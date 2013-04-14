@@ -1,5 +1,4 @@
 <?php 
-
 namespace Bpez\Infuse;
 
 use Bpez\Infuse\Util;
