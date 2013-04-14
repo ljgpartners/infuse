@@ -1,4 +1,6 @@
-<?php namespace Bpez\Infuse;
+<?php 
+
+namespace Bpez\Infuse\Util;
 
 	class Util {
 
