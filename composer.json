@@ -1,21 +1,18 @@
 {
     "name": "bpez/infuse",
-    "type": "admin",
-    "description": "Infuse, Admin tool for PHP > 5.3 ",
-    "keywords": ["admin","scaffold"],
-    "homepage": "",
-    "license": "",
+    "description": "Infuse, Scaffold tool for PHP > 5.3",
+    "license": "GNU General Public License",
     "authors": [
         {
             "name": "Bryan Perez",
-            "email": "perezjbryan@gmail.com",
-            "role": "Developer"
+            "email": "perezjbryan@gmail.com"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.0"
     },
     "autoload": {
-        "psr-0": { "Bpez\\Infuse\\": "" }
+        "psr-0": { "Infuse": "bpez/infuse/" }
     }
 }
