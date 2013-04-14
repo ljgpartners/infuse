@@ -1,6 +1,6 @@
 <?php 
 
-namespace Bpez\Infuse\Scaffold;
+namespace Bpez\Infuse;
 
 use Bpez\Infuse\Util;
 

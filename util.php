@@ -1,6 +1,6 @@
 <?php 
 
-namespace Bpez\Infuse\Util;
+namespace Bpez\Infuse;
 
 	class Util {
 
