@@ -1,9 +1,11 @@
 <?php use Infuse\Util; ?>
 
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
 <div class="scaffold">
 	<table class="table table-striped table-bordered table-hover">
 		<tr>
-			<td colspan="<?php echo count($columns); ?>">
+			<td colspan="<?php echo count($columns)+1; ?>">
 				<a href="?action=c">Create</a>
 			  <div style="float:right;">
 			 	<a href="?pg=a">View All</a>
@@ -12,7 +14,6 @@
 			 	<?php endforeach; ?>
 			  </div>
 			</td>
-			<td></td>
 		</tr>
 		<tr>
 			<?php foreach ($columns as $column): ?>

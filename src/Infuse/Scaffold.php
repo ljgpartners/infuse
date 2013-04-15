@@ -19,9 +19,18 @@ class Scaffold {
 		$columns = $db::query("SHOW COLUMNS FROM ".$model->table());
 		foreach ($columns as $column) {
 			if ($column->field != 'id' ) {
+				if (strlen(strstr($column->type, "varchar")) > 0) {
+					$type = "varchar";
+				} else if (strlen(strstr($column->type, "tinyint")) > 0) {
+					$type = "tinyint";
+				} else if (strlen(strstr($column->type, "int")) > 0) {
+					$type = "int";
+				} else {
+					$type = $column->type;
+				}
 				$this->columns[] = array(
 						"field" => $column->field,
-						"type"  => $column->type
+						"type"  => $type
 					);
 			}
 		}
@@ -48,6 +57,9 @@ class Scaffold {
 				break;
 			case 'c':
 				$this->create();
+				break;
+			case 'u':
+				$this->update();
 				break;
 			default:
 				$this->listAll();
@@ -76,7 +88,7 @@ class Scaffold {
 	private function edit()
 	{
 		$model = $this->model;
-		echo "edit";
+		$this->entries = $model::find(Util::get("id"));
 	}
 
 	private function create()
@@ -88,7 +100,10 @@ class Scaffold {
 	private function delete()
 	{
 		$model = $this->model;
-		echo "delete";
+		$model::find(Util::get("id"))->delete();
+		$redirect_path = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
+		header("Location: {$redirect_path}");
+		exit();
 	}
 
 	private function update()
@@ -107,7 +122,7 @@ class Scaffold {
 	{	
 		$model = $this->model;
 
-		//echo Util::debug($this->columns);
+		
 		$data = array(
 				"action" => $this->action,
 				"enrties" => $this->entries,

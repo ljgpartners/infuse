@@ -17,16 +17,11 @@ class View {
 				require dirname(__FILE__)."/templates/listAll.php";
 				break;
 			case 'e':
-				require dirname(__FILE__)."/templates/edit.php";
+			case 'c':
+				require dirname(__FILE__)."/templates/create_edit.php";
 				break;
 			case 's':
 				require dirname(__FILE__)."/templates/show.php";
-				break;
-			case 'd':
-				require dirname(__FILE__)."/templates/delete.php";
-				break;
-			case 'c':
-				require dirname(__FILE__)."/templates/create.php";
 				break;
 			default:
 				require dirname(__FILE__)."/templates/listAll.php";
