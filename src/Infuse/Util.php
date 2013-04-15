@@ -3,24 +3,14 @@ namespace Infuse;
 
 	class Util {
 
-		/**
-		 * 
-		 *
-		 * @param  string  $driver
-		 * @return mixed
-		 */
+
 		public static function get($name)
 		{
 			return (isset($_POST["{$name}"])? $_POST["{$name}"] : 
 				(isset($_GET["{$name}"]))? $_GET["{$name}"] : false );
 		}
 
-		/**
-		 * .
-		 *
-		 * @param  string  $driver
-		 * @return mixed
-		 */
+
 		public static function truncateText($text, $nbrChar, $append='...') 
 		{
 			if (strlen($text) > $nbrChar) {
@@ -30,15 +20,20 @@ namespace Infuse;
 		  return $text;
 		}
 
-		/**
-		 * 
-		 *
-		 * @param  string  $driver
-		 * @return mixed
-		 */
+		public static function cleanName($name) 
+		{
+			return ucfirst(str_replace('_', ' ', $name));
+		}
+
+
 		public static function debug($var)
 		{
-			return "<pre>".print_r($var)."</pre>";
+			ob_start();
+			echo "<pre>";
+			print_r($var);
+			echo "</pre>";
+      return ob_get_clean();
+			
 		}
 
 	}
