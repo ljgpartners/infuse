@@ -10,12 +10,15 @@ class Scaffold {
 	private $action;
 	private $entries = array();
 	private $header = array();
+	private $name;
 
 
 	public function __construct($model, $db)
 	{	
+		if (!isset($_SESSION)) session_start();
 		$this->action = Util::get("action");
 		$this->model = $model;
+		$this->name = get_class($model);
 		$columns = $db::query("SHOW COLUMNS FROM ".$model->table());
 		foreach ($columns as $column) {
 			if ($column->field != 'id' ) {
@@ -71,7 +74,8 @@ class Scaffold {
 	{	
 		$model = $this->model;
 		$this->header = array(
-				"pagination" => array()
+				"pagination" => array(),
+				"name" => $this->name
 			);
 		$this->entries = $model::all();
 	}
@@ -80,7 +84,8 @@ class Scaffold {
 	{	
 		$model = $this->model;
 		$this->header = array(
-				"pagination" => array()
+				"pagination" => array(),
+				"name" => $this->name
 			);
 		$this->entries = $model::find(Util::get("id"));
 	}
@@ -88,19 +93,28 @@ class Scaffold {
 	private function edit()
 	{
 		$model = $this->model;
+		$this->header = array(
+				"edit" => true,
+				"name" => $this->name
+			);
 		$this->entries = $model::find(Util::get("id"));
 	}
 
 	private function create()
 	{
 		$model = $this->model;
-		echo "create";
+		$model = $this->model;
+		$this->header = array(
+				"name" => $this->name
+			);
+		$this->entries = $model;
 	}
 
 	private function delete()
 	{
 		$model = $this->model;
 		$model::find(Util::get("id"))->delete();
+		$_SESSION['infuse_message'] = array("message" => "Deleted {$this->name} with id = ".Util::get("id").".", "type" => "error"); 
 		$redirect_path = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
 		header("Location: {$redirect_path}");
 		exit();
@@ -109,7 +123,30 @@ class Scaffold {
 	private function update()
 	{	
 		$model = $this->model;
-		echo "update";
+		if (Util::get("id")) {
+			$entry = $model::find(Util::get("id"));
+			$message = array("message" => "Updated {$this->name} user with id = ".Util::get("id").".", "type" => "success");
+		} else {
+			$entry = $model;
+			$message = array("message" => "Created {$this->name}.", "type" => "success");
+		}
+
+		foreach ($this->columns as $column) {
+			$entry->{$column['field']} = Util::get($column['field']);
+		}
+
+		try {
+			if ($entry->save()) {
+				$_SESSION['infuse_message'] = $message;
+			}
+		} catch (Exception $e) {
+			$_SESSION['infuse_message'] = array("message" => "Failed to save {$this->name}.", "type" => "error"); 
+		}
+
+		
+		$redirect_path = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
+		header("Location: {$redirect_path}");
+		exit();
 	}
 
 	public function config()

@@ -6,8 +6,8 @@ namespace Infuse;
 
 		public static function get($name)
 		{
-			return (isset($_POST["{$name}"])? $_POST["{$name}"] : 
-				(isset($_GET["{$name}"]))? $_GET["{$name}"] : false );
+			return (isset($_POST["{$name}"]))? $_POST["{$name}"] : 
+				((isset($_GET["{$name}"]))? $_GET["{$name}"] : false);
 		}
 
 
