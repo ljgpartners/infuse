@@ -1,7 +1,7 @@
 <?php 
-namespace Infuse;
+namespace Bpez\Infuse;
 
-use Infuse\Util;
+use Bpez\Infuse\Util;
 
 class View {
 

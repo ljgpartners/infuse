@@ -1,6 +1,6 @@
 <?php 
-use Infuse\Util; 
-use Infuse\View; 
+use Bpez\Infuse\Util; 
+use Bpez\Infuse\View; 
 ?>
 
 <div class="scaffold">
