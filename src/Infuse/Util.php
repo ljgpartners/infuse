@@ -1,5 +1,5 @@
 <?php 
-namespace Bpez\Infuse;
+namespace Infuse;
 
 	class Util {
 
