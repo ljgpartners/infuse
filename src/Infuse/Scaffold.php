@@ -2,6 +2,9 @@
 namespace Infuse;
 
 use Infuse\Util;
+use Exception;
+use Transit\Transit;
+use Transit\Validator\ImageValidator;
 
 class Scaffold {
 
@@ -11,6 +14,13 @@ class Scaffold {
 	private $entries = array();
 	private $header = array();
 	private $name;
+	private $limit = 10;
+	private $order = array(
+		"order" => "desc",
+		"column" => "id"
+		);
+	private $selects = array();
+	private $hasMany = array();
 
 
 	public function __construct($model, $db)
@@ -19,6 +29,7 @@ class Scaffold {
 		$this->action = Util::get("action");
 		$this->model = $model;
 		$this->name = get_class($model);
+
 		$columns = $db::query("SHOW COLUMNS FROM ".$model->table());
 		foreach ($columns as $column) {
 			if ($column->field != 'id' ) {
@@ -31,16 +42,18 @@ class Scaffold {
 				} else {
 					$type = $column->type;
 				}
-				$this->columns[] = array(
+				$this->columns["{$column->field}"] = array(
 						"field" => $column->field,
 						"type"  => $type
 					);
 			}
 		}
-
-		$this->route();
-
 	}
+
+	public static function newInstance($model, $db)
+  {
+  	return new self($model, $db);
+  }
 
 
 	private function route()
@@ -73,11 +86,30 @@ class Scaffold {
 	private function listAll()
 	{	
 		$model = $this->model;
+		$pagination = array(
+			"limit" => $this->limit,
+			"active_page" => 1,
+			"count" => 0
+		);
+		
+		$pagination['count'] = $model::count();
+		$offset = 0;
+		$page = Util::get("pg");
+		if ($page && $page != 1 && $page != 'a') {
+			$offset =  ($page-1) * $pagination['limit'];
+			$pagination['active_page'] = $page;
+		}
+
+		if ($page == "a") {
+			$this->entries = $model::order_by($this->order["column"], $this->order["order"])->get();
+		} else {
+			$this->entries = $model::order_by($this->order["column"], $this->order["order"])->take($pagination['limit'])->skip($offset)->get();
+		}
+		
 		$this->header = array(
-				"pagination" => array(),
+				"pagination" => $pagination,
 				"name" => $this->name
 			);
-		$this->entries = $model::all();
 	}
 
 	private function show()
@@ -95,9 +127,15 @@ class Scaffold {
 		$model = $this->model;
 		$this->header = array(
 				"edit" => true,
-				"name" => $this->name
+				"name" => $this->name,
+				"associations" => $this->hasMany
 			);
-		$this->entries = $model::find(Util::get("id"));
+		$post = Util::flashArray("post");
+		if (!$post) {
+			$this->entries = $model::find(Util::get("id"));
+		} else {
+			$this->entries = Util::arrayToObject($post);
+		}
 	}
 
 	private function create()
@@ -107,14 +145,24 @@ class Scaffold {
 		$this->header = array(
 				"name" => $this->name
 			);
-		$this->entries = $model;
+		$post = Util::flashArray("post");
+		if (!$post) {
+			$this->entries = $model;
+		} else {
+			$this->entries = Util::arrayToObject($post);
+		}
+		
 	}
 
 	private function delete()
 	{
 		$model = $this->model;
 		$model::find(Util::get("id"))->delete();
-		$_SESSION['infuse_message'] = array("message" => "Deleted {$this->name} with id = ".Util::get("id").".", "type" => "error"); 
+		Util::flash(array(
+			"message" => "Deleted {$this->name} with id = ".Util::get("id").".", 
+			"type" => "error"
+			)
+		); 
 		$redirect_path = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
 		header("Location: {$redirect_path}");
 		exit();
@@ -131,35 +179,125 @@ class Scaffold {
 			$message = array("message" => "Created {$this->name}.", "type" => "success");
 		}
 
+		$fileErrors = array();
+
 		foreach ($this->columns as $column) {
-			$entry->{$column['field']} = Util::get($column['field']);
-		}
 
-		try {
-			if ($entry->save()) {
-				$_SESSION['infuse_message'] = $message;
+			if (array_key_exists("upload", $column) && $_FILES["{$column['field']}"] != "") {
+				$validations = $column['upload']['validations'];
+				if (count($validations) > 0) {
+					$validator = new ImageValidator();
+					foreach ($validations as $val) {
+						$validator->addRule($val[0], $val[1], $val[2]);
+					}
+				}
+
+				$transit = new Transit($_FILES["{$column['field']}"]); 
+				$transit->setDirectory($model->uploadPath($column['field'])) 
+								->setValidator($validator);
+
+				try { 
+					if ($_FILES["{$column['field']}"]['name'] != "" && $transit->upload()) {
+						$fileName = explode(DIRECTORY_SEPARATOR, $transit->getOriginalFile());
+						$entry->{$column['field']} = end($fileName);
+					}
+				} catch (Exception $e) {
+					$fileErrors["{$column['field']}"] = $e->getMessage();
+				}
+
+			} else {
+				$entry->{$column['field']} = Util::get($column['field']);
 			}
-		} catch (Exception $e) {
-			$_SESSION['infuse_message'] = array("message" => "Failed to save {$this->name}.", "type" => "error"); 
 		}
 
+
+		if ($entry->validate(Util::getAll()) && count($fileErrors) == 0) {
+			$entry->save();
+			Util::flash($message);
+			$redirect_path = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
+		} else {
+			Util::flash(array(
+				"message" => "Failed to save {$this->name}.", 
+				"type" => "error"
+				)
+			);
+			Util::flashArray("errors", $entry->errors());
+			Util::flashArray("file_errors", $fileErrors);
+			$action = (Util::get("id"))? "?action=e&id=".Util::get("id") : "?action=c";
+			Util::flashArray("post", Util::getAll());
+			$redirect_path = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'])."{$action}";
+		}
 		
-		$redirect_path = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
 		header("Location: {$redirect_path}");
 		exit();
 	}
 
-	public function config()
+	
+
+	/******************************
+		Alter methods
+	*******************************/
+
+	public function limit($limit)
 	{
-		$model = $this->model;
-		echo "config";
+		$this->limit = (is_int($limit))? $limit : $this->limit;
+		return $this;
 	}
 
+	public function order($order)
+	{
+		if (is_array($order) && array_key_exists("order", $order) && array_key_exists("column", $order)) {
+			$this->order["order"] = $order["order"];
+			$this->order["column"] = $order["column"];
+			return $this;
+		} else {
+			throw new Exception('order(array("order" => "desc", "column" => "name")); Array required with order and column. ');
+		}
+	}
+
+	public function addSelect($column, $array)
+	{	
+		if (!is_string($column)) 
+			throw new Exception('addSelect("name", array()); First argument should name of column. ');
+		if (!is_array($array)) 
+			throw new Exception('addSelect("name", array()); Second argument can only be an array. ');
+		if (array_key_exists($column, $this->columns)) {
+			$this->columns["{$column}"]["select"] = $array;
+			return $this;
+		} else {
+			throw new Exception('addSelect("name", array()); Column doesn\'t exist.');
+		}
+	}
+
+
+	public function fileUpload($column, $uploadFolder, $validations = array())
+	{
+		if (!is_string($column)) 
+			throw new Exception('fileUpload("name", "/path/to/files"); First argument should name of column. ');
+		if (!is_string($uploadFolder)) 
+			throw new Exception('fileUpload("name", "/path/to/files"); Second argument should be the path to the uploads folder. ');
+		if (array_key_exists($column, $this->columns)) {
+			$this->columns["{$column}"]["upload"] = array("uploadFolder" => $uploadFolder, "validations" => $validations);
+			return $this;
+		} else {
+			throw new Exception('fileUpload("name", "/path/to/files");  Column doesn\'t exist.');
+		}
+	}
+
+	public function hasMany($model)
+	{	
+		if (!is_string($column)) 
+			throw new Exception('hasMany("name"); First argument should name of the model. ');
+		array_push($this->hasMany, $mode);
+	}
+
+
+	/******************************
+		Final build scaffold
+	*******************************/
 	public function build()
 	{	
-		$model = $this->model;
-
-		
+		$this->route();
 		$data = array(
 				"action" => $this->action,
 				"enrties" => $this->entries,

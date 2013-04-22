@@ -10,12 +10,14 @@ class View {
 				"bootstrap.min.js",
 				"jquery-ui.min.js",
 				"jquery-ui-timepicker-addon.js",
+				"infuse.js"
 			);
 
 	private static $css = array(
 				"bootstrap-combined.min.css",
 				"jquery-ui.min.css",
-				"jquery-ui-timepicker-addon.css"
+				"jquery-ui-timepicker-addon.css",
+				"infuse.css"
 			);
 
 	public static function fuse($data)
@@ -23,8 +25,7 @@ class View {
 		$entries = $data['enrties'];
 		$columns = $data['columns'];
 		$header  = $data['header'];
-		$message = isset($_SESSION['infuse_message'])? $_SESSION['infuse_message'] : false;
-		unset($_SESSION['infuse_message']);
+		$message = Util::flash();
 
 		ob_start();
 		View::fuseAssets();
@@ -50,14 +51,13 @@ class View {
 	{	
 		
 		foreach (View::$css  as $file) {
-			echo '<link href="/css/'.$file.'" rel="stylesheet">';
+			echo '<link href="/infuse_assets/css/'.$file.'" rel="stylesheet">';
 		}
 
 		foreach (View::$js  as $file) {
-			echo '<script type="text/javascript" src="/js/'.$file.'"></script>';
+			echo '<script type="text/javascript" src="/infuse_assets/js/'.$file.'"></script>';
 		}
 
-		require dirname(__FILE__)."/assets/infuse.php";
 	}
 
 
@@ -81,6 +81,7 @@ class View {
 					$message['type'] = "alert-info";
 					break;
 			}
+
 			echo '<div class="alert '.$message['type'].'">
 					  <button type="button" class="close" data-dismiss="alert">&times;</button>
 					  <h4>'.$message['message'].'</h4>

@@ -10,6 +10,11 @@ namespace Infuse;
 				((isset($_GET["{$name}"]))? $_GET["{$name}"] : false);
 		}
 
+		public static function getAll()
+		{
+			return ($_SERVER['REQUEST_METHOD'] === 'POST')? $_POST : $_GET;
+		}
+
 
 		public static function truncateText($text, $nbrChar, $append='...') 
 		{
@@ -30,10 +35,45 @@ namespace Infuse;
 		{
 			ob_start();
 			echo "<pre>";
-			print_r($var);
+			var_dump($var);//print_r($var);
 			echo "</pre>";
       return ob_get_clean();
 			
+		}
+
+		public static function flash($message = null)
+		{
+			if (!isset($_SESSION)) session_start();
+			if ($message == null && isset($_SESSION['flash_message'])) {
+				$temp = $_SESSION['flash_message'];
+				unset($_SESSION['flash_message']);
+				return $temp;
+			} else if ($message) {
+				$_SESSION['flash_message'] = $message;
+			} else {
+				return false;
+			}
+			
+		}
+
+		public static function flashArray($index, $message = null)
+		{
+			if (!isset($_SESSION)) session_start();
+			if ($message == null && isset($_SESSION["{$index}"])) {
+				$temp = $_SESSION["{$index}"];
+				unset($_SESSION["{$index}"]);
+				return $temp;
+			} else if ($message) {
+				$_SESSION["{$index}"] = $message;
+			} else {
+				return false;
+			}
+			
+		}
+
+		public static function arrayToObject($array)
+		{
+			return (object)$array;
 		}
 
 	}

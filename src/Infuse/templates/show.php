@@ -2,7 +2,7 @@
 use Infuse\Util; 
 use Infuse\View; 
 ?>
-<div class="scaffold">
+<div class="infuseScaffold">
 
 	<div class="navbar">
 	  <div class="navbar-inner">
@@ -12,11 +12,30 @@ use Infuse\View;
 
 	<?php  View::fuseAlerts($message); ?>
 
-	<table class="table table-striped table-bordered table-hover ">
+	<table class="table table-striped table-bordered">
 			<?php foreach ($columns as $column): ?>
 			<tr>
+
+				<?php if (array_key_exists("select", $column)): ?>
+
+						<?php 
+						foreach ($column['select'] as $value):
+								if ($entries->{$column['field']} == $value->id): 
+									$attributes = $value->attributes;
+									end($attributes);
+									$columnName = current($attributes); ?>
+									<th><?php echo Util::cleanName($column['field']); ?></th>
+									<td><?php echo $columnName; ?></td>
+								<?php
+								endif; 
+						endforeach; ?>
+
+				<?php else: ?>
+
 				<th><?php echo Util::cleanName($column['field']); ?></th>
 				<td><?php echo $entries->{$column['field']}; ?></td>
+
+				<?php endif; ?>
 			</tr>
 			<?php endforeach; ?>
 

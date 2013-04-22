@@ -3,7 +3,7 @@ use Infuse\Util;
 use Infuse\View; 
 ?>
 
-<div class="scaffold">
+<div class="infuseScaffold">
 
 	<div class="navbar">
 	  <div class="navbar-inner">
@@ -13,7 +13,7 @@ use Infuse\View;
 
 	<?php  View::fuseAlerts($message); ?>
 
-	<table class="table table-striped table-bordered table-hover table table-condensed">
+	<table class="table  table-bordered table-striped">
 		<tr>
 			<td colspan="<?php echo count($columns)+1; ?>">
 				<a class="btn btn-small btn-success" href="?action=c">Create</a>
@@ -29,7 +29,28 @@ use Infuse\View;
 		<?php foreach ($entries as $entry): ?>
 		<tr>
 			<?php foreach ($columns as $column): ?>
-			<td><?php echo Util::truncateText($entry->{$column['field']}, "25"); ?></td>
+			<td>
+				<?php if (array_key_exists("select", $column)):
+
+								foreach ($column['select'] as $value):
+										if ($entry->{$column['field']} == $value->id):
+											$attributes = $value->attributes;
+											end($attributes);
+											$columnName = current($attributes);
+											echo $columnName;
+										endif; 
+								endforeach;
+
+							elseif ($column['type'] == "tinyint"): ?>
+								<input type="checkbox" <?php echo ($entry->{$column['field']} == 1)? "checked='checked'" : ""; ?> 
+									data-checked="<?php echo $entry->{$column['field']}; ?>" data-id="<?php echo $entry->id; ?>"
+									data-url='<?php echo str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']); ?>' 
+									name="<?php echo $column['field']; ?>" class="infuseBoolean">
+							<?php
+							else: 
+								echo (($column['type'] == "text"))? Util::truncateText($entry->{$column['field']}, "25") : $entry->{$column['field']};
+							endif; ?>
+			</td>
 			<?php endforeach; ?>
 			<td>
 				<div class="btn-group">
@@ -51,17 +72,32 @@ use Infuse\View;
 
 	<div class="pagination pagination-small pagination-centered">
 	  <ul>
-	  	<?php foreach ($header['pagination'] as $key => $value): ?>
-			 			<a href="?pg=">1</a>
-			 <?php endforeach; ?>
-	  	<li class="disabled"><span>&laquo;</span></li>
-	    <li class="active"><a href="#">1</a></li>
-	    <li><a href="#">2</a></li>
-	    <li><a href="#">3</a></li>
-	    <li><a href="#">4</a></li>
-	    <li><a href="#">5</a></li>
-	    <li><a href=""><span>&raquo;</span></a></li>
-	    <li><a href="?pg=a">View All</a></li>
+	  	<?php 
+	  	$pagination = $header['pagination']; 
+	  	if ($pagination['active_page'] != 1): ?>
+	  		<li><a href="?pg=<?php echo $pagination['active_page']-1; ?>">&laquo;</a></li>
+	  	<?php else: ?>
+	  		<li class="disabled"><a href="javascript: void(0)">&laquo;</a></li>
+	  	<?php
+	  	endif;
+	  	
+	  	if ($pagination['count'] > $pagination['limit']):  
+	  		$times = ceil((int)$pagination['count']/(int)$pagination['limit']);
+	  		for ($i=1; $i < $times+1; $i++): ?>
+	  			<li class="<?php echo ($pagination['active_page'] == $i)? "active" : ""; ?>">
+	  				<a href="?pg=<?php echo $i; ?>">
+	  					<?php echo $i; ?>
+	  				</a>
+	  			</li>
+	  	<?php endfor; ?>
+	  	 <li><a href="?pg=a">View All</a></li>
+	  	<?php endif; ?>
+	  	
+	  	<?php if ($pagination['active_page'] != $times): ?>
+	    	<li><a href="?pg=<?php echo $pagination['active_page']+1; ?>">&raquo;</a></li>
+	    <?php else: ?>
+	    	<li class="disabled"><a href="javascript: void(0)">&raquo;</a></li>
+	   	<?php endif; ?> 
 	    
 	  </ul>
 	</div>
