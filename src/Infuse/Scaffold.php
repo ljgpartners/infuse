@@ -77,6 +77,8 @@ class Scaffold {
 			case 'u':
 				$this->update();
 				break;
+			case 'cc':
+				$this->childCreate();
 			default:
 				$this->listAll();
 				break;
@@ -141,9 +143,9 @@ class Scaffold {
 	private function create()
 	{
 		$model = $this->model;
-		$model = $this->model;
 		$this->header = array(
-				"name" => $this->name
+				"name" => $this->name,
+				"associations" => $this->hasMany
 			);
 		$post = Util::flashArray("post");
 		if (!$post) {
@@ -152,6 +154,11 @@ class Scaffold {
 			$this->entries = Util::arrayToObject($post);
 		}
 		
+	}
+
+	private function childCreate()
+	{
+
 	}
 
 	private function delete()
@@ -183,7 +190,7 @@ class Scaffold {
 
 		foreach ($this->columns as $column) {
 
-			if (array_key_exists("upload", $column) && $_FILES["{$column['field']}"] != "") {
+			if (array_key_exists("upload", $column) && array_key_exists($column['field'], $_FILES) && $_FILES["{$column['field']}"] != "") {
 				$validations = $column['upload']['validations'];
 				if (count($validations) > 0) {
 					$validator = new ImageValidator();
@@ -286,9 +293,11 @@ class Scaffold {
 
 	public function hasMany($model)
 	{	
-		if (!is_string($column)) 
-			throw new Exception('hasMany("name"); First argument should name of the model. ');
-		array_push($this->hasMany, $mode);
+		if (!is_array($model)) 
+			throw new Exception('hasMany(array("name" => new User)); First argument should is_array of the model. 
+				With name as the index and new instance of the Model');
+		array_push($this->hasMany, $model);
+		return $this;
 	}
 
 

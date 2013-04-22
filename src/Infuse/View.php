@@ -35,6 +35,7 @@ class View {
 				break;
 			case 'e':
 			case 'c':
+			case 'cc':
 				require dirname(__FILE__)."/templates/create_edit.php";
 				break;
 			case 's':

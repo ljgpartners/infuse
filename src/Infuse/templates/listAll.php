@@ -7,7 +7,7 @@ use Infuse\View;
 
 	<div class="navbar">
 	  <div class="navbar-inner">
-	    <a class="brand" href="#"><?php echo $header['name'] ; ?></a>
+	    <a class="brand" href="#"><?php echo $header['name']; ?></a>
 	  </div>
 	</div>
 
@@ -16,7 +16,7 @@ use Infuse\View;
 	<table class="table  table-bordered table-striped">
 		<tr>
 			<td colspan="<?php echo count($columns)+1; ?>">
-				<a class="btn btn-small btn-success" href="?action=c">Create</a>
+				<a class="btn btn-small btn-success" href="?action=c">Create <?php echo $header['name']; ?></a>
 			</td>
 		</tr>
 		<tr>
@@ -68,8 +68,25 @@ use Infuse\View;
 			</td>
 		</tr>
 		<?php endforeach; ?>
+
+		<?php if ($header['pagination']['count'] < 1): ?>
+		<tr>
+			<td colspan="<?php echo count($columns)+1; ?>">
+				<div class="hero-unit">
+				  <h1><?php echo $header['name']; ?> listing is empty.</h1>
+				  <p>To create the first one click the create button below.</p>
+				  <p>
+				    <a href="?action=c" class="btn btn-success btn">
+				      Create <?php echo $header['name']; ?>
+				    </a>
+				  </p>
+				</div>
+			</td>
+		</tr>
+	<?php endif; ?>
 	</table>
 
+	<?php if ($header['pagination']['count'] > 0): ?>
 	<div class="pagination pagination-small pagination-centered">
 	  <ul>
 	  	<?php 
@@ -93,7 +110,7 @@ use Infuse\View;
 	  	 <li><a href="?pg=a">View All</a></li>
 	  	<?php endif; ?>
 	  	
-	  	<?php if ($pagination['active_page'] != $times): ?>
+	  	<?php if (isset($times) && $pagination['active_page'] != $times): ?>
 	    	<li><a href="?pg=<?php echo $pagination['active_page']+1; ?>">&raquo;</a></li>
 	    <?php else: ?>
 	    	<li class="disabled"><a href="javascript: void(0)">&raquo;</a></li>
@@ -101,6 +118,10 @@ use Infuse\View;
 	    
 	  </ul>
 	</div>
+	<?php endif; ?>
+
+
 </div>
+
 
 

@@ -45,7 +45,7 @@ use Infuse\View;
 						endforeach; ?>
 					</select>
 
-				<?php elseif (array_key_exists("upload", $column)): ?>
+				<?php elseif (property_exists($entries, $column['field']) && array_key_exists("upload", $column)): ?>
 
 					<input type="file" name="<?php echo $column['field']; ?>" >
 
@@ -140,22 +140,8 @@ use Infuse\View;
 				</td>
 			</tr>
 
-			<tr>
-			<?php if (count($header['associations']) > 0): ?>
-				<?php foreach ($header['associations'] as $association) ?>
-				<table>
-					<tr>
-						<td colspan="2"><a href="?action=cc&pid=<?php echo $entries->id; ?>">Create <?php echo get_class($entries); ?></a><?php echo ; ?></td>
-					</tr>
-					<?php foreach ($entries->has_many($association) as $key => $value): ?>
-						# code...
-					<?php endforeach; ?>
-
-				</table>
-				<?php endforeach; ?>
-			<?php endif; ?>
-			</tr>
-
+			<?php require "children.php"; ?>
+			
 			</form>
 	</table>
 </div>
