@@ -1,0 +1,61 @@
+body{ 
+	font-family: 'Open Sans', sans-serif;
+	background-color: #f9f9f9; 
+	background: url("/packages/bpez/infuse/images/infuseBackground.jpg") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  padding: 0 !important;
+}
+
+body.infuseWrapper{ background-color: #F2F2F2; background: none;  }
+
+.container{ margin-bottom: 100px; }
+.infuseInner{  width: 1024px; margin: 0px auto; }
+.initialBackground{ width: 100%; height: 37px; background-color: black; background: url("/packages/bpez/infuse/images/infuseBackground.jpg") no-repeat center center fixed; -webkit-background-size: cover;
+  -moz-background-size: cover; -o-background-size: cover; background-size: cover;  }
+
+.infuseScaffold .table{ background-color: white; }
+.infuseScaffold input, .infuseScaffold textarea{ width: 60%; }
+.infuseScaffold input[type="submit"]{ width: auto; }
+.infuseScaffold{ font-size: 12px; }
+.infuseScaffold textarea{ min-height: 80px; }
+
+.infuseScaffold .label, .infuseScaffold .badge{ font-weight: normal; margin: 2px 0px 0px 0px;  }
+.infuseScaffold input[type="file"]{ height: auto !important; line-height: 15px !important; }
+.introLanding, .infuseScaffold { margin-top: 50px; }
+
+.infuseBlue{ color: #0088cc !important; }
+
+.infuseLogin{ width: 406px; height: 387px; background-color: black; background-image: url("/packages/bpez/infuse/images/loginTopBorder.png"); background-repeat: no-repeat; background-position: center top;
+	margin: 150px auto 0px; box-sizing: Border-box; }
+.infuseLogin p{ color: #0099CC; font-size: 14px; font-family: 'Raleway', sans-serif; }
+.infuseLogin .logo{ display: block; margin: 0px auto 20px; }
+.infuseLogin .infuseU, .infuseLogin .infuseP{ color: #666666; font-family: 'Raleway', sans-serif; width: 299px; height: 46px; box-sizing: Border-box; padding: 12px 12px 12px 44px;background-repeat: no-repeat; background-position: 5% 50%; }
+.infuseLogin .infuseU{ background-image: url("/packages/bpez/infuse/images/loginUser.png");}
+.infuseLogin .infuseP{ background-image: url("/packages/bpez/infuse/images/loginPass.png");}
+input.infuseLoginSubmit{ background-color: #0099CC; font-weight: normal; color: white; border: none; width: 114px; height: 43px; font-family: 'Raleway', sans-serif; font-size: 14px; 
+-moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; /* future proofing */ -khtml-border-radius: 5px; /* for old Konqueror browsers */ }
+
+.infuseNav{ height: 49px; background-color: black;  }
+.infuseNav .navElement{ height: 49px; width: 143px; margin: 0px 1px 0px 1px; background-color: black; display: inline-block; vertical-align: top; }
+.infuseNav .logo{ display: inline-block; vertical-align: top; width: 150px; position: relative; margin: 0px 2px; }
+.infuseNav .logo img{ position: absolute; top: -25px;}
+.infuseNav .innerNav{ font-size: 0px;  width: 1024px; margin: 0px auto; background-color: transparent; background: url("/packages/bpez/infuse/images/infuseBackground.jpg") no-repeat center center fixed;  }
+.infuseNav .navElement a{ width: 100%; height: 100%; background-color: black; display: inline-block; text-align: center; font-family: 'Raleway', sans-serif; font-size: 14px; color:  white; font-weight: 400; }
+.infuseNav .navElement a span{ margin-top: 14px; display: inline-block }
+.infuseNav .navElement a.active{ }
+
+.infuseSideMenu{ padding: 30px; position: absolute; top: 86px; left: -360px; z-index: 100; width: 300px;  height: 100%; background-color: #F2F2F2; }
+.nav-header{ color: #3AACE2; font-family: 'Raleway', sans-serif; font-size: 14px; text-shadow: none !important; font-weight: 400; text-indent: 15px;  }
+.nav-list a{ color: black;  font-size: 13px; text-shadow: none !important; font-weight: 400; text-indent: 15px; }
+
+.accordion-toggle{ text-decoration: none !important;}
+	/*
+#AA4FAA #3AACE2
+
+font-family: 'Raleway', sans-serif;
+font-family: 'Open Sans', sans-serif;
+
+	*/

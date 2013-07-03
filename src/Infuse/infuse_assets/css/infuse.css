@@ -1,6 +1,0 @@
-.infuseScaffold input, .infuseScaffold textarea{ width: 60%; }
-.infuseScaffold input[type="submit"]{ width: auto; }
-.infuseScaffold{ font-size: 12px; }
-
-.infuseScaffold .label, .infuseScaffold .badge{ font-weight: normal; }
-.infuseScaffold input[type="file"]{ height: auto !important; line-height: 15px !important; }
