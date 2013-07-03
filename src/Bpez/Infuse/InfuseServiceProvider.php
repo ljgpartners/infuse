@@ -3,6 +3,41 @@
 use Illuminate\Support\ServiceProvider;
 use Bpez\Infuse\Commands\MysqlDumpCommand;
 
+/*
+|--------------------------------------------------------------------------
+| Steps for installing from a package
+|--------------------------------------------------------------------------
+|
+| php artisan migrate --package="bpez/infuse"
+| php artisan asset:publish bpez/infuse
+|	php artisan config:publish bpez/infuse
+| Add 'Bpez\Infuse\InfuseServiceProvider' to your laravel providers in /app/config/app.php
+|
+*/
+
+
+/*
+|--------------------------------------------------------------------------
+| Steps for installing from a package (When working in workbench )
+|--------------------------------------------------------------------------
+|
+| php artisan migrate --bench="bpez/infuse"
+| php artisan asset:publish --bench="bpez/infuse"
+| php artisan config:publish --path="workbench/bpez/infuse/src/config" bpez/infuse
+| Add 'Bpez\Infuse\InfuseServiceProvider' to your laravel providers in /app/config/app.php
+|
+*/
+
+/*
+|--------------------------------------------------------------------------
+| Add another class run this in infuse root
+|--------------------------------------------------------------------------
+|
+| composer dump-autoload 
+|
+*/
+
+
 class InfuseServiceProvider extends ServiceProvider {
 
 	/**

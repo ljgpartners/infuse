@@ -2,24 +2,6 @@
 
 use Bpez\Infuse\Scaffold;
 
-/*
- steps for installing from a package
- php artisan migrate --package="bpez/infuse"
- php artisan asset:publish bpez/infuse
- php artisan config:publish bpez/infuse
-
-------- When working in workbench 
- php artisan migrate --bench="bpez/infuse"
- php artisan asset:publish --bench="bpez/infuse"
- php artisan config:publish --path="workbench/bpez/infuse/src/config" bpez/infuse
-
-
-
-------- add another class run this in infuse root
-composer dump-autoload 
-*/
-
-
 class InfuseController extends BaseController {
 
 	public $layout = 'infuse::layouts.application';
