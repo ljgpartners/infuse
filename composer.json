@@ -1,10 +1,14 @@
 {
     "name": "bpez/infuse",
-    "version": "1.0.0-dev",
     "type": "library",
     "description": "Infuse is a laravel admin package for generating administration style interfaces",
     "version": "1.0.0",
-    "keywords": ["laravel 4", "laravel", "admin", "scaffold"],
+    "keywords": [
+        "laravel 4", 
+        "laravel", 
+        "admin", 
+        "scaffold"
+    ],
     "license": "MIT",
     "authors": [
         {
