@@ -7,12 +7,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/illuminate/support.git",
-            "reference": "v4.0.5"
+            "reference": "6a690ae6dff5da787f3b265350f23c4e8e4828ed"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/illuminate/support/zipball/v4.0.5",
-            "reference": "v4.0.5",
+            "url": "https://api.github.com/repos/illuminate/support/zipball/6a690ae6dff5da787f3b265350f23c4e8e4828ed",
+            "reference": "6a690ae6dff5da787f3b265350f23c4e8e4828ed",
             "shasum": ""
         },
         "require": {
@@ -23,7 +23,7 @@
             "patchwork/utf8": "1.1.*",
             "phpunit/phpunit": "3.7.*"
         },
-        "time": "2013-06-11 00:56:49",
+        "time": "2013-07-09 02:19:57",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -52,17 +52,17 @@
     },
     {
         "name": "mjohnson/transit",
-        "version": "1.3.5",
-        "version_normalized": "1.3.5.0",
+        "version": "1.3.6",
+        "version_normalized": "1.3.6.0",
         "source": {
             "type": "git",
             "url": "https://github.com/milesj/Transit.git",
-            "reference": "1.3.5"
+            "reference": "1.3.6"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/milesj/Transit/zipball/1.3.5",
-            "reference": "1.3.5",
+            "url": "https://api.github.com/repos/milesj/Transit/zipball/1.3.6",
+            "reference": "1.3.6",
             "shasum": ""
         },
         "require": {
@@ -79,7 +79,7 @@
             "aws/aws-sdk-php": "~2.2",
             "ext-exif": "Extract exif data from images"
         },
-        "time": "2013-06-18 22:30:31",
+        "time": "2013-06-19 19:33:22",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -116,45 +116,6 @@
             "uploader",
             "validator",
             "video"
-        ]
-    },
-    {
-        "name": "dg/mysql-dump",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/dg/MySQL-dump.git",
-            "reference": "43928fc540865372a7d94fd750ab16ffd4774e88"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/dg/MySQL-dump/zipball/43928fc540865372a7d94fd750ab16ffd4774e88",
-            "reference": "43928fc540865372a7d94fd750ab16ffd4774e88",
-            "shasum": ""
-        },
-        "time": "2013-05-13 16:19:19",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "classmap": [
-                "MySQLDump.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3"
-        ],
-        "authors": [
-            {
-                "name": "David Grudl",
-                "homepage": "http://davidgrudl.com"
-            }
-        ],
-        "description": "MySQL database dump.",
-        "homepage": "https://github.com/dg/MySQL-dump",
-        "keywords": [
-            "mysql"
         ]
     }
 ]

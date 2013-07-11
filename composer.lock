@@ -3,45 +3,8 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "ea2ffbeb8279b49350d42641b535c279",
+    "hash": "d216b5526bb1ef08544f43ea212f4d98",
     "packages": [
-        {
-            "name": "dg/mysql-dump",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dg/MySQL-dump.git",
-                "reference": "43928fc540865372a7d94fd750ab16ffd4774e88"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dg/MySQL-dump/zipball/43928fc540865372a7d94fd750ab16ffd4774e88",
-                "reference": "43928fc540865372a7d94fd750ab16ffd4774e88",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "MySQLDump.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3"
-            ],
-            "authors": [
-                {
-                    "name": "David Grudl",
-                    "homepage": "http://davidgrudl.com"
-                }
-            ],
-            "description": "MySQL database dump.",
-            "homepage": "https://github.com/dg/MySQL-dump",
-            "keywords": [
-                "mysql"
-            ],
-            "time": "2013-05-13 16:19:19"
-        },
         {
             "name": "illuminate/support",
             "version": "4.0.x-dev",
@@ -49,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "v4.0.5"
+                "reference": "6a690ae6dff5da787f3b265350f23c4e8e4828ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/v4.0.5",
-                "reference": "v4.0.5",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/6a690ae6dff5da787f3b265350f23c4e8e4828ed",
+                "reference": "6a690ae6dff5da787f3b265350f23c4e8e4828ed",
                 "shasum": ""
             },
             "require": {
@@ -89,20 +52,20 @@
                     "email": "taylorotwell@gmail.com"
                 }
             ],
-            "time": "2013-06-11 00:56:49"
+            "time": "2013-07-09 02:19:57"
         },
         {
             "name": "mjohnson/transit",
-            "version": "1.3.5",
+            "version": "1.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/milesj/Transit.git",
-                "reference": "1.3.5"
+                "reference": "1.3.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/milesj/Transit/zipball/1.3.5",
-                "reference": "1.3.5",
+                "url": "https://api.github.com/repos/milesj/Transit/zipball/1.3.6",
+                "reference": "1.3.6",
                 "shasum": ""
             },
             "require": {
@@ -155,7 +118,7 @@
                 "validator",
                 "video"
             ],
-            "time": "2013-06-18 22:30:31"
+            "time": "2013-06-19 19:33:22"
         }
     ],
     "packages-dev": [
@@ -165,9 +128,9 @@
 
     ],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "dg/mysql-dump": 20
-    },
+    "stability-flags": [
+
+    ],
     "platform": {
         "php": ">=5.3.0"
     },
