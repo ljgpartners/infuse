@@ -101,7 +101,7 @@
 
 		public static function classToString($instance)
 		{
-			return strtolower(get_class($instance));
+			return strtolower(self::camel2under(get_class($instance)));
 		}
 
 		public static function stringToCLass($name)
@@ -138,7 +138,12 @@
 		public static function camel2under($str) 
 	  { 
 	     $regexp = '#(?<!=^)[A-Z]#e'; 
-	     return preg_replace($regexp, "'_'.strtolower('\\0')", $str); 
+	     $str = preg_replace($regexp, "'_'.strtolower('\\0')", $str);
+	     if (substr($str, 0, 1) == "_"){
+	     	return  substr($str, 1);
+	     } else {
+	     	return $str; 
+	     }
 	  } 
 
     public static function under2camel($str) 

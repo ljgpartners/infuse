@@ -216,7 +216,7 @@ class Scaffold {
 			$message = array("message" => "Updated {$this->name} user with id of ".Util::get("id").".", "type" => "success");
 		} elseif (Util::get("parent") && Util::get("pid")) {
 			$entry = $model;
-			$message = array("message" => "Added {$this->name} to ".Util::get("parent")." with id of ".Util::get("pid").".", "type" => "success");
+			$message = array("message" => "Added {$this->name} to ".Util::cleanName(Util::get("parent"))." with id of ".Util::get("pid").".", "type" => "success");
 		} else {
 			$entry = $model;
 			$message = array("message" => "Created {$this->name}.", "type" => "success");
