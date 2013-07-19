@@ -152,6 +152,7 @@ class Scaffold {
 			$this->entries = $model::find(Util::get("id"));
 		} else {
 			$this->entries = Util::arrayToObject($post);
+			$this->header['actualModel'] = $model::find($post["id"]);
 		}
 		
 	}

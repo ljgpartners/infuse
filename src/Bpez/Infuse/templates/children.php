@@ -13,7 +13,7 @@
 	<table class="table table-striped table-bordered">
 		<tr>
 			<td colspan="<?php echo $numColumns; ?>">
-				<h4><?php echo $childTitle; ?></h4>
+				<h4><?php echo Util::cleanName($model); ?></h4>
 			</td>
 		</tr>
 		<tr>
@@ -22,8 +22,17 @@
 			<?php endforeach; ?>
 			<th><a href="<?php echo Util::getPath()."/".$model; ?>?action=c&pid=<?php echo $entries->id; ?>&parent=<?php echo Util::classToString($entries); ?>">Create </a></th>
 		</tr>
-				
-		<?php foreach ($entries->hasMany(ucfirst($model))->get() as $key => $child): ?>
+		
+		<?php 
+			if (array_key_exists('actualModel', $header)) {
+				$hasManyObject = $header['actualModel']->hasMany(Util::under2camel(ucfirst($model)))->get();
+			} else {
+				$hasManyObject = $entries->hasMany(Util::under2camel(ucfirst($model)))->get();
+			}
+
+		?>
+		
+		<?php foreach ($hasManyObject as $key => $child): ?>
 		<tr>
 			<?php foreach ($childColumns as $column): ?>
 			<td><?php echo $child->{$column}; ?></td>
