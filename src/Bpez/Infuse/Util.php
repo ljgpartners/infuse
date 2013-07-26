@@ -41,7 +41,8 @@
 
 		public static function isForeignKey($columnString)
 		{
-	    return (strpos($columnString, "_id") === false)?  false : true;
+	    $matches = null;
+			return (preg_match("/_id$/", $columnString, $matches, PREG_OFFSET_CAPTURE) == 0)? false : true;
 		}
 
 		public static function debug($var)
