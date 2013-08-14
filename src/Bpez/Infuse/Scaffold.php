@@ -404,9 +404,9 @@ class Scaffold {
 	public function hasMany($model)
 	{	
 		if (!is_array($model)) 
-			throw new Exception('hasMany(array("model_name" => array("model_title", array("column_1", "column_2")))); First argument should be an array of the model. 
-				With name as the index and another array with the title as the first and the second array with columns to list.');
-		array_push($this->hasMany, $model);
+			throw new Exception('hasMany(array("SomeModelName", "model_title", array("column_1", "column_2"))); First argument should be an array with all the info of the model. 
+				First index in the array should be the model name, second should be the wanted model title and third should be the column names to list.');
+		$this->hasMany = $model;
 		return $this;
 	}
 
