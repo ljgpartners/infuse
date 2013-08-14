@@ -40,11 +40,10 @@
 			<?php foreach ($childColumns as $column):
 							if (is_array($column)): 
 								foreach (current($column) as $value):
-										if ($child->{key($column)} == $value["id"]): 
-											$columnName = end($value); ?>
-											<td><?php echo $child->{$columnName}; ?></td>
+										if ($child->{key($column)} == $value["id"]): ?>
+											<td><?php echo end($value); ?></td>
 										<?php
-										endif; 
+										endif;  
 								endforeach; ?>
 				<?php else: ?>
 					<td><?php echo $child->{$column}; ?></td>
