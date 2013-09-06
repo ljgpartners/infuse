@@ -24,9 +24,13 @@ class InfuseController extends BaseController {
 	{
 		$this->layout->title = "Resource | Infuse";
 		if ($child == "") { 
-			$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', Config::get('infuse::resources')["$resource"]['scaffold']->build()); 
+			$data = Config::get('infuse::resources')["$resource"]['scaffold']->config();
+			$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
+			$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold); 
 		} else { 
-			$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', Config::get('infuse::resources')["$resource"]["children"]["$child"]->build()); 
+			$data = Config::get('infuse::resources')["$resource"]["children"]["$child"]->config();
+			$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
+			$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold);  
 		}
 		
 	}
@@ -34,14 +38,15 @@ class InfuseController extends BaseController {
 	public function admin_user()
 	{	
 		$this->layout->title = "Admin User | Infuse";
-		$scaffold = Scaffold::newInstance(new InfuseAdminUser, new DB)
+		$data = Scaffold::newInstance(new InfuseAdminUser, new DB)
 			->name("Admin User")
 			->infuseLogin()
 			->limit(10)
 			->order(array("order" => "desc", "column" => "last_login_date"))
 			->listColumns(array("username", "email", "logins", "last_login_date"))
-			->build();
+			->config();
 
+		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
 		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold);
 	}
 

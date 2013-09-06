@@ -1,6 +1,5 @@
 <?php namespace Bpez\Infuse;
 
-use Bpez\Infuse\Util;
 use Exception;
 use Transit\Transit;
 use Transit\Validator\ImageValidator;
@@ -466,7 +465,7 @@ class Scaffold {
 	/******************************
 		Final build scaffold
 	*******************************/
-	public function build()
+	public function config()
 	{	
 
 		$this->route();
@@ -479,7 +478,25 @@ class Scaffold {
 				"infuseLogin" => $this->infuseLogin
 			);
 
-		return View::fuse($data);
+		return $data;
+	}
+
+
+	public static function getBladeTemplate()
+	{
+		switch (Util::get("action")) {
+			case 'l':
+				return "infuse::scaffold.list_all";
+			case 'e':
+			case 'c':
+			case 'cd':
+				return "infuse::scaffold.create_edit";
+			case 's':
+				return "infuse::scaffold.show";
+			default:
+				return "infuse::scaffold.list_all";
+		}
+
 	}
 
 }

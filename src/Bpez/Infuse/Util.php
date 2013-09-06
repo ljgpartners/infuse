@@ -220,6 +220,38 @@
         $array = array_slice($array, 0, $offset, TRUE) + $values + array_slice($array, $offset, NULL, TRUE);
         return $array;
     }
+
+
+    public static function fuseAlerts($message)
+		{	
+			if ($message) {
+				switch ($message['type']) {
+					case 'warning':
+						$message['type'] = "alert-block";
+						break;
+					case 'error':
+						$message['type'] = "alert-error";
+						break;
+					case 'success':
+						$message['type'] = "alert-success";
+						break;
+					case 'info':
+						$message['type'] = "alert-info";
+						break;
+					default:
+						$message['type'] = "alert-info";
+						break;
+				}
+
+				echo '<div class="alert '.$message['type'].'">
+						  <button type="button" class="close" data-dismiss="alert">&times;</button>
+						  <h4>'.$message['message'].'</h4>
+							</div>';
+			}
+			
+		}
+
+		
  
 
 	}
