@@ -40,9 +40,9 @@ $infuseLogin = $data['infuseLogin'];
 						@foreach ($column['select'] as $value)
 								@if ($entry->{$column['field']} == $value["id"])
 									<?php $columnName = end($value); ?>
-									{{$columnName}};
-								@endif; 
-						@endforeach;
+									{{$columnName}}
+								@endif
+						@endforeach
 
 					@elseif ($column['type'] == "tinyint")
 									<input type="checkbox" {{($entry->{$column['field']} == 1)? "checked='checked'" : ""}}
