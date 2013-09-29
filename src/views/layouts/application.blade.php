@@ -11,13 +11,16 @@
 	<link href='/packages/bpez/infuse/css/bootstrap-combined.min.css' rel='stylesheet' type='text/css'>
 	<link href='/packages/bpez/infuse/css/jquery-ui.min.css' rel='stylesheet' type='text/css'>
 	<link href='/packages/bpez/infuse/css/jquery-ui-timepicker-addon.css' rel='stylesheet' type='text/css'>
+	<link href='/packages/bpez/infuse/css/magicsuggest-1.3.1.css' rel='stylesheet' type='text/css'>
 	<link href='/packages/bpez/infuse/css/infuse.css' rel='stylesheet' type='text/css'>
+	
 	
 	<script src="/packages/bpez/infuse/js/jquery-1.9.1.min.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/bootstrap.min.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/jquery-ui.min.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/ckeditor/ckeditor.js" type="text/javascript"></script>
+	<script src="/packages/bpez/infuse/js/magicsuggest-1.3.1.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/infuse.js" type="text/javascript"></script>
 	
 </head>

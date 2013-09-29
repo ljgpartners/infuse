@@ -52,6 +52,12 @@ input.infuseLoginSubmit{ background-color: #0099CC; font-weight: normal; color: 
 .nav-list a{ color: black;  font-size: 13px; text-shadow: none !important; font-weight: 400; text-indent: 15px; }
 
 .accordion-toggle{ text-decoration: none !important;}
+
+.filtersContainer{ display: none; }
+.filtersContainer form{ margin: 0px; }
+.filtersContainer .ms-ctn{ display: inline-block; vertical-align: middle; margin: 5px 0px 5px 5px; height: 30px !important;   }
+.filtersContainer .ms-sel-ctn{ height: 30px !important;  }
+.appendFilters{ display: inline-block; vertical-align: middle; max-width: 1023px; }
 	/*
 #AA4FAA #3AACE2
 

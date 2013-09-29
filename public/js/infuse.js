@@ -48,6 +48,35 @@ $(document).ready(function() {
 			})
 		}
 	});
+
+	var filterCount = 0;
+
+	$(".filterColumn").click(function(event) {
+		event.preventDefault();
+		filterCount++;
+		var self = $(this);
+		
+		var input = $("<input class='filterInput"+filterCount+"' type='text' >");
+		$(".appendFilters").append(input.wrap("<div class='control-group'>"));
+		var magicSugggest = $(".filterInput"+filterCount).magicSuggest({
+				width: 495,
+				name: 'filter_'+filterCount,
+				maxSelectioninteger: 3,
+				emptyTextstring: "Type here",
+				displayField: 'value',
+		    value: [self.text(), 'equals'],
+		    data: [
+		    		{ id: self.text(), value: self.text()}, 
+		    		{ id: 'equals', value: 'equals' }, 
+		    		{ id: 'less than', value: 'less than'}, 
+		    		{ id: 'greater than', value: 'greater than'}, 
+		    		{ id: 'not equal to', value: 'not equal to'}
+		      ]
+			});
+
+		$(".filtersContainer").slideDown();
+		$(".filterCount").val(filterCount);
+	});
 	
 });
 })(jQuery);

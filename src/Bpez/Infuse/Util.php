@@ -251,6 +251,30 @@
 			
 		}
 
+
+		public static function outputCSV($data) 
+		{
+        $outputBuffer = fopen("php://output", 'w');
+        foreach($data as $val) {
+           fputcsv($outputBuffer, $val);
+        }
+        fclose($outputBuffer);
+    }
+
+
+    public static function returnCSVDataAsFile($filename, $data) 
+		{
+        header("Content-type: text/csv");
+		    header("Content-Disposition: attachment; filename={$filename}.csv");
+		    header("Pragma: no-cache");
+		    header("Expires: 0");
+		    self::outputCSV($data);
+		    exit();
+    }
+
+
+    
+
 		
  
 

@@ -90,6 +90,9 @@ class Scaffold {
 			case 'u':
 				$this->update();
 				break;
+			case 'toCSV':
+				$this->toCSV();
+				break;
 
 			default:
 				$this->listAll();
@@ -314,6 +317,20 @@ class Scaffold {
 		
 		header("Location: {$redirect_path}");
 		exit();
+	}
+
+
+	private function toCSV()
+	{
+		$model = $this->model; 
+		$columnNames = array_keys($this->columns);
+		array_unshift($columnNames, "id");
+		$data = $model::select($columnNames)->orderBy($this->order["column"], $this->order["order"])->get()->toArray();
+		foreach ($columnNames as $key => $column) {
+		 	$columnNames[$key] = Util::cleanName($column);
+		}
+		array_unshift($data, $columnNames);
+		Util::returnCSVDataAsFile(Util::classToString($model), $data);
 	}
 
 	

@@ -18,7 +18,37 @@ $infuseLogin = $data['infuseLogin'];
 	<table class="table  table-bordered table-striped">
 		<tr>
 			<td colspan="{{count($columns)+1}}">
-				<a class="btn btn-small btn-success" href="?action=c">Create {{$header['name']}}</a>
+				<div class="btn-group">
+					<a class="btn btn-small btn-success" href="?action=c">Create {{$header['name']}}</a>
+				</div>
+        <div class="btn-group">
+          <button class="btn btn-small btn-inverse dropdown-toggle" data-toggle="dropdown">Filter <span class="caret"></span></button>
+          <ul class="dropdown-menu">
+          	@foreach ($columns as $column)
+								<li><a href="" class="filterColumn">{{Util::cleanName($column['field'])}}</a></li>
+						@endforeach
+          </ul>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-small btn-inverse dropdown-toggle" data-toggle="dropdown">Other Actions <span class="caret"></span></button>
+          <ul class="dropdown-menu">
+            <li><a target="_BLANK" href="?action=toCSV">Download CSV</a></li>
+          </ul>
+        </div>
+			</td>
+		</tr>
+		<tr class="filtersContainer">
+			<td colspan="{{count($columns)+1}}">
+				<form action="?" method="post">
+					<div class="btn-group">
+						<input type="submit" value="Filter Results" class="btn btn-small btn-success">
+					</div>
+					<div class="appendFilters">
+						
+					</div>
+					<input type="hidden" value='0' name="filter_count" class="filterCount">
+					<input type="hidden" value='f' name="action">
+				</form>
 			</td>
 		</tr>
 		<tr>
