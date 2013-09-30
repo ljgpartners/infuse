@@ -93,6 +93,9 @@ class Scaffold {
 			case 'toCSV':
 				$this->toCSV();
 				break;
+			case 'f':
+				$this->listAllFilter();
+				break;
 
 			default:
 				$this->listAll();
@@ -331,6 +334,77 @@ class Scaffold {
 		}
 		array_unshift($data, $columnNames);
 		Util::returnCSVDataAsFile(Util::classToString($model), $data);
+	}
+
+
+	private function listAllFilter()
+	{
+		$model = $this->model;
+		$pagination = array(
+			"limit" => $this->limit,
+			"active_page" => 1,
+			"count" => 0
+		);
+		
+
+		$filterCount = Util::get("filter_count");
+		$filters = array();
+
+		for ($x=1; $x <= $filterCount; $x++)	{
+			$filter = json_decode(Util::get("filter_".$x));
+
+			if (count($filter) == 3) {
+				if (!isset($filter[0]) && !in_array($filter[0], $columnNames))
+					continue;
+				if (!isset($filter[1]) && !array_key_exists($filter[1], $comparisons))
+					continue;
+				if (!isset($filter[2]))
+					continue;
+				array_push($filters, $filter);
+			}
+	  } 
+
+		
+		$pagination['count'] = $model::count();
+		$offset = 0;
+		$page = Util::get("pg");
+		if ($page && $page != 1 && $page != 'a') {
+			$offset =  ($page-1) * $pagination['limit'];
+			$pagination['active_page'] = $page;
+		}
+
+
+
+
+		if ($page == "a") {
+			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"]);
+		} else {
+			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"])->take($pagination['limit'])->skip($offset);
+		}
+
+		$columnNames = array_keys($this->columns);
+		$comparisons = array("equals" => "=", "less than" => "<", "greater than" => ">", "not equal to" => "!=");
+
+		$firstWhere = true;
+		
+		foreach($filters as $filter) {
+			if ($firstWhere) {
+				$prepareModel = $prepareModel->where($filter[0], $comparisons[$filter[1]], $filter[2]);
+			} else {
+				$prepareModel = $prepareModel->orWhere($filter[0], $comparisons[$filter[1]], $filter[2]);
+			}
+			$firstWhere = false;
+		}
+
+		$this->entries = $prepareModel->get();
+		
+		$this->header = array(
+				"pagination" => $pagination,
+				"name" => $this->name,
+				"list" => $this->list,
+				"filters" => $filters
+			);
+
 	}
 
 	

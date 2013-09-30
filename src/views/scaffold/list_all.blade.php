@@ -39,9 +39,9 @@ $infuseLogin = $data['infuseLogin'];
 		</tr>
 		<tr class="filtersContainer">
 			<td colspan="{{count($columns)+1}}">
-				<form action="?" method="post">
+				<form action="" method="post">
 					<div class="btn-group">
-						<input type="submit" value="Filter Results" class="btn btn-small btn-success">
+						<input type="submit" value="Filter Results" class="btn btn-small btn-primary">
 					</div>
 					<div class="appendFilters">
 						
@@ -128,6 +128,9 @@ $infuseLogin = $data['infuseLogin'];
 	  	 
 	  	<?php $pagination = $header['pagination']; ?>
 	  	@if ($pagination['active_page'] != 1)
+	  		@if (isset($header['filters']))
+	  			<?php  $filters = "action=f&filter_count=".count($header['filters']).""; ?>
+	  		@endif
 	  		<li><a href="?pg={{$pagination['active_page']-1}}">&laquo;</a></li>
 	  	@else
 	  		<li class="disabled"><a href="javascript: void(0)">&laquo;</a></li>
