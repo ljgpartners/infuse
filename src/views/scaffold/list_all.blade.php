@@ -5,7 +5,18 @@ $entries = $data['enrties'];
 $columns = $data['columns'];
 $header  = $data['header'];
 $infuseLogin = $data['infuseLogin'];
+
+if (isset($header['filters'])):
+		$individualFilters = "";
+		for($x=1; $x <= count($header['filters']); $x++)
+			$individualFilters .= "&filter_".$x."=".Util::get("filter_".$x);
+		$filters = "&action=f&filter_count=".count($header['filters']).$individualFilters; 
+else:
+	$filters = "";
+endif;
 ?>
+
+
 
 <div class="infuseScaffold">
 
@@ -22,33 +33,44 @@ $infuseLogin = $data['infuseLogin'];
 					<a class="btn btn-small btn-success" href="?action=c">Create {{$header['name']}}</a>
 				</div>
         <div class="btn-group">
-          <button class="btn btn-small btn-inverse dropdown-toggle" data-toggle="dropdown">Filter <span class="caret"></span></button>
-          <ul class="dropdown-menu">
+          <button class="btn btn-small btn-inverse dropdown-toggle" data-toggle="dropdown">Add Filter <span class="caret"></span></button>
+          <ul class="dropdown-menu filtersDropDown">
           	@foreach ($columns as $column)
-								<li><a href="" class="filterColumn">{{Util::cleanName($column['field'])}}</a></li>
+								<li><a href="" class="filterColumn filter{{$column['field']}}" data-filter-column="{{$column['field']}}">{{Util::cleanName($column['field'])}}</a></li>
 						@endforeach
           </ul>
         </div>
         <div class="btn-group">
           <button class="btn btn-small btn-inverse dropdown-toggle" data-toggle="dropdown">Other Actions <span class="caret"></span></button>
           <ul class="dropdown-menu">
-            <li><a target="_BLANK" href="?action=toCSV">Download CSV</a></li>
+            <li><a target="_BLANK" class="downloadCSVLink" href='?action=l&pg=a&toCSV=1' data-filter-download='?action=f&pg=a&toCSV=1{{$filters}}'>Download CSV</a></li> 
           </ul>
         </div>
 			</td>
 		</tr>
 		<tr class="filtersContainer">
 			<td colspan="{{count($columns)+1}}">
-				<form action="" method="post">
+				<form action="?" method="post" class="filtersForm">
 					<div class="btn-group">
-						<input type="submit" value="Filter Results" class="btn btn-small btn-primary">
+						<input type="submit" value="Filter Listing" class="btn btn-small btn-primary">
 					</div>
-					<div class="appendFilters">
-						
+					<div class="btn-group">
+						<a class="btn btn-small btn-primary clearFilters">Clear Filters</a>
 					</div>
+					<div class="appendFilters"></div>
 					<input type="hidden" value='0' name="filter_count" class="filterCount">
 					<input type="hidden" value='f' name="action">
 				</form>
+
+				
+					@if (isset($header['filters']))
+		  			<div class="hide rebuildFiltersThroughJs" data-filter-count="{{count($header['filters'])}}">
+		  				@for($x=1; $x <= count($header['filters']); $x++)
+		  					<div data-filter-{{$x}}-first="{{$header['filters'][$x-1][0]}}" data-filter-{{$x}}-first-display="{{Util::cleanName($header['filters'][$x-1][0])}}" data-filter-{{$x}}-second="{{$header['filters'][$x-1][1]}}" data-filter-{{$x}}-third="{{$header['filters'][$x-1][2]}}"></div>
+		  				@endfor
+		  			</div>
+		  		@endif
+				</div>
 			</td>
 		</tr>
 		<tr>
@@ -105,7 +127,7 @@ $infuseLogin = $data['infuseLogin'];
 		</tr>
 		@endforeach
 
-		@if ($header['pagination']['count'] < 1)
+		@if ($header['pagination']['count'] < 1 && !isset($header['filters']))
 		<tr>
 			<td colspan="{{count($columns)+1}}">
 				<div class="hero-unit">
@@ -120,18 +142,26 @@ $infuseLogin = $data['infuseLogin'];
 			</td>
 		</tr>
 	@endif
+
+	@if ($header['pagination']['count'] < 1 && isset($header['filters']))
+	<tr>
+			<td colspan="{{count($columns)+1}}">
+				<div class="hero-unit">
+				  <h1>No results.</h1>
+				</div>
+			</td>
+		</tr>
+	@endif
+
 	</table>
 
 	@if ($header['pagination']['count'] > 0)
 	<div class="pagination pagination-small pagination-centered">
 	  <ul>
-	  	 
+
 	  	<?php $pagination = $header['pagination']; ?>
 	  	@if ($pagination['active_page'] != 1)
-	  		@if (isset($header['filters']))
-	  			<?php  $filters = "action=f&filter_count=".count($header['filters']).""; ?>
-	  		@endif
-	  		<li><a href="?pg={{$pagination['active_page']-1}}">&laquo;</a></li>
+	  		<li><a href='?pg={{$pagination['active_page']-1}}{{$filters}}'>&laquo;</a></li>
 	  	@else
 	  		<li class="disabled"><a href="javascript: void(0)">&laquo;</a></li>
 	  	@endif
@@ -140,16 +170,16 @@ $infuseLogin = $data['infuseLogin'];
 	  		<?php $times = ceil((int)$pagination['count']/(int)$pagination['limit']); ?>
 	  		@for ($i=1; $i < $times+1; $i++)
 	  			<li class="{{($pagination['active_page'] == $i)? "active" : ""}}">
-	  				<a href="?pg={{$i}}">
+	  				<a href='?pg={{$i}}{{$filters}}'>
 	  					{{$i}}
 	  				</a>
 	  			</li>
 	  	@endfor
-	  	 <li><a href="?pg=a">View All</a></li>
+	  	 <li><a href='?pg=a{{$filters}}'>View All</a></li>
 	  	@endif
 	  	
 	  	@if (isset($times) && $pagination['active_page'] != $times)
-	    	<li><a href="?pg={{$pagination['active_page']+1}}">&raquo;</a></li>
+	    	<li><a href='?pg={{$pagination['active_page']+1}}{{$filters}}'>&raquo;</a></li>
 	    @else
 	    	<li class="disabled"><a href="javascript: void(0)">&raquo;</a></li>
 	   	@endif
@@ -160,6 +190,9 @@ $infuseLogin = $data['infuseLogin'];
 
 
 </div>
+
+
+
 
 
 

@@ -90,9 +90,6 @@ class Scaffold {
 			case 'u':
 				$this->update();
 				break;
-			case 'toCSV':
-				$this->toCSV();
-				break;
 			case 'f':
 				$this->listAllFilter();
 				break;
@@ -121,10 +118,16 @@ class Scaffold {
 		}
 
 		if ($page == "a") {
-			$this->entries = $model::orderBy($this->order["column"], $this->order["order"])->get();
+			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"]);
 		} else {
-			$this->entries = $model::orderBy($this->order["column"], $this->order["order"])->take($pagination['limit'])->skip($offset)->get();
+			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"])->take($pagination['limit'])->skip($offset);
 		}
+
+		if (Util::get("toCSV"))	{
+			$this->toCSV($prepareModel);
+		}
+
+		$this->entries = $prepareModel->get();
 		
 		$this->header = array(
 				"pagination" => $pagination,
@@ -323,17 +326,18 @@ class Scaffold {
 	}
 
 
-	private function toCSV()
+	private function toCSV($prepareModel)
 	{
-		$model = $this->model; 
+		$model = $this->model;
 		$columnNames = array_keys($this->columns);
 		array_unshift($columnNames, "id");
-		$data = $model::select($columnNames)->orderBy($this->order["column"], $this->order["order"])->get()->toArray();
+		$data = $prepareModel->select($columnNames)->get()->toArray();
 		foreach ($columnNames as $key => $column) {
 		 	$columnNames[$key] = Util::cleanName($column);
 		}
 		array_unshift($data, $columnNames);
 		Util::returnCSVDataAsFile(Util::classToString($model), $data);
+		exit();
 	}
 
 
@@ -365,7 +369,8 @@ class Scaffold {
 	  } 
 
 		
-		$pagination['count'] = $model::count();
+		
+		
 		$offset = 0;
 		$page = Util::get("pg");
 		if ($page && $page != 1 && $page != 'a') {
@@ -376,7 +381,7 @@ class Scaffold {
 
 
 
-		if ($page == "a") {
+		if ($page == "a") { 
 			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"]);
 		} else {
 			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"])->take($pagination['limit'])->skip($offset);
@@ -385,18 +390,22 @@ class Scaffold {
 		$columnNames = array_keys($this->columns);
 		$comparisons = array("equals" => "=", "less than" => "<", "greater than" => ">", "not equal to" => "!=");
 
-		$firstWhere = true;
-		
 		foreach($filters as $filter) {
-			if ($firstWhere) {
 				$prepareModel = $prepareModel->where($filter[0], $comparisons[$filter[1]], $filter[2]);
-			} else {
-				$prepareModel = $prepareModel->orWhere($filter[0], $comparisons[$filter[1]], $filter[2]);
-			}
-			$firstWhere = false;
+		}
+
+		if (Util::get("toCSV"))	{
+			$this->toCSV($prepareModel);
 		}
 
 		$this->entries = $prepareModel->get();
+
+
+		$prepareModelForCount = $model::orderBy($this->order["column"], $this->order["order"]);
+		foreach($filters as $filter) {
+				$prepareModelForCount = $prepareModelForCount->where($filter[0], $comparisons[$filter[1]], $filter[2]);
+		}
+		$pagination['count'] = $prepareModelForCount->count();
 		
 		$this->header = array(
 				"pagination" => $pagination,
