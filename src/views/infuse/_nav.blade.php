@@ -2,11 +2,6 @@
 <div class="infuseNav">
 	<div class="innerNav">
 		<div class="navElement">
-			<a href="<?php echo $adminLink; ?>">
-				<span><?php echo $adminTitle; ?></span>
-			</a>
-		</div>
-		<div class="navElement">
 			<a class="active" href="/admin">
 				<span>Dashboard</span>
 			</a>
@@ -14,6 +9,11 @@
 		<div class="navElement">
 			<a href="" class="infuseManage" data-open="0">
 				<span>Manage</span>
+			</a>
+		</div>
+		<div class="navElement">
+			<a target="_BLANK" href="<?php echo $adminLink; ?>">
+				<span><?php echo $adminTitle; ?></span>
 			</a>
 		</div>
 		<div class="logo">

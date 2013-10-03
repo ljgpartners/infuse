@@ -52,7 +52,7 @@ endif;
 			<td colspan="{{count($columns)+1}}">
 				<form action="?" method="post" class="filtersForm">
 					<div class="btn-group">
-						<input type="submit" value="Filter Listing" class="btn btn-small btn-primary">
+						<input type="submit" value="Filter" class="btn btn-small btn-primary">
 					</div>
 					<div class="btn-group">
 						<a class="btn btn-small btn-primary clearFilters">Clear Filters</a>

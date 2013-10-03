@@ -60,6 +60,7 @@ input.infuseLoginSubmit{ background-color: #0099CC; font-weight: normal; color: 
 .appendFilters{ display: inline-block; vertical-align: middle; max-width: 1023px; }
 
 .ms-sel-ctn .ms-sel-item{ background-color: #f5f5f5; color: black; }
+.page-header .hero-unit{ margin-top: 50px; }
 
 	/*
 #AA4FAA #3AACE2
