@@ -96,11 +96,11 @@ endif;
 								@endif
 						@endforeach
 
-					@elseif ($column['type'] == "tinyint")
-									<input type="checkbox" {{($entry->{$column['field']} == 1)? "checked='checked'" : ""}}
-										data-checked="{{$entry->{$column['field']} }}" data-id="{{$entry->id}}"
-										data-url='{{str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'])}}' 
-										name="{{$column['field']}}" class="infuseBoolean">
+					@elseif (array_key_exists("upload", $column))
+						<div class="previewImage">
+							<img src="{{$entry->url($column['field'])}}" alt=""> 
+						</div>
+
 					@elseif (array_key_exists("display_order", $column)): ?>
 										<span>{{$entry->{$column['field']} }}</span> <span class="icon-arrow-up"></span> <span class="icon-arrow-down"></span>
 					@else 

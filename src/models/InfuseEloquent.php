@@ -13,6 +13,11 @@ class InfuseEloquent extends Eloquent
 
     public function validate($data)
     {
+        $replace = ($this->getKey() > 0) ? $this->getKey() : '';
+        foreach ($this->rules as $key => $rule) {
+            $this->rules[$key] = str_replace('[id]', $replace, $rule);
+        }
+
         // make a new validator object
         $v = Validator::make($data, $this->rules);
 
@@ -26,6 +31,19 @@ class InfuseEloquent extends Eloquent
         // validation pass
         return true;
     }
+
+    protected function processRules(array $rules)
+    {
+        $id = $this->getKey();
+        array_walk($rules, function(&$item) use ($id)
+        {
+            // Replace placeholders
+            $item = stripos($item, ':id:') !== false ? str_ireplace(':id:', $id, $item) : $item;
+        });
+
+        return $rules;
+    }
+
 
     public function errors()
     {

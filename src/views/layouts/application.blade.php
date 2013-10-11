@@ -23,6 +23,8 @@
 	<script src="/packages/bpez/infuse/js/magicsuggest-1.3.1.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/infuse.js" type="text/javascript"></script>
 	
+
+	<!--<script data-main="/packages/bpez/infuse/js/main.js" src="/packages/bpez/infuse/js/require.js"></script>-->
 </head>
 <body class="<?php echo (isset($navigation))? "infuseWrapper" : ""; ?>">
 

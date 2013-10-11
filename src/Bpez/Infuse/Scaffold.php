@@ -283,8 +283,12 @@ class Scaffold {
 			}
 		}
 
+		$data = Util::getAll();
 
-		if ($entry->validate(Util::getAll()) && count($fileErrors) == 0) {
+		// Remove any FALSE values. This includes NULL values, EMPTY arrays, etc.
+		$data = array_filter($data);
+
+		if ($entry->validate($data) && count($fileErrors) == 0) {
 
 			$entry->save();
 			Util::flash($message);
@@ -586,7 +590,7 @@ class Scaffold {
 	{
 		switch (Util::get("action")) {
 			case 'l':
-				return "infuse::scaffold.list_all";
+				return "infuse::scaffold.list";
 			case 'e':
 			case 'c':
 			case 'cd':
@@ -594,7 +598,7 @@ class Scaffold {
 			case 's':
 				return "infuse::scaffold.show";
 			default:
-				return "infuse::scaffold.list_all";
+				return "infuse::scaffold.list";
 		}
 
 	}

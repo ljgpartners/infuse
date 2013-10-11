@@ -5,9 +5,9 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 class InfuseAdminUser extends InfuseEloquent implements UserInterface, RemindableInterface {
 
 	protected $rules = array(
-        'username' => "required|unique:infuse_admin_users,username",
-        'email'  => 'required|email|unique:infuse_admin_users,email',
-        'password' => 'required|confirmed'
+        'username' => "required|unique:infuse_admin_users,username,[id]",
+        'email'  => 'required|email|unique:infuse_admin_users,email,[id]"',
+        'password' => 'required_without:id|confirmed'
     );
 
 	protected $fillable = array('fname','lname','email','password','create_at','updated_at');
