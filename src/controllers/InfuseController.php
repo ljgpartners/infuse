@@ -24,11 +24,13 @@ class InfuseController extends BaseController {
 	{
 		$this->layout->title = "Resource | Infuse";
 		if ($child == "") { 
-			$data = Config::get('infuse::resources')["$resource"]['scaffold']->config();
+			$data = Config::get('infuse::resources');
+			$data = $data["{$resource}"]['scaffold']->config();
 			$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
 			$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold); 
 		} else { 
-			$data = Config::get('infuse::resources')["$resource"]["children"]["$child"]->config();
+			$data = Config::get('infuse::resources');
+			$data = $data["{$resource}"]["children"]["{$child}"]->config();
 			$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
 			$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold);  
 		}

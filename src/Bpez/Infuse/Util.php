@@ -93,7 +93,8 @@
 		public static function getPath()
 		{
 			if (strpos($_SERVER['REQUEST_URI'], "?")) {
-				$path = explode("?", $_SERVER['REQUEST_URI'])[0];
+				$path = explode("?", $_SERVER['REQUEST_URI']);
+				$path = $path[0];
 			} else {
 				$path = $_SERVER['REQUEST_URI'];
 			}
@@ -166,7 +167,7 @@
     {
         // enforce existing position
         if (!isset($array[$position])) {
-            throw new Exception(strtr('Array position does not exist (:1)', [':1' => $position]));
+            throw new Exception(strtr('Array position does not exist (:1)', array(':1' => $position)));
         }
  
         // offset
@@ -200,7 +201,7 @@
     {
         // enforce existing position
         if (!isset($array[$position])) {
-            throw new Exception(strtr('Array position does not exist (:1)', [':1' => $position]));
+            throw new Exception(strtr('Array position does not exist (:1)', array(':1' => $position)));
         }
  
         // offset
