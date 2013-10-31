@@ -139,8 +139,14 @@
 
 		public static function camel2under($str) 
 	  { 
-	     $regexp = '#(?<!=^)[A-Z]#e'; 
-	     $str = preg_replace($regexp, "'_'.strtolower('\\0')", $str);
+	     /* The e modifier is deprecated as of PHP 5.5.0 . 
+	     		Replace preg_replace() e modifier with preg_replace_callback 
+		     $regexp = '#(?<!=^)[A-Z]#e'; 
+		     $str = preg_replace($regexp, "'_'.strtolower('\\0')", $str); 
+	     */
+		   $regexp = '#(?<!=^)[A-Z]#'; 
+	     $str = preg_replace_callback($regexp, function($matches){ return '_'.strtolower($matches[0]); }, $str);
+
 	     if (substr($str, 0, 1) == "_"){
 	     	return  substr($str, 1);
 	     } else {
@@ -150,8 +156,13 @@
 
     public static function under2camel($str) 
     { 
-      $regexp = '#_(.)#e'; 
-      return preg_replace($regexp, "strtoupper('\\1')", $str); 
+    	/* The e modifier is deprecated as of PHP 5.5.0 . 
+	     	 Replace preg_replace() e modifier with preg_replace_callback 
+	       $regexp = '#_(.)#e'; 
+	       return preg_replace($regexp, "strtoupper('\\1')", $str); 
+	    */
+      $regexp = '#_(.)#';
+      return preg_replace_callback($regexp, function($matches){ return '_'.strtolower($matches[1]); }, $str);
     } 
 
 
