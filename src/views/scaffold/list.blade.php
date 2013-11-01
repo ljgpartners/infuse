@@ -27,6 +27,8 @@ endif;
 	{{Util::fuseAlerts(Util::flash())}}
 
 	<table class="table  table-bordered table-striped">
+
+		@if(!$header['onlyOne'])
 		<tr>
 			<td colspan="{{count($columns)+1}}">
 				<div class="btn-group">
@@ -48,6 +50,8 @@ endif;
         </div>
 			</td>
 		</tr>
+		@endif
+
 		<tr class="filtersContainer">
 			<td colspan="{{count($columns)+1}}">
 				<form action="?" method="post" class="filtersForm">
@@ -118,8 +122,10 @@ endif;
 				  <ul class="dropdown-menu">
 				    <li><a href="?action=s&id={{$entry->id}}">Show</a></li>
 						<li><a href="?action=e&id={{$entry->id}}">Edit</a></li>
+						@if(!$header['onlyOne'])
 						<li><a href="?action=d&id={{$entry->id}}" onclick="return confirm('Confirm delete?');">Delete</a></li>
 						<li><a href="?action=cd&id={{$entry->id}}">Duplicate</a></li>
+						@endif
 				  </ul>
 				</div>
 				

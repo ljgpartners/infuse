@@ -24,6 +24,7 @@ class Scaffold {
 	private $description = "";
 	private $list = array();
 	private $infuseLogin = false;
+	private $onlyOne = false;
 
 
 	public function __construct($model, $db)
@@ -132,7 +133,8 @@ class Scaffold {
 		$this->header = array(
 				"pagination" => $pagination,
 				"name" => $this->name,
-				"list" => $this->list 
+				"list" => $this->list,
+				"onlyOne" => $this->onlyOne
 			);
 	}
 
@@ -153,7 +155,8 @@ class Scaffold {
 				"edit" => true,
 				"name" => $this->name,
 				"associations" => $this->hasMany,
-				"hasOneAssociation" => $this->hasOne
+				"hasOneAssociation" => $this->hasOne,
+				"onlyOne" => $this->onlyOne
 			);
 		$post = Util::flashArray("post");
 		if (!$post) {
@@ -561,6 +564,12 @@ class Scaffold {
 		if (!is_array($list)) 
 			throw new Exception('list(array("name", "count", "active")); First argument should be an array of the names of the columns wanted listed on landing page.');
 		$this->list = $list;
+		return $this;
+	}
+
+	public function onlyOne()
+	{
+		$this->onlyOne = true;
 		return $this;
 	}
 

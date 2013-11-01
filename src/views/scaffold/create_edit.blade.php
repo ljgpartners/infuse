@@ -161,7 +161,9 @@ $infuseLogin = $data['infuseLogin'];
 				    <a class="btn btn-small" href="{{Util::redirectBackToParentUrl(Util::classToString($entries), Util::get("pid"))}}">Back</a>
 				  	@if (isset($header['edit']))
 				  	<a class="btn btn-small" href="?action=s&id={{$entries->id}}&pid={{Util::get("pid")}}&parent={{Util::get("parent")}}">Show</a>
-						<a class="btn btn-small" href="?action=d&id={{$entries->id}}&pid={{Util::get("pid")}}&parent={{Util::get("parent")}}" onclick="return confirm('Confirm delete?');">Delete</a>
+					  	@if(!$header['onlyOne'])
+							<a class="btn btn-small" href="?action=d&id={{$entries->id}}&pid={{Util::get("pid")}}&parent={{Util::get("parent")}}" onclick="return confirm('Confirm delete?');">Delete</a>
+							@endif
 						@endif
 				  </div>
 					@else
@@ -169,7 +171,9 @@ $infuseLogin = $data['infuseLogin'];
 				    <a class="btn btn-small" href="?action=l">List</a>
 				  	@if (isset($header['edit']))
 				  	<a class="btn btn-small" href="?action=s&id={{$entries->id}}">Show</a>
-						<a class="btn btn-small" href="?action=d&id={{$entries->id}}" onclick="return confirm('Confirm delete?');">Delete</a>
+					  	@if(!$header['onlyOne'])
+							<a class="btn btn-small" href="?action=d&id={{$entries->id}}" onclick="return confirm('Confirm delete?');">Delete</a>
+							@endif
 						@endif
 				  </div>
 					@endif
