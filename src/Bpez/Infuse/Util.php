@@ -128,12 +128,23 @@
 			$action = "?action=c&pid={$pid}&parent={$parent}";
 			return str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'])."{$action}";;
 		}
-
 		
 
 		public static function redirectBackToParentUrl($currentModel, $parentId)
 		{
-			return str_replace("/".strtolower($currentModel)."?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'])."?action=e&id={$parentId}";
+			$redirect = explode("?", $_SERVER['REQUEST_URI']);
+			$redirect = $redirect[0];
+			return str_replace("/".strtolower($currentModel), '', $redirect )."?action=e&id={$parentId}";
+		}
+
+		public static function splitReturnFirst($string, $delimiter)
+		{
+			if (strpos($string, "@") !== FALSE) {
+				$string = explode($delimiter, $string);
+				return $string[0];
+			} else {
+				return false;
+			}
 		}
 
 

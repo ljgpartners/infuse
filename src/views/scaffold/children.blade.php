@@ -15,6 +15,8 @@ $infuseLogin = $data['infuseLogin'];
 			$model = $association[0];
 			$childTitle = $association[1];
 			$childColumns = $association[2];
+			$childOrderColumn = (isset($association[3]) && is_array($association[3]) && isset($association[3]['order_column']) )? $association[3]['order_column'] : false;
+			$childOrderDirection = (isset($association[3]) && is_array($association[3]) && isset($association[3]['order_direction']) )? $association[3]['order_direction'] : false;
 			$numColumns = count($childColumns)+1;
 	?>
 	<table class="table table-striped table-bordered">
@@ -31,28 +33,45 @@ $infuseLogin = $data['infuseLogin'];
 					<th>{{Util::cleanName($column)}}</th>
 				@endif
 			@endforeach
-			<th><a href="{{Util::getPath()."/".Util::camel2under($model)}}?action=c&pid={{$entries->id}}&parent={{Util::classToString($entries)}}">Create </a></th>
+			<th><a href="{{Util::getPath()."/".Util::camel2under($model)}}?action=c&pid={{$entries->id}}&parent={{Util::classToString($entries)}}">Create</a></th>
 		</tr>
 		
 		<?php 
 			if (array_key_exists('actualModel', $header)):
-				$hasManyObject = $header['actualModel']->hasMany(Util::under2camel(ucfirst($model)))->get();
+				if ($childOrderColumn && $childOrderDirection ) {
+					$hasManyObject = $header['actualModel']->hasMany(Util::under2camel(ucfirst($model)))->orderBy($childOrderColumn, $childOrderDirection)->get();
+				} else {
+					$hasManyObject = $header['actualModel']->hasMany(Util::under2camel(ucfirst($model)))->get();
+				}
 			else:
-				$hasManyObject = $entries->hasMany(Util::under2camel(ucfirst($model)))->get();
+				if ($childOrderColumn && $childOrderDirection ) {
+					$hasManyObject = $entries->hasMany(Util::under2camel(ucfirst($model)))->orderBy($childOrderColumn, $childOrderDirection)->get();
+				} else {
+					$hasManyObject = $entries->hasMany(Util::under2camel(ucfirst($model)))->get();
+				}
 			endif;
 		?>
 		
 		@foreach ($hasManyObject as $key => $child)
-		<tr>
+		<tr> 
 			@foreach ($childColumns as $column)
-				@if (is_array($column))
+				@if (is_array($column)) 
 					@foreach (current($column) as $value)
 							@if ($child->{key($column)} == $value["id"])
 								<td>{{end($value)}}</td>
 							@endif
 					@endforeach
 				@else
-					<td>{{$child->{$column} }}</td>
+					@if (Util::splitReturnFirst($column, "@"))
+						<td>
+							<div class="previewImage">
+								<img src="{{$child->url(Util::splitReturnFirst($column, "@"))}}" alt="">  
+							</div>
+						</td>
+					@else
+						<td>{{$child->{$column} }}</td>
+					@endif
+					
 				@endif
 
 			@endforeach

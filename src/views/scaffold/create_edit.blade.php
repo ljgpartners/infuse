@@ -61,8 +61,8 @@ $infuseLogin = $data['infuseLogin'];
 
 				@elseif (array_key_exists("upload", $column))
 
-					<input type="file" name="{{$column['field']}}" >
-
+					<input type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "livePreviewCrop": "" )}}" id="upload{{$column['field']}}" >
+					
 					@if (property_exists($entries, $column['field']) && $entries->{$column['field']} != "")
 						</br>
 						<button type="button" class="btn btn-mini btn-link" data-toggle="modal" data-target="#{{"Modal".$column['field'].$entries->id}}">
@@ -87,6 +87,25 @@ $infuseLogin = $data['infuseLogin'];
 						</br><span class="label label-info">{{$val[1]}}</span>
 						@endif
 					@endforeach
+
+					@if ($column['upload']['imageCrop'])
+					<div class="imagePreviewCrop">
+						<!-- image preview area-->
+						<img id="upload{{$column['field']}}Preview" class="imgAreaSelect" data-id="upload{{$column['field']}}" style="display:none;"/>
+					</div>
+
+					<!-- hidden inputs -->
+					<input type="hidden" id="upload{{$column['field']}}x" name="upload{{$column['field']}}x" />
+					<input type="hidden" id="upload{{$column['field']}}y" name="upload{{$column['field']}}y" />
+					<input type="hidden" id="upload{{$column['field']}}w" name="upload{{$column['field']}}w" />
+					<input type="hidden" id="upload{{$column['field']}}h" name="upload{{$column['field']}}h" />
+
+					<input type="hidden" id="upload{{$column['field']}}nw" name="upload{{$column['field']}}nw" />
+					<input type="hidden" id="upload{{$column['field']}}nh" name="upload{{$column['field']}}nh" />
+
+					@endif
+
+
 
 				@elseif ($infuseLogin && ($column['field'] == "password" || $column['field'] == "password_confirmation" ) )
 					<input type="password" name="<?php echo $column['field']; ?>" value="">

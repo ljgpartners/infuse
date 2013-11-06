@@ -77,6 +77,7 @@ endif;
 				</div>
 			</td>
 		</tr>
+		
 		<tr>
 			@foreach ($columns as $column)
 				@if (in_array($column['field'], $header['list']))

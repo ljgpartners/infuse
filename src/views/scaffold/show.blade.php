@@ -30,7 +30,7 @@ $infuseLogin = $data['infuseLogin'];
 				@elseif (array_key_exists("upload", $column))
 					<th>{{Util::cleanName($column['field'])}}</th>
 					<td>
-						@if ($entries->{$column['field']} != "" && preg_match('/(\.jpg|\.png|\.gif)$/', $entries->{$column['field']} ))
+						@if ($entries->{$column['field']} != "" && preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $entries->{$column['field']} ))
 							<img class="" src="{{$entries->url($column['field'])}}">
 						@elseif ($entries->{$column['field']} != "")
 							<a href="<?php echo $entries->url($column['field']); ?>">{{$entries->{$column['field']} }}</a>

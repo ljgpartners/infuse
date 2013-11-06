@@ -64,6 +64,9 @@ input.infuseLoginSubmit{ background-color: #0099CC; font-weight: normal; color: 
 
 .previewImage{ width: 100%; text-align: center; vertical-align: middle; }
 .previewImage img{ max-width: 100%; }
+
+.imagePreviewCrop{ margin: 20px 0px; }
+
 	/*
 #AA4FAA #3AACE2
 

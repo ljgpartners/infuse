@@ -240,32 +240,71 @@ class Scaffold {
 
 			if (array_key_exists("upload", $column) && array_key_exists($column['field'], $_FILES) && $_FILES["{$column['field']}"] != "") {
 				
-				$transit = new Transit($_FILES["{$column['field']}"]); 
+				/**************************************
+				* Do uploading via image crop method
+				****************************************/
+				if (array_key_exists("imageCrop", $column['upload']) && $column['upload']['imageCrop']) {
+					$nw = $column['upload']['imageCrop']['width']; 
+					$nh = $column['upload']['imageCrop']['height'];
+					 
+					$valid_exts = array('jpeg', 'JPEG', 'jpg', 'JPG', 'png', 'PNG', 'gif', 'GIF');
+					$ext = strtolower(pathinfo($_FILES["{$column['field']}"]['name'], PATHINFO_EXTENSION));
+						if (in_array($ext, $valid_exts)) {
+								$filename = uniqid().'.'.$ext;
+								$path = $model->uploadPath($column['field']).$filename;
+								$size = getimagesize($_FILES["{$column['field']}"]['tmp_name']);
 
-				$validations = $column['upload']['validations'];
-				if (count($validations) > 0) {
-					$validator = new ImageValidator();
-					foreach ($validations as $val) {
-						$validator->addRule($val[0], $val[1], $val[2]);
-					}
+								$x = (int) Util::get("upload{$column['field']}x");
+								$y = (int) Util::get("upload{$column['field']}y");
+								$w = (int) Util::get("upload{$column['field']}w") ? Util::get("upload{$column['field']}w") : $size[0];
+								$h = (int) Util::get("upload{$column['field']}h") ? Util::get("upload{$column['field']}h") : $size[1];
 
-					$transit->setDirectory($model->uploadPath($column['field'])) 
-								->setValidator($validator);
+								$data = file_get_contents($_FILES["{$column['field']}"]['tmp_name']);
+								$vImg = imagecreatefromstring($data);
+								$dstImg = imagecreatetruecolor($nw, $nh);
+								imagecopyresampled($dstImg, $vImg, 0, 0, $x, $y, $nw, $nh, $w, $h);
+								imagejpeg($dstImg, $path);
+								imagedestroy($dstImg);
+								$entry->{$column['field']} = $filename;
+								
+						} else {
+							$fileErrors["{$column['field']}"] = $e->getMessage();
+						}
+						
+
 				} else {
-					$transit->setDirectory($model->uploadPath($column['field']));
-				}
+					/**************************************
+					* Not croped image do regualr uploading 
+					***************************************/
+					$transit = new Transit($_FILES["{$column['field']}"]);
 
-				
-				
+					$validations = $column['upload']['validations'];
+					if (count($validations) > 0) {
+						$validator = new ImageValidator();
+						foreach ($validations as $val) {
+							$validator->addRule($val[0], $val[1], $val[2]);
+						}
 
-				try { 
-					if ($_FILES["{$column['field']}"]['name'] != "" && $transit->upload()) {
-						$fileName = explode(DIRECTORY_SEPARATOR, $transit->getOriginalFile());
-						$entry->{$column['field']} = end($fileName);
+						$transit->setDirectory($model->uploadPath($column['field'])) 
+									->setValidator($validator);
+					} else {
+						$transit->setDirectory($model->uploadPath($column['field']));
 					}
-				} catch (Exception $e) {
-					$fileErrors["{$column['field']}"] = $e->getMessage();
+
+					try { 
+						if ($_FILES["{$column['field']}"]['name'] != "" && $transit->upload()) {
+							$fileName = explode(DIRECTORY_SEPARATOR, $transit->getOriginalFile());
+							$entry->{$column['field']} = end($fileName);
+						}
+					} catch (Exception $e) {
+						$fileErrors["{$column['field']}"] = $e->getMessage();
+					}
 				}
+				
+				
+				
+
+				
 
 			} else {
 				if ($column['field'] != "created_at" && $column['field'] != "updated_at" ) {
@@ -290,7 +329,7 @@ class Scaffold {
 
 		// Remove any FALSE values. This includes NULL values, EMPTY arrays, etc.
 		$data = array_filter($data);
-
+		
 		if ($entry->validate($data) && count($fileErrors) == 0) {
 
 			$entry->save();
@@ -418,7 +457,8 @@ class Scaffold {
 				"pagination" => $pagination,
 				"name" => $this->name,
 				"list" => $this->list,
-				"filters" => $filters
+				"filters" => $filters,
+				"onlyOne" => $this->onlyOne
 			);
 
 	}
@@ -492,15 +532,19 @@ class Scaffold {
 		}
 	}
 
-
-	public function fileUpload($column, $uploadFolder, $validations = array())
+	/* 
+	To activate Image croping pass in the following
+	$imageCrop = array("image_crop" => true, "width" => 98, "height" => 98) 
+	Note if image crop is used then file validation will be applied
+	*/
+	public function fileUpload($column, $uploadFolder, $validations = array(), $imageCrop = false)
 	{
 		if (!is_string($column)) 
 			throw new Exception('fileUpload("name", "/path/to/files"); First argument should name of column. ');
 		if (!is_string($uploadFolder)) 
-			throw new Exception('fileUpload("name", "/path/to/files"); Second argument should be the path to the uploads folder. ');
+			throw new Exception('fileUpload("name", "/path/to/files"); Second argument should be the path to the uploads folder. '); 
 		if (array_key_exists($column, $this->columns)) {
-			$this->columns["{$column}"]["upload"] = array("uploadFolder" => $uploadFolder, "validations" => $validations);
+			$this->columns["{$column}"]["upload"] = array("uploadFolder" => $uploadFolder, "validations" => $validations, "imageCrop" => $imageCrop);
 			return $this;
 		} else {
 			throw new Exception('fileUpload("name", "/path/to/files");  Column doesn\'t exist.');

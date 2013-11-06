@@ -120,6 +120,50 @@ $(document).ready(function() {
 		$(".appendFilters").empty(); 
 		$(".filtersForm").submit();
 	});
+
+
+
+	function setInfo(img, selection) {
+		var theImage 		 = new Image();
+		theImage.src 	   = $(img).attr("src");
+		
+
+		var	originalImgWidth = theImage.width,
+				scaledImgWidth   = img.width,
+				scale  					 = (originalImgWidth >= scaledImgWidth)? (originalImgWidth/scaledImgWidth) : 1,
+				orignalUploadId  = $(img).data("id");
+
+		$('#'+orignalUploadId+'x').val(selection.x1*scale);
+		$('#'+orignalUploadId+'y').val(selection.y1*scale);
+		$('#'+orignalUploadId+'w').val(selection.width*scale);
+		$('#'+orignalUploadId+'h').val(selection.height*scale);
+	}
+
+	// prepare instant preview
+	$(".livePreviewCrop").change(function(){
+		var id = $(this).attr("id"),
+				p  = $("#"+id+"Preview");
+
+		// fadeOut or hide preview
+		p.fadeOut();
+
+		// prepare HTML5 FileReader
+		var oFReader = new FileReader();
+		oFReader.readAsDataURL(document.getElementById(id).files[0]);
+
+		oFReader.onload = function (oFREvent) {
+	   		p.attr('src', oFREvent.target.result).fadeIn();
+		};
+	});
+
+	// implement imgAreaSelect plug in (http://odyniec.net/projects/imgareaselect/)
+	$('img.imgAreaSelect').imgAreaSelect({
+		// set crop ratio (optional)
+		aspectRatio: '632:360',
+		onSelectEnd: setInfo,
+		handles: true
+	});
+
 	
 });
 })(jQuery);
