@@ -322,7 +322,7 @@ class Scaffold {
 						$inputsTemp = Hash::make(Util::get($column['field']));
 					}
 
-					if (isset($column['displayOrder']) && Util::get("parent") && Util::get("pid")) {
+					if (isset($column['displayOrder']) && Util::get("parent") && Util::get("pid") && $inputsTemp == "") {
 						$count = $model::where(Util::foreignKeyString(Util::get("parent")), "=", Util::get("pid"))->count();
 						$count = 1+(int)$count;
 						$inputsTemp = $count;
