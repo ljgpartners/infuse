@@ -160,7 +160,7 @@ $infuseLogin = $data['infuseLogin'];
 
 
 				@if ($fileErrors && array_key_exists($column['field'], $fileErrors) && count($fileErrors) > 0)
-					@foreach ($fileErrors as $err): ?>
+					@foreach ($fileErrors as $err)
 							</br><span class="label label-important">{{$err}}</span>
 					@endforeach
 				@endif

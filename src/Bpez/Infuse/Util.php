@@ -123,10 +123,12 @@
 			return str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'])."{$action}";;
 		}
 
-		public static function redirectUrlChildSaveFailed($parent, $pid)
+		public static function redirectUrlChildSaveFailed($parent, $pid, $id)
 		{
-			$action = "?action=c&pid={$pid}&parent={$parent}";
-			return str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'])."{$action}";;
+			$action = "?action=e&id={$id}&pid={$pid}&parent={$parent}";
+			$redirect = explode("?", $_SERVER['REQUEST_URI']);
+			$redirect = $redirect[0];
+			return $redirect.$action;
 		}
 		
 

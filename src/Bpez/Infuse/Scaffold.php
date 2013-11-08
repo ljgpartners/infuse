@@ -5,6 +5,7 @@ use Transit\Transit;
 use Transit\Validator\ImageValidator;
 use Illuminate\Support\Facades\Hash;
 
+
 class Scaffold {
 
 	private $model;
@@ -29,6 +30,7 @@ class Scaffold {
 
 	public function __construct($model, $db)
 	{	
+
 		if (!isset($_SESSION)) session_start();
 		$this->action = Util::get("action");
 		$this->model = $model;
@@ -234,42 +236,48 @@ class Scaffold {
 			$message = array("message" => "Created {$this->name}.", "type" => "success");
 		}
 
-		$fileErrors = array();
+		$fileErrors = array(); 
 
 		foreach ($this->columns as $column) {
 
 			if (array_key_exists("upload", $column) && array_key_exists($column['field'], $_FILES) && $_FILES["{$column['field']}"] != "") {
 				
+				
+
 				/**************************************
 				* Do uploading via image crop method
 				****************************************/
 				if (array_key_exists("imageCrop", $column['upload']) && $column['upload']['imageCrop']) {
-					$nw = $column['upload']['imageCrop']['width']; 
-					$nh = $column['upload']['imageCrop']['height'];
-					 
-					$valid_exts = array('jpeg', 'JPEG', 'jpg', 'JPG', 'png', 'PNG', 'gif', 'GIF');
-					$ext = strtolower(pathinfo($_FILES["{$column['field']}"]['name'], PATHINFO_EXTENSION));
-						if (in_array($ext, $valid_exts)) {
-								$filename = uniqid().'.'.$ext;
-								$path = $model->uploadPath($column['field']).$filename;
-								$size = getimagesize($_FILES["{$column['field']}"]['tmp_name']);
 
-								$x = (int) Util::get("upload{$column['field']}x");
-								$y = (int) Util::get("upload{$column['field']}y");
-								$w = (int) Util::get("upload{$column['field']}w") ? Util::get("upload{$column['field']}w") : $size[0];
-								$h = (int) Util::get("upload{$column['field']}h") ? Util::get("upload{$column['field']}h") : $size[1];
+					if ($_FILES["{$column['field']}"]['name'] != "") {
+						
+						$nw = $column['upload']['imageCrop']['width']; 
+						$nh = $column['upload']['imageCrop']['height'];
+						 
+						$valid_exts = array('jpeg', 'JPEG', 'jpg', 'JPG', 'png', 'PNG', 'gif', 'GIF');
+						$ext = strtolower(pathinfo($_FILES["{$column['field']}"]['name'], PATHINFO_EXTENSION));
+							if (in_array($ext, $valid_exts)) {
+									$filename = uniqid().'.'.$ext;
+									$path = $model->uploadPath($column['field']).$filename;
+									$size = getimagesize($_FILES["{$column['field']}"]['tmp_name']);
 
-								$data = file_get_contents($_FILES["{$column['field']}"]['tmp_name']);
-								$vImg = imagecreatefromstring($data);
-								$dstImg = imagecreatetruecolor($nw, $nh);
-								imagecopyresampled($dstImg, $vImg, 0, 0, $x, $y, $nw, $nh, $w, $h);
-								imagejpeg($dstImg, $path);
-								imagedestroy($dstImg);
-								$entry->{$column['field']} = $filename;
-								
-						} else {
-							$fileErrors["{$column['field']}"] = $e->getMessage();
-						}
+									$x = (int) Util::get("upload{$column['field']}x");
+									$y = (int) Util::get("upload{$column['field']}y");
+									$w = (int) Util::get("upload{$column['field']}w") ? Util::get("upload{$column['field']}w") : $size[0];
+									$h = (int) Util::get("upload{$column['field']}h") ? Util::get("upload{$column['field']}h") : $size[1];
+
+									$data = file_get_contents($_FILES["{$column['field']}"]['tmp_name']);
+									$vImg = imagecreatefromstring($data);
+									$dstImg = imagecreatetruecolor($nw, $nh);
+									imagecopyresampled($dstImg, $vImg, 0, 0, $x, $y, $nw, $nh, $w, $h);
+									imagejpeg($dstImg, $path);
+									imagedestroy($dstImg);
+									$entry->{$column['field']} = $filename;
+									
+							} else {
+								$fileErrors["{$column['field']}"] = "Extension not allowed.";
+							}
+					}
 						
 
 				} else {
@@ -313,6 +321,12 @@ class Scaffold {
 					if ($this->infuseLogin && $column['field'] == "password") {
 						$inputsTemp = Hash::make(Util::get($column['field']));
 					}
+
+					if (isset($column['displayOrder']) && Util::get("parent") && Util::get("pid")) {
+						$count = $model::where(Util::foreignKeyString(Util::get("parent")), "=", Util::get("pid"))->count();
+						$count = 1+(int)$count;
+						$inputsTemp = $count;
+					} 
 
 					$entry->{$column['field']} = $inputsTemp;
 
@@ -358,7 +372,7 @@ class Scaffold {
 			Util::flashArray("post", Util::getAll());
 
 			if (Util::get("parent") && Util::get("pid")) {
-				$redirect_path = Util::redirectUrlChildSaveFailed(Util::get("parent"), Util::get("pid"));
+				$redirect_path = Util::redirectUrlChildSaveFailed(Util::get("parent"), Util::get("pid"), $entry->id);
 			} else {
 				$redirect_path = Util::redirectUrlSaveFailed(Util::get("id"));
 			}
@@ -615,6 +629,18 @@ class Scaffold {
 	{
 		$this->onlyOne = true;
 		return $this;
+	}
+
+	public function displayOrderColumn($column)
+	{
+		if (!is_string($column)) 
+			throw new Exception('displayOrderColumn("name");  First argument should name of column.');
+		if (array_key_exists($column, $this->columns)) {
+			$this->columns["{$column}"]["displayOrder"] = true;
+			return $this;
+		} else {
+			throw new Exception('displayOrderColumn("name");  Column doesn\'t exist.');
+		}
 	}
 
 

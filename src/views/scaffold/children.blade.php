@@ -28,9 +28,9 @@ $infuseLogin = $data['infuseLogin'];
 		<tr>
 			@foreach ($childColumns as $column)
 				@if (is_array($column))
-					<th>{{Util::cleanName(key($column))}}</th>
+					<th>{{Util::cleanName(key($column))}}</th> 
 				@else
-					<th>{{Util::cleanName($column)}}</th>
+					<th>{{Util::splitReturnFirst(Util::cleanName($column), "@")}}</th>
 				@endif
 			@endforeach
 			<th><a href="{{Util::getPath()."/".Util::camel2under($model)}}?action=c&pid={{$entries->id}}&parent={{Util::classToString($entries)}}">Create</a></th>
@@ -39,19 +39,20 @@ $infuseLogin = $data['infuseLogin'];
 		<?php 
 			if (array_key_exists('actualModel', $header)):
 				if ($childOrderColumn && $childOrderDirection ) {
-					$hasManyObject = $header['actualModel']->hasMany(Util::under2camel(ucfirst($model)))->orderBy($childOrderColumn, $childOrderDirection)->get();
+					$hasManyObject = $header['actualModel']->hasMany(Util::under2camel(ucfirst($model)))->orderBy(DB::raw("{$childOrderColumn} = 0"), "asc")->orderBy($childOrderColumn, $childOrderDirection)->get();
 				} else {
 					$hasManyObject = $header['actualModel']->hasMany(Util::under2camel(ucfirst($model)))->get();
 				}
 			else:
 				if ($childOrderColumn && $childOrderDirection ) {
-					$hasManyObject = $entries->hasMany(Util::under2camel(ucfirst($model)))->orderBy($childOrderColumn, $childOrderDirection)->get();
+					$hasManyObject = $entries->hasMany(Util::under2camel(ucfirst($model)))->orderBy(DB::raw("{$childOrderColumn} = 0"), "asc")->orderBy($childOrderColumn, $childOrderDirection)->get();
 				} else {
 					$hasManyObject = $entries->hasMany(Util::under2camel(ucfirst($model)))->get();
 				}
 			endif;
 		?>
 		
+		<?php $previoustChildId = 0; ?>
 		@foreach ($hasManyObject as $key => $child)
 		<tr> 
 			@foreach ($childColumns as $column)
@@ -64,16 +65,27 @@ $infuseLogin = $data['infuseLogin'];
 				@else
 					@if (Util::splitReturnFirst($column, "@"))
 						<td>
+							@if ($child->{Util::splitReturnFirst($column, "@")} != "")
 							<div class="previewImage">
 								<img src="{{$child->url(Util::splitReturnFirst($column, "@"))}}" alt="">  
 							</div>
+							@endif
 						</td>
 					@else
-						<td>{{$child->{$column} }}</td>
+						@if ($childOrderColumn && $childOrderDirection)
+							<td class="childOrderColumn">
+								<a class="childUpOrder" data-previous-id="{{$previoustChildId}}" data-id="{{$child->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column}}" data-model="{{get_class($child)}}" href="">[up]</a> 
+								<a class="childDownOrder" href="">[down]</a>
+								<span>{{$child->{$column} }}</span>
+							</td>
+						@else
+							<td>{{$child->{$column} }}</td>
+						@endif
+						
 					@endif
 					
 				@endif
-
+			
 			@endforeach
 			<td>
 				<a href="{{Util::getPath()."/".Util::camel2under($model)}}?action=s&id={{$child->id}}&pid={{$entries->id}}&parent={{Util::classToString($entries)}}">show</a>
@@ -81,6 +93,7 @@ $infuseLogin = $data['infuseLogin'];
 				<a href="{{Util::getPath()."/".Util::camel2under($model)}}?action=d&id={{$child->id}}&pid={{$entries->id}}&parent={{Util::classToString($entries)}}" onclick="return confirm('Confirm delete?');">delete</a>
 			</td>
 		</tr>
+		<?php $previoustChildId = $child->id; ?>	
 		@endforeach
 
 

@@ -1,6 +1,7 @@
 <?php
 
 use Bpez\Infuse\Scaffold;
+use Bpez\Infuse\WebService;
 
 class InfuseController extends BaseController {
 
@@ -23,6 +24,12 @@ class InfuseController extends BaseController {
 	public function resource($resource, $child = "")
 	{
 		$this->layout->title = "Resource | Infuse";
+
+		if (Request::ajax()) {
+			$response = WebService::newInstance(new DB);
+			return Response::json($response);
+		}
+
 		if ($child == "") { 
 			$data = Config::get('infuse::resources');
 			$data = $data["{$resource}"]['scaffold']->config();
