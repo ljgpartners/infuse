@@ -132,11 +132,26 @@
 		}
 		
 
+		/*
+		Replace last instancex
+		*/
+		public static function str_lreplace($search, $replace, $subject)
+		{
+	    $pos = strrpos($subject, $search);
+
+	    if($pos !== false) {
+	    	$subject = substr_replace($subject, $replace, $pos, strlen($search));
+	    }
+
+	    return $subject;
+		}
+		
+
 		public static function redirectBackToParentUrl($currentModel, $parentId)
 		{
 			$redirect = explode("?", $_SERVER['REQUEST_URI']);
 			$redirect = $redirect[0];
-			return str_replace("/".strtolower($currentModel), '', $redirect )."?action=e&id={$parentId}";
+			return self::str_lreplace("/".strtolower($currentModel), '', $redirect )."?action=e&id={$parentId}";
 		}
 
 		public static function splitReturnFirst($string, $delimiter)
