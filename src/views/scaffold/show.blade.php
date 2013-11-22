@@ -39,7 +39,11 @@ $infuseLogin = $data['infuseLogin'];
 
 				@else
 
-				<th>{{Util::cleanName($column['field'])}}</th>
+				@if (array_key_exists($column['field'], $header['columnNames']))
+					<th>{{$header['columnNames']["{$column['field']}"]}}</th>
+				@else
+					<th>{{Util::cleanName($column['field'])}}</th>
+				@endif
 				<td>{{$entries->{$column['field']} }}</td>
 
 				@endif

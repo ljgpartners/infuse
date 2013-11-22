@@ -35,7 +35,11 @@ $infuseLogin = $data['infuseLogin'];
 			@foreach ($columns as $column)
 			@if ($column['field'] != "created_at" && $column['field'] != "updated_at" && !Util::isForeignKey($column['field']) )
 			<tr>  
-				<th>{{Util::cleanName($column['field'])}}</th>
+				@if (array_key_exists($column['field'], $header['columnNames']))
+					<th>{{$header['columnNames']["{$column['field']}"]}}</th>
+				@else
+					<th>{{Util::cleanName($column['field'])}}</th>
+				@endif
 				<td> 
 
 				@if ($column['field'] == Util::getForeignKeyString($entries))

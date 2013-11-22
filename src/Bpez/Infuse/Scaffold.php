@@ -15,6 +15,7 @@ class Scaffold {
 	private $entries = array();
 	private $header = array();
 	private $name;
+	private $columnNames = array();
 	private $limit = 10;
 	private $order = array(
 		"order" => "desc",
@@ -136,7 +137,8 @@ class Scaffold {
 				"pagination" => $pagination,
 				"name" => $this->name,
 				"list" => $this->list,
-				"onlyOne" => $this->onlyOne
+				"onlyOne" => $this->onlyOne,
+				"columnNames" => $this->columnNames
 			);
 	}
 
@@ -145,7 +147,8 @@ class Scaffold {
 		$model = $this->model;
 		$this->header = array(
 				"pagination" => array(),
-				"name" => $this->name
+				"name" => $this->name,
+				"columnNames" => $this->columnNames
 			);
 		$this->entries = $model::find(Util::get("id"));
 	}
@@ -158,7 +161,8 @@ class Scaffold {
 				"name" => $this->name,
 				"associations" => $this->hasMany,
 				"hasOneAssociation" => $this->hasOne,
-				"onlyOne" => $this->onlyOne
+				"onlyOne" => $this->onlyOne,
+				"columnNames" => $this->columnNames
 			);
 		$post = Util::flashArray("post");
 		if (!$post) {
@@ -176,7 +180,8 @@ class Scaffold {
 		$this->header = array(
 				"name" => $this->name,
 				"associations" => $this->hasMany,
-				"hasOneAssociation" => $this->hasOne
+				"hasOneAssociation" => $this->hasOne,
+				"columnNames" => $this->columnNames
 			);
 		$post = Util::flashArray("post");
 		if (!$post) {
@@ -192,7 +197,8 @@ class Scaffold {
 		$model = $this->model;
 		$this->header = array(
 				"name" => $this->name,
-				"associations" => $this->hasMany
+				"associations" => $this->hasMany,
+				"columnNames" => $this->columnNames
 			);
 		$post = Util::flashArray("post");
 		if (!$post) {
@@ -472,7 +478,8 @@ class Scaffold {
 				"name" => $this->name,
 				"list" => $this->list,
 				"filters" => $filters,
-				"onlyOne" => $this->onlyOne
+				"onlyOne" => $this->onlyOne,
+				"columnNames" => $this->columnNames
 			);
 
 	}
@@ -486,6 +493,19 @@ class Scaffold {
 	public function name($name)
 	{
 		$this->name = $name;
+		return $this;
+	}
+
+	public function columnName($columnName, $newName)
+	{
+		if (!is_string($columnName) || !is_string($newName)) 
+			throw new Exception('columnName("columnName", "newName"); First argument should name of column. Second argument should be replacement name.');
+		if (array_key_exists($columnName, $this->columns)) {
+			$this->columnNames["{$columnName}"] = $newName;
+			return $this;
+		} else {
+			throw new Exception('columnName("columnName", "newName"); Column doesn\'t exist.');
+		}
 		return $this;
 	}
 
