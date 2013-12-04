@@ -228,7 +228,7 @@ class Scaffold {
 		exit();
 	}
 
-	private function update()
+	private function update() 
 	{	
 		$model = $this->model;
 		if (Util::get("id")) {
@@ -551,6 +551,20 @@ class Scaffold {
 			return $this;
 		} else {
 			throw new Exception('addSelect("name", array()); Column doesn\'t exist.');
+		}
+	}
+
+	public function addMultiSelect($column, $array)
+	{	
+		if (!is_string($column)) 
+			throw new Exception('addMultiSelect("name", array()); First argument should name of column. ');
+		if (!is_array($array)) 
+			throw new Exception('addMultiSelect("name", array()); Second argument can only be an array. ');
+		if (array_key_exists($column, $this->columns)) {
+			$this->columns["{$column}"]["multi_select"] = $array;
+			return $this;
+		} else {
+			throw new Exception('addMultiSelect("name", array()); Column doesn\'t exist.');
 		}
 	}
 

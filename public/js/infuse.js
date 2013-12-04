@@ -64,7 +64,7 @@ $(document).ready(function() {
 				width: 495,
 				name: 'filter_'+filterCount,
 				maxSelectioninteger: 3,
-				emptyTextstring: "Type here",
+				emptyText: "Type here",
 				displayField: 'value',
 		    value: [self.data("filter-column"), 'equals'],
 		    data: [
@@ -81,6 +81,7 @@ $(document).ready(function() {
 		self.parent().addClass("hide");
 		$(".downloadCSVLink").attr("href", $(".downloadCSVLink").data("filter-download"));
 	});
+
 
 
 	$(".rebuildFiltersThroughJs div").each(function() {
@@ -230,6 +231,31 @@ $(document).ready(function() {
 		return false;
 	});
 
+
+	var multiSelectCount = 0,
+			multiSelects		 = [];
+
+	$(".multiSelect").each(function() {
+		multiSelectCount++;
+		var self = $(this),
+				data = self.data("data"),
+				name = self.data("name"),
+				value = String(self.data("value"));
+				
+		multiSelects[name] = self.magicSuggest({
+				width: 495,
+				allowFreeEntries: false,
+				name: name+multiSelectCount,
+				emptyText: "Click arrow to add",
+				displayField: 'value',
+				value: value,
+		    data: data
+		});
+		
+		$(multiSelects[name]).on('selectionchange', function(event, combo, selection){
+			$(".multiSelect"+name).val(multiSelects[name].getValue());
+		});
+	});
 	
 
 	

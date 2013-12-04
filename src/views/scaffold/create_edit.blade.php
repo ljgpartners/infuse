@@ -63,6 +63,20 @@ $infuseLogin = $data['infuseLogin'];
 						@endforeach
 					</select>
 
+				@elseif (array_key_exists("multi_select", $column))
+
+					<?php
+						$dataMultiSelect = array();
+						foreach ($column['multi_select'] as $value):
+								$columnName = end($value);
+								array_push($dataMultiSelect, array("id" => $value["id"], "value" => $columnName));
+						endforeach;
+					?>
+					
+					<div class="multiSelect"  data-name="{{$column['field']}}" data-data='{{json_encode($dataMultiSelect)}}' data-value="{{$entries->{$column['field']} }}"></div>
+					<input class="multiSelect{{$column['field']}}" name="{{$column['field']}}" type="hidden" value='{{$entries->{$column['field']} }}'>
+
+
 				@elseif (array_key_exists("upload", $column))
 
 					<input type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "livePreviewCrop": "" )}}" id="upload{{$column['field']}}" >
