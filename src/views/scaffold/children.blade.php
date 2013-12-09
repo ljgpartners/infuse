@@ -29,8 +29,10 @@ $infuseLogin = $data['infuseLogin'];
 			@foreach ($childColumns as $column)
 				@if (is_array($column))
 					<th>{{Util::cleanName(key($column))}}</th> 
-				@else
+				@elseif (Util::splitReturnFirst(Util::cleanName($column), "@"))
 					<th>{{Util::splitReturnFirst(Util::cleanName($column), "@")}}</th>
+				@else
+					<th>{{Util::cleanName($column)}}</th>
 				@endif
 			@endforeach
 			<th><a href="{{Util::getPath()."/".Util::camel2under($model)}}?action=c&pid={{$entries->id}}&parent={{Util::classToString($entries)}}">Create</a></th>
