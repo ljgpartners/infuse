@@ -241,6 +241,18 @@ $(document).ready(function() {
 				data = self.data("data"),
 				name = self.data("name"),
 				value = String(self.data("value"));
+
+		if(value.indexOf(",") !== -1) {
+			var tempArray = new Array();
+			$.each(value.split(","), function(index, value) {
+				tempArray.push(value);
+			});
+			value = tempArray;
+		} else {
+			var tempArray = new Array();
+			tempArray[0] = value;
+			value = tempArray;
+		}
 				
 		multiSelects[name] = self.magicSuggest({
 				width: 495,
