@@ -2,7 +2,7 @@
     "name": "bpez/infuse",
     "type": "library",
     "description": "Infuse is a laravel admin package for generating administration style interfaces",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "keywords": [
         "laravel 4", 
         "laravel", 
@@ -18,7 +18,7 @@
     ],
     "require": {
         "php": ">=5.3.7",
-        "illuminate/support": "4.0.x",
+        "illuminate/support": "4.1.*",
         "mjohnson/transit": "1.3.*"
     },
     
@@ -29,7 +29,7 @@
             "src/models"
         ],
         "psr-0": {
-            "Bpez\\Infuse": "src/"
+            "Bpez\\Infuse\\": "src/"
         }
     },
     "minimum-stability": "dev"
