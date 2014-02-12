@@ -1,0 +1,37 @@
+{
+	"name": "mjohnson/transit",
+	"type": "library",
+	"description": "A file uploader with support for validation, image transformation and remote transportation.",
+	"keywords": [
+		"transit", "file", "uploader", "validator", "importer", "transformer", "transporter",
+		"image", "audio", "video", "text", "application", "archive", "s3", "glacier", "exif"
+	],
+	"homepage": "http://milesj.me/code/php/transit",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Miles Johnson",
+			"homepage": "http://milesj.me"
+		}
+	],
+	"require": {
+		"php": ">=5.3.3",
+		"ext-curl": "*",
+		"ext-mbstring": "*",
+		"ext-fileinfo": "*"
+	},
+	"require-dev": {
+		"ext-exif": "*",
+		"aws/aws-sdk-php": "~2.2"
+	},
+	"suggest": {
+		"ext-exif": "Extract exif data from images",
+		"aws/aws-sdk-php": "~2.2"
+	},
+	"support": {
+		"source": "https://github.com/milesj/Transit"
+	},
+	"autoload": {
+		"psr-0": { "Transit": "src/" }
+	}
+}

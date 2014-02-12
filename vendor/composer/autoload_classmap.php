@@ -11,4 +11,6 @@ return array(
     'InfuseAdminUser' => $baseDir . '/src/models/InfuseAdminUser.php',
     'InfuseController' => $baseDir . '/src/controllers/InfuseController.php',
     'InfuseEloquent' => $baseDir . '/src/models/InfuseEloquent.php',
+    'SessionHandlerInterface' => $vendorDir . '/symfony/http-foundation/Symfony/Component/HttpFoundation/Resources/stubs/SessionHandlerInterface.php',
+    'Zizaco\\Entrust\\MigrationCommand' => $vendorDir . '/zizaco/entrust/src/commands/MigrationCommand.php',
 );
