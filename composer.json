@@ -20,7 +20,7 @@
         "php": ">=5.3.7",
         "illuminate/support": "4.1.*",
         "mjohnson/transit": "1.3.*",
-        "zizaco/entrust": "1.1.1"
+        "zizaco/entrust": "dev-master"
     },
     
     "autoload": {
