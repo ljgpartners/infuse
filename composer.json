@@ -20,7 +20,7 @@
         "php": ">=5.3.7",
         "illuminate/support": "4.1.*",
         "mjohnson/transit": "1.3.*",
-        "toddish/verify": "2.3.0"
+        "toddish/verify": "2.3.*"
     },
     
     "autoload": {

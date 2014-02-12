@@ -1,6 +1,8 @@
 Infuse
 ====================
 
+> uses Verify (L4) A simple role/permission authentication package for Laravel 4. http://docs.toddish.co.uk/verify-l4/
+
 
 Steps for installing 
 ---------------------
@@ -15,22 +17,6 @@ Steps for installing
 >
 > Add 'Bpez\Infuse\InfuseServiceProvider' to your laravel providers in /app/config/app.php
 
-### Basset asset management
-
-> Add to composer.json "jasonlewis/basset": "dev-master", "natxet/CssMin": "dev-master", "mrclay/minify": "dev-master"
->
-> Add 'Basset\BassetServiceProvider' to your laravel providers in /app/config/app.php
->
-> $ php artisan config:publish jasonlewis/basset
-
-In app/bootstrap/start.php Add local & production environments 
-
-> $env = $app->detectEnvironment(array(
->
->	'local' => array('localhost'),
->	'production' => array('somedomain.com'),
->
-> ));
 
 
 ### When working in workbench
@@ -44,16 +30,21 @@ In app/bootstrap/start.php Add local & production environments
 > Add 'Bpez\Infuse\InfuseServiceProvider' to your laravel providers in /app/config/app.php
 >
 > Adding another class run this in infuse root (composer dump-autoload )
+>
 
 
-After install
----------------------
+### New additional infuse steps
 
-### Deploying to production server
-
-> php artisan basset:build --production
-
-### Using basset in your layout templates
-
-> {{ basset_stylesheets('application', 'admin') }}
-> {{ basset_javascripts('application') }}
+> Add the Verify Service Provider to your config in app/config/app.php:
+>
+> 'Toddish\Verify\VerifyServiceProvider'
+> 
+> 'driver' => 'verify',
+>
+> You may also change the 'model' value to 'Toddish\Verify\Models\User' if you want to be able to load Verify's User model when using Auth::user().
+>
+> $ php artisan config:publish toddish/verify
+> $ php artisan config:publish --path="workbench/bpez/infuse/vendor/toddish/verify/src/config" toddish/verify
+>
+> $ php artisan migrate --package="toddish/verify"
+> $ php artisan migrate --bench="toddish/verify"
