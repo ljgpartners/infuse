@@ -46,7 +46,7 @@ return array(
 		/*
 		| Url path
 		*/
-		"logo" => "", // /packages/bpez/infuse/images/infuseLogo.png
+		"logo" => "", 
 		"login_page_background" => "/packages/bpez/infuse/images/infuseBackgroundNew.jpg",
 		"top_nav_background_snipe" => ""
 	), 
@@ -55,6 +55,8 @@ return array(
 		/*
 		| Hex colors
 		*/
+		"login_text" => "#CBCECD", 
+		"login_input_text" => "#CBCECD", 
 		"top_nav_background_color" => "#333333",
 		"nav_border_color" => "#000000",
 		"nav_highlight" => "#A01A27",
@@ -65,6 +67,7 @@ return array(
 		"side_menu_open_background" => "#E4E4E4",
 		"side_menu_section_title" => "#0093CF",
 		"side_menu_sub_section_title" => "#000000",
+		"side_menu_border" => "#F8F8F8"
 	), 
 	
 		

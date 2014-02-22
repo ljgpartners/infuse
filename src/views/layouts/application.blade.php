@@ -30,11 +30,16 @@
 	.infuseSideMenu{ background-color: {{Config::get('infuse::colors.side_menu_background')}}; }
 	.infuseSideMenu .accordion-inner{ background-color: {{Config::get('infuse::colors.side_menu_open_background')}}; }
 	.infuseSideMenu .accordion-heading .accordion-toggle{ color: {{Config::get('infuse::colors.side_menu_section_title')}}; }
-	.infuseSideMenu .nav-list a{ color: {{Config::get('infuse::colors.side_menu_sub_section_title')}}; }
+	.infuseSideMenu .nav-list a,  .infuseSideMenu .nav-list a:hover{ color: {{Config::get('infuse::colors.side_menu_sub_section_title')}}; }
+	.infuseSideMenu .accordion-group{ border-color: {{Config::get('infuse::colors.side_menu_border')}}; }
 
 	.infuseTopButtonGroup .btn.mainColor{ background-color: {{Config::get('infuse::colors.button_color')}} !important; }
 	.infuseTopButtonGroup .btn.altColor{ background-color: {{Config::get('infuse::colors.button_alt_color')}} !important; }
 	.infuseWrapper .submitButton{  background-color: {{Config::get('infuse::colors.button_color')}} !important; }
+
+	.infuseLogin .infuseSiteTitle, .infuseLogin .infuseTextLogo, .infuseLogin .infuseTextLogoAbove{ color: {{Config::get('infuse::colors.login_text')}}; }
+	.infuseLogin .infuseU, .infuseLogin .infuseP{ color: {{Config::get('infuse::colors.login_input_text')}}; }
+
 	.fixTextEditorHighlightingClass{}
 	</style>
 	
