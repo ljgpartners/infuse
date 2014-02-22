@@ -13,10 +13,61 @@ return array(
 	|
 	*/
 
-	'admin_title' => 'Title of Website',
+	/*
+	| Link to main site
+	*/
+	'admin_site_link' => url('/'),
 
-	'admin_title_link' => 'http://localhost:8888/',
+	/*
+	| Overide dashboard template a custom template from your views
+	*/
+	'dashboard_template' => '', 
 
+	/*
+	| The "expire" time is the number of minutes that the reminder should be
+	| considered valid. This security feature keeps tokens short-lived so
+	| they have less time to be guessed. You may change this as needed.
+	*/
+	'reminder_expire' => 60,
+
+
+	/*
+	| Theme customization (css & images)
+	*/
+	"titles" => array(
+		"login_above_logo" => "",
+		"login_site_title" => "Site Title Here"
+	),
+
+	"logo_margin_top" => 0,
+	"snipe_css" => "background-repeat: no-repeat; background-position: 100% 0px;",
+
+	"images" => array( 
+		/*
+		| Url path
+		*/
+		"logo" => "", // /packages/bpez/infuse/images/infuseLogo.png
+		"login_page_background" => "/packages/bpez/infuse/images/infuseBackgroundNew.jpg",
+		"top_nav_background_snipe" => ""
+	), 
+
+	"colors" => array(
+		/*
+		| Hex colors
+		*/
+		"top_nav_background_color" => "#333333",
+		"nav_border_color" => "#000000",
+		"nav_highlight" => "#A01A27",
+		"button_color" => "#A01A27",
+		"button_alt_color" => "#33352E",
+
+		"side_menu_background" => "#FFFFFF",
+		"side_menu_open_background" => "#E4E4E4",
+		"side_menu_section_title" => "#0093CF",
+		"side_menu_sub_section_title" => "#000000",
+	), 
+	
+		
 	/*
 	|--------------------------------------------------------------------------
 	| Navigation
@@ -28,23 +79,20 @@ return array(
 
 	'navigation' => array(
 
-		'Main' => array(
-			'Shops' => 'shop',
-			'Categories' => 'category',
-			'Restaurants' => 'restaurant',
-			'Cuisines' => 'cuisine'
+		'Section 1' => array(
+			'Model' => 'model_snake_case'
 		),
 
-		'Play' => array(
-				'Gallery' => 'gallery',
-				'Event' => 'event'
-			),
+		'Section 2 ' => array(
+			'Model2' => 'model2_snake_case',
+			'Model3' => 'model3_snake_case',
+			'Model4' => 'model4_snake_case'
+		),
 
-		'Other' => array(
-				'ContactSubmission' => 'contact_submission',
-				'News' => 'news',
-				"HomeAds" => 'home_ads'
-			)
+		'Section 3' => array(
+			'Model5' => 'model5_snake_case'
+		),
+
 
 	),
 
@@ -59,142 +107,62 @@ return array(
 
 	'resources' => array(
 
-		'shop' => array(
-			'scaffold' => Scaffold::newInstance(new Shop, new DB)
-											->modelDescription("Shops that are at the village.")
-											->limit(30)
-											->order(array("order" => "desc", "column" => "created_at"))
-											->addCkeditor("details_text")
-											->fileUpload("logo", "/uploads", array(
-													array('maxWidth', 'Must have width of 249px', 249)
-												))
-											->fileUpload("detail_background_image", "/uploads", array(
-													array('width', 'Must have width of 896px', 896),
-													array('height', 'Must have height of 360px', 360)
-												))
-											->listColumns(array("name"))
-											->describeColumn("store_hours", "To break to a new line use \",\" character. ")
-											->hasMany(array(
-													"special" => array("Special", array("name"))
-												))
-											->addSelect("category", Category::orderBy('name', 'asc')->get(array('id', 'name'))->toArray()),
+		'meetings' => array(
+					'scaffold' => Scaffold::newInstance(new Meeting, new DB)
+												->modelDescription("Construction Coffee Meetings")
+												->limit(30)
+												->order(array("order" => "desc", "column" => "created_at"))
+												->listColumns(array("title"))
+												->addSelect("category", Category::orderBy('name', 'asc')->get(array('id', 'name'))->toArray()),
+												->addSelect("restaurant", Restaurant::orderBy('name', 'asc')->get(array('id', 'name'))->toArray(), true)
 
-			'children' => array(
-					"special" =>  Scaffold::newInstance(new Special, new DB)
-											->modelDescription("Specials are located in the specials section of the site.")
-				)
-		),
+				),
 
-		'category' => array(
-			'scaffold' => Scaffold::newInstance(new Category, new DB)
-											->modelDescription("Categories are use to categorize the shops.")
-											->limit(30)
-											->order(array("order" => "desc", "column" => "created_at"))
-											->listColumns(array("name"))
-		),
+			'constuction_updates' => array(
+					'scaffold' => Scaffold::newInstance(new ConstructionUpdate, new DB)
+												->modelDescription("Construction Updates")
+												->limit(30)
+												->order(array("order" => "desc", "column" => "created_at"))
+												->listColumns(array("update_type", "created_at"))
+												->addCkeditor("details_text")
+												->describeColumn("store_hours", "To break to a new line use \",\" character. ")
+												->addSelect("update_type", array(
+														array("id" => "building_projects", "name" => "Major NBCU Building Projects"),
+														array("id" => "infrastructure_projects", "name" => "Infrastructure Projects"),
+														array("id" => "metro_pedestrian_bridge", "name" => "Metro Pedestrian Bridge"),
+													))
+												->addCkeditor("update_text")
+				),
 
-		'restaurant' => array(
-			'scaffold' => Scaffold::newInstance(new Restaurant, new DB)
-											->modelDescription("Restaurants that are located in the dine section of the site.")
-											->limit(30)
-											->order(array("order" => "desc", "column" => "created_at"))
-											->addCkeditor("main_text")
-											->fileUpload("logo", "/uploads", array(
-													array('width', 'Must have width of 632px', 632),
-													array('height', 'Must have height of 360px', 360)
-												))
-											->listColumns(array("name"))
-											->describeColumn("side_bar_text", "To break to a new line use \"|\" character. ")
-											->addSelect("cuisine", Cuisine::orderBy('name', 'asc')->get(array('id', 'name'))->toArray())
-											
-		),
-
-		'cuisine' => array(
-			'scaffold' => Scaffold::newInstance(new Cuisine, new DB)
-											->modelDescription("Cuisines are use to categorize the restaurants in the dine section.")
-											->limit(30)
-											->order(array("order" => "desc", "column" => "created_at"))
-											->listColumns(array("name"))
-		),
-		
-		'gallery' => array(
-			'scaffold' => Scaffold::newInstance(new Gallery, new DB)
-											->modelDescription("Galleries are located in the play section of the site.")
-											->limit(30)
-											->order(array("order" => "desc", "column" => "created_at"))
-											->listColumns(array("name"))
-											->addSelect("restaurant", Restaurant::orderBy('name', 'asc')->get(array('id', 'name'))->toArray(), true)
-											->addSelect("event", VamEvent::orderBy('name', 'asc')->get(array('id', 'name'))->toArray(), true)
-											->hasMany(array(
-													"photo" => array("Photo", array("photo", "display_order"))
+			'spotlights' => array(
+					'scaffold' => Scaffold::newInstance(new Spotlight, new DB)
+												->modelDescription("Our neighbors speak spotlights")
+												->limit(30)
+												->order(array("order" => "desc", "column" => "created_at"))
+												->listColumns(array("update_type", "created_at"))
+												->addCkeditor("content")
+												->hasMany(array(
+													array("SpotlightImage", "Spotlight Images", array("image")),
 												)),
-
-			'children' => array(
-					"photo" =>  Scaffold::newInstance(new Photo, new DB)
-											->modelDescription("Photos belong to the galleries")
-											->fileUpload("photo", "/uploads", array(
-													array('width', 'Must have width of 710px', 710),
-													array('height', 'Must have height of 470px', 470)
-												))
+					'children' => array(
+						"spotlight_image" =>  Scaffold::newInstance(new SpotlightImage, new DB)
+																	 ->name("Splotlight Image")
+																	 ->fileUpload("image", "/uploads", array(
+																			array('width', 'Must have width of 490px', 490),
+																			array('height', 'Must have height of 250px', 250)
+																	 ))
+												
+					)
 				)
-		),
 
-		'event' => array(
-			'scaffold' => Scaffold::newInstance(new VamEvent, new DB)
-											->name("Event")
-											->modelDescription("Events are in the play section of the site.")
-											->addCkeditor("main_text")
-											->limit(30)
-											->order(array("order" => "desc", "column" => "created_at"))
-											->listColumns(array("name", "date_time_start", "date_time_end"))
-
-		),
-
-		'contact_submission' => array(
-			'scaffold' => Scaffold::newInstance(new ContactSubmission, new DB)
-											->name("Contact Submissions")
-											->modelDescription("Submissions from the contact page.")
-											->limit(30)
-											->addCkeditor("comments_questions")
-											->order(array("order" => "desc", "column" => "created_at"))
-											->listColumns(array("name", "email", "created_at"))
-
-		),
-
-
-		'news' => array(
-			'scaffold' => Scaffold::newInstance(new News, new DB)
-											->modelDescription("New articles.")
-											->limit(30)
-											->addCkeditor("main_text")
-											->order(array("order" => "desc", "column" => "created_at"))
-											->listColumns(array("title", "created_at"))
-											->fileUpload("image", "/uploads", array(
-													array('width', 'Must have width of 632px', 632),
-													array('height', 'Must have height of 360px', 360)
-												))
-
-		),
-
-		'home_ads' => array(
-			'scaffold' => Scaffold::newInstance(new HomeAds, new DB)
-											->name("Home Ad")
-											->modelDescription("Bottom 3 ads that are displayed on the home page.")
-											->limit(30)
-											->order(array("order" => "desc", "column" => "created_at"))
-											->listColumns(array("text", "display_order"))
-											->fileUpload("image", "/uploads", array(
-													array('width', 'Must have width of 98px', 98),
-													array('height', 'Must have height of 98px', 98)
-												))
-
-		),
-	
-	)
+		
 	
 	|--------------------------------------------------------------------------*/
 
-	'resources' => array()
+	'resources' => array(
+
+
+	)
 		
 
 

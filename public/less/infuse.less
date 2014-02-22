@@ -1,0 +1,111 @@
+@import url("bootstrap-combined.min.less");
+@import url("jquery-ui.min.less");
+@import url("jquery-ui-timepicker-addon.less");
+@import url("magicsuggest-1.3.1.less");
+@import url("imgareaselect/imgareaselect-animated.less");
+@import url("imgareaselect/imgareaselect-default.less");
+@import url("imgareaselect/imgareaselect-deprecated.less");
+
+body{ font-family: 'Open Sans', sans-serif; background-color: black;  background: url("/packages/bpez/infuse/images/infuseBackgroundNew.jpg") no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover; padding: 0 !important; }
+body.infuseWrapper{ background-color: #FFFFFF; background-image: none !important;  }
+body.infuseWrapper input[type="text"], body.infuseWrapper input[type="password"],{ -webkit-appearance: none; }
+
+.container{ margin-bottom: 100px; }
+.infuseInner{  width: 1024px; margin: 0px auto; }
+
+.infuseScaffold .table{ background-color: white; }
+.infuseScaffold input, .infuseScaffold textarea{ width: 60%; }
+.infuseScaffold input[type="submit"]{ width: auto; }
+.infuseScaffold{ font-size: 12px; }
+.infuseScaffold textarea{ min-height: 80px; }
+
+.infuseScaffold .label, .infuseScaffold .badge{ font-weight: normal; margin: 2px 0px 0px 0px;  }
+.infuseScaffold input[type="file"]{ height: auto !important; line-height: 15px !important; }
+.introLanding, .infuseScaffold { margin-top: 50px; }
+
+.infuseBlue{ color: #0088cc !important; }
+
+
+.infuseWrapper h1{ font-size: 25px; font-weight: 300; position: relative; letter-spacing: 2px; }
+.infuseWrapper small{ font-size: 16px; position: absolute; top: 10px; letter-spacing: 2px; right: 0px;  color: #999999; font-weight: 300;  }
+
+
+/* Login and password reset pages */
+
+.infuseLogin{ width: 420px; height: 387px; background-color: transparent; margin: 150px auto 0px; box-sizing: Border-box; }
+.infuseLogin .logo{ display: block; margin: 0px auto 20px; }
+.infuseLogin .infuseU, .infuseLogin .infuseP{ color: #666666; background-color: transparent; border: none; font-family: 'Open Sans', sans-serif, sans-serif; width: 299px; height: 54px; box-sizing: Border-box; padding: 12px 12px 12px 12px; background-repeat: repeat; }
+.infuseLogin .infuseU{ background-image: url("/packages/bpez/infuse/images/transparent40Percent.png");}
+.infuseLogin .infuseP{ background-image: url("/packages/bpez/infuse/images/transparent40Percent.png");}
+input.infuseLoginSubmit{ background-color: #A01A27; margin: 0px auto; display: block; font-weight: 300; color: white; vertical-align: top; border: none; width: 35px; height: 35px; padding-bottom: 5px; font-family: 'Open Sans', sans-serif; font-size: 13px; 
+-moz-border-radius: 20px; -webkit-border-radius: 20px; border-radius: 20px; /* future proofing */ -khtml-border-radius: 20px; /* for old Konqueror browsers */ }
+.infuseLogin .infuseTextLogoAbove{ font-size: 13px; font-weight: 300; color: white; text-transform: uppercase; text-align: center; line-height: 120%; opacity: 0.5; letter-spacing: 3px; }
+.infuseLogin .infuseTextLogo{ font-size: 70px; font-weight: 300; color: white; text-transform: uppercase; text-align: center; line-height: 100%; opacity: 0.5; }
+.infuseLogin .infuseSiteTitle{ margin-top: 15px; font-size: 13px; font-weight: 300; color: white; text-transform: uppercase; text-align: center; line-height: 140%; opacity: 0.5; letter-spacing: 3px; }
+.infuseLogin form{ margin-top: 15px; }
+.infuseLogin p{ text-align: center; color: white; font-size: 14px; opacity: 0.5;  }
+.infuseLogin p.errorMessage{ margin-top: 10px; opacity: 1.0; font-weight: 500;  color: #A01A27; }
+.infuseLogin p.successMessage{ margin-top: 10px; opacity: 1.0; font-weight: 500;  color: #009933; }
+.infuseLogin .errorInput{ border: 1px solid #A01A27; }
+
+/* Nav  */
+.infuseNav{ height: 84px; background-color: #333333; border-bottom: 5px solid black;  }
+.infuseNav .navElement{ height: 84px; width: 143px; margin: 0px 1px 0px 1px; display: inline-block; vertical-align: top; }
+.infuseNav .navElement.navElementCenter{  width: auto; padding: 0px 15px; }
+.infuseNav .infuseTextLogo{ font-size: 60px; margin-top: 13px; font-weight: 300; color: white; text-transform: uppercase; text-align: center; line-height: 100%;  }
+.infuseNav .innerNav{ font-size: 0px;  width: 1024px; margin: 0px auto; text-align: center; position: relative; }
+.infuseNav .navElement a{  width: 100%; height: 100%; display: inline-block; text-transform: uppercase; letter-spacing: 2px; text-align: center; font-family: 'Open Sans', sans-serif; font-size: 13px; font-weight: 300; color:  white;  }
+.infuseNav .navElement a span{ letter-spacing: 3px; margin-top: 33px; display: inline-block; }
+.infuseNav .navElement a.active{ border-bottom: 5px solid #990000; }
+.infuseNav .navElement a:hover{ border-bottom: 5px solid #990000; }
+.infuseNav .siteLink{ position: absolute; right: 0px; top: 32%; text-decoration: none; background-color: #A01A27; margin: 0px auto; display: block; font-weight: 300; color: white; vertical-align: top; border: none; width: 32px; height: 27px; padding-top: 3px; font-family: 'Open Sans', sans-serif; font-size: 13px; 
+-moz-border-radius: 20px; -webkit-border-radius: 20px; border-radius: 20px; /* future proofing */ -khtml-border-radius: 20px; /* for old Konqueror browsers */ }
+
+
+/* slide out menu */
+.infuseSideMenu{ border-radius: 0px; position: absolute; top: 89px; left: -360px; z-index: 100; width: 360px;  height: 100%; background-color: #FFFFFF; border-right: 1px solid #F8F8F8;  }
+.nav-header{ color: #3AACE2; font-size: 14px; text-shadow: none !important; font-weight: 400; text-indent: 15px;  }
+.nav-list a{ color: black;  font-size: 13px; text-shadow: none !important; font-weight: 400; text-indent: 15px; }
+.infuseSideMenu .accordion-heading .accordion-toggle{ padding: 22px 15px; text-decoration: none !important; border-bottom: 1px solid #F8F8F8; margin-bottom: 1px; color: #0093CF; }
+.infuseSideMenu .accordion-heading{ font-size: 18px; text-indent: 15px; }
+.infuseSideMenu .accordion-group{ border: 0px; }
+.infuseSideMenu .nav>li>a:hover, .infuseSideMenu .nav>li>a:focus{ background-color: transparent; }
+.infuseSideMenu .divider{ display: none;  }
+.infuseSideMenu .nav-list a{ padding: 6px 0px; font-size: 13px; text-transform: uppercase;}
+.infuseSideMenu .accordion-inner{ background-color: #E4E4E4; padding: 19px 15px;  }
+.infuseSideMenu .nav-list a:hover, .infuseSideMenu .nav-list a:focus{ color: inherit;}
+.infuseSideMenu .nav-list a{ color: #000000; }
+
+/* buttons */
+.infuseTopButtonGroup{ margin-bottom: 15px; }
+.infuseTopButtonGroup .btn{ letter-spacing: 2px; font-weight: 300; font-size: 13px; text-transform: uppercase; color: white;   background-image: none; border-color: transparent; padding: 9px 30px; margin-bottom: 0; text-shadow: none; }
+.infuseTopButtonGroup .btn.mainColor{ background-color: #A01A27; }
+.infuseTopButtonGroup .btn.altColor{ background-color: #33352E; }
+.infuseWrapper .submitButton{ padding: 6px 18px; background-color: #A01A27; font-weight: 300; color: white; letter-spacing: 1px;  font-size: 12px; text-transform: uppercase; background-image: none; border-color: transparent; text-shadow: none; }
+
+
+
+.filtersContainer{ display: none; }
+.filtersContainer form{ margin: 0px; }
+.filtersContainer .ms-ctn{ display: inline-block; vertical-align: middle; margin: 5px 0px 5px 5px; height: 30px !important;   }
+.filtersContainer .ms-sel-ctn{ height: 30px !important;  }
+.appendFilters{ display: inline-block; vertical-align: middle; max-width: 1023px; }
+
+.ms-sel-ctn .ms-sel-item{ background-color: #f5f5f5; color: black; }
+.page-header .hero-unit{ margin-top: 50px; }
+
+.previewImage{ width: 100%; text-align: center; vertical-align: middle; }
+.previewImage img{ max-width: 100%; }
+
+.imagePreviewCrop{ margin: 20px 0px; }
+
+.superAdminMenu{ position: fixed; bottom: 5px; left: 10px; z-index: 100; }
+.manyToManyAssociations .checkbox{ white-space: nowrap;  text-align: left; vertical-align: middle; }
+.manyToManyAssociations .checkbox input[type="checkbox"]{  float: none; margin-left: 0px;  width: auto !important; vertical-align: middle;  }
+.manyToManyAssociations  .checkbox.inline+.checkbox.inline{ margin-left: 0px; }
+
+/*
+#AA4FAA #3AACE2
+font-family: 'Open Sans', sans-serif;
+
+	*/

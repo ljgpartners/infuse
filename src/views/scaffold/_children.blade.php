@@ -34,9 +34,9 @@ $infuseLogin = $data['infuseLogin'];
 				@else
 					<th>{{Util::cleanName($column)}}</th>
 				@endif
-			@endforeach
-			<th><a href="{{Util::getPath()."/".Util::camel2under($model)}}?action=c&pid={{$entries->id}}&parent={{Util::classToString($entries)}}">Create</a></th>
-		</tr>
+			@endforeach 
+			<th><a href="{{Util::childActionLink($model, 'c')}}">Create</a></th>
+		</tr> 
 		
 		<?php 
 			if (array_key_exists('actualModel', $header)):
@@ -88,11 +88,11 @@ $infuseLogin = $data['infuseLogin'];
 					
 				@endif
 			
-			@endforeach
+			@endforeach 
 			<td>
-				<a href="{{Util::getPath()."/".Util::camel2under($model)}}?action=s&id={{$child->id}}&pid={{$entries->id}}&parent={{Util::classToString($entries)}}">show</a>
-				<a href="{{Util::getPath()."/".Util::camel2under($model)}}?action=e&id={{$child->id}}&pid={{$entries->id}}&parent={{Util::classToString($entries)}}">edit</a>
-				<a href="{{Util::getPath()."/".Util::camel2under($model)}}?action=d&id={{$child->id}}&pid={{$entries->id}}&parent={{Util::classToString($entries)}}" onclick="return confirm('Confirm delete?');">delete</a>
+				<a href="{{Util::childActionLink($model, 's', $child->id)}}">show</a>
+				<a href="{{Util::childActionLink($model, 'e', $child->id)}}">edit</a>
+				<a href="{{Util::childActionLink($model, 'd', $child->id)}}" onclick="return confirm('Confirm delete?');">delete</a>
 			</td>
 		</tr>
 		<?php $previoustChildId = $child->id; ?>	

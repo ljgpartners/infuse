@@ -1,4 +1,4 @@
-<div class="infuseSideMenu hero-unit">
+<div class="infuseSideMenu">
 	<?php $count = 0; ?>
 	<div class="accordion" id="accordion">
 		@foreach ($navigation as $header => $n )

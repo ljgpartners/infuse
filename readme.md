@@ -9,15 +9,20 @@ Steps for installing
 
 ### From a composer package
 
-> $ php artisan migrate --package="bpez/infuse"
+> Add the Infuse Service Provider to your config in app/config/app.php: 
+>
+> 'Bpez\Infuse\InfuseServiceProvider'
 >
 > $ php artisan asset:publish bpez/infuse
 >
 > $ php artisan config:publish bpez/infuse
 >
-> Add 'Bpez\Infuse\InfuseServiceProvider' to your laravel providers in /app/config/app.php
-
-
+> Add the Verify Service Provider to your config in app/config/app.php:
+>
+> 'Toddish\Verify\VerifyServiceProvider'
+> 
+> $ php artisan migrate --package="bpez/infuse"
+>
 
 ### When working in workbench
 
@@ -33,18 +38,15 @@ Steps for installing
 >
 
 
-### New additional infuse steps
+### Future features 
 
-> Add the Verify Service Provider to your config in app/config/app.php:
+> add Throttling
 >
-> 'Toddish\Verify\VerifyServiceProvider'
-> 
-> 'driver' => 'verify',
->
-> You may also change the 'model' value to 'Toddish\Verify\Models\User' if you want to be able to load Verify's User model when using Auth::user().
->
-> $ php artisan config:publish toddish/verify
-> $ php artisan config:publish --path="workbench/bpez/infuse/vendor/toddish/verify/src/config" toddish/verify
->
-> $ php artisan migrate --package="toddish/verify"
-> $ php artisan migrate --bench="toddish/verify"
+> https://github.com/websoftwares/Throttle
+> http://laravel.com/docs/cache
+
+
+
+
+
+

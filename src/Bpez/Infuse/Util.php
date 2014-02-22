@@ -1,5 +1,7 @@
 <?php namespace Bpez\Infuse;
 
+use Illuminate\Support\Facades\Log;
+
 	class Util {
 
 
@@ -38,7 +40,7 @@
 		{
 			return strtolower($modelString)."_id";
 		}
-
+		
 		public static function isForeignKey($columnString)
 		{
 	    $matches = null;
@@ -54,6 +56,9 @@
       return ob_get_clean();
 			
 		}
+
+
+
 
 		public static function flash($message = null)
 		{
@@ -84,6 +89,160 @@
 			}
 			
 		}
+
+
+		////////////////////////////////////////////
+		/// Stack Functions
+		///////////////////////////////////////////
+
+
+		public static function stackPush($resource, $id, $uri)
+		{
+			$stack = self::flashArray("infuse_stack");
+			$stack = ($stack == null)? array() : $stack;
+			if (!array_key_exists($resource, $stack))
+				$stack[$resource] = array($resource, $id, $uri);
+			self::flashArray("infuse_stack", $stack);
+		}
+
+		public static function stackPop()
+		{
+			$stack = self::flashArray("infuse_stack");
+			$stack = ($stack == null)? array() : $stack;
+			$popped = array_pop($stack);
+			self::flashArray("infuse_stack", $stack);
+			return $popped;
+		}
+
+		public static function stackParent()
+		{
+			$stack = self::flashArray("infuse_stack");
+			$stack = ($stack == null)? array() : $stack;
+			$parent = end($stack);
+			if (count($stack) >= 2) {
+				prev($stack);
+				$parent = current($stack);
+			}
+			end($stack);
+			self::flashArray("infuse_stack", $stack);
+			return $parent;
+		}
+
+		public static function stackParentId()
+		{
+			$stack = self::flashArray("infuse_stack");
+			$stack = ($stack == null)? array() : $stack;
+			$parent = end($stack);
+			if (count($stack) >= 2) {
+				prev($stack);
+				$parent = current($stack);
+			}
+			end($stack);
+			self::flashArray("infuse_stack", $stack);
+			return $parent[1];
+		}
+
+		public static function stackParentName()
+		{
+			$stack = self::flashArray("infuse_stack");
+			$stack = ($stack == null)? array() : $stack;
+			$parent = end($stack);
+			if (count($stack) >= 2) {
+				prev($stack);
+				$parent = current($stack);
+			}
+			end($stack);
+			self::flashArray("infuse_stack", $stack);
+			return $parent[0];
+		}
+
+		public static function stackParentBaseUri()
+		{
+			$stack = self::flashArray("infuse_stack");
+			$stack = ($stack == null)? array() : $stack;
+			$parent = end($stack);
+			if (count($stack) >= 2) {
+				prev($stack);
+				$parent = current($stack);
+			}
+			end($stack);
+			self::flashArray("infuse_stack", $stack);
+			return $parent[2];
+		}
+
+		public static function stackSize()
+		{
+			$stack = self::flashArray("infuse_stack");
+			$stack = ($stack == null)? array() : $stack;
+			self::flashArray("infuse_stack", $stack);
+			return count($stack);
+		}
+
+		public static function stackReset()
+		{
+			self::flashArray("infuse_stack", array());
+		}
+
+		public static function childActionLink($model, $action, $id = null)
+		{
+			$model = self::camel2under($model);
+			
+			if (self::stackSize() == 1) {
+				$top = self::stackPop();
+				$baseUri  = $top[2]."/child";
+			} else {
+				$top = self::stackPop();
+				$baseUri  = $top[2];
+			}
+			self::stackPush($top[0], $top[1], $top[2]);
+			
+			if ($id == null) {
+				return "/{$baseUri}?stack={$model}&action=c";
+			} else {
+				return "/{$baseUri}?stack={$model}&action={$action}&id={$id}";
+			}
+			 
+		}
+		
+		public static function childBackLink($popValues = false)
+		{
+			if (self::stackSize() == 2) { 
+				if ($popValues) { 
+					self::stackPop();
+					$parent = self::stackPop(); 
+				} else {
+					$parent = self::stackParent();
+				}
+				$id = $parent[1];
+				$baseUri = $parent[2];
+			 	return "/{$baseUri}?action=e&id={$id}&pop=1";
+			} else { 
+				if ($popValues) {
+					self::stackPop(); 
+					$parent = self::stackPop(); 
+					self::stackPush($parent[0], $parent[1], $parent[2]); 
+				} else {
+					$parent = self::stackParent();
+				}
+				$model = $parent[0];
+				$id = $parent[1];
+				$baseUri = $parent[2];
+				return "/{$baseUri}?stack={$model}&action=e&id={$id}&pop=1";
+			}
+				
+		}
+
+		public static function redirectUrlChildSaveFailed()
+		{
+			$parent = self::stackPop(); 
+			$model = $parent[0];
+			$baseUri = $parent[2];
+			return "/{$baseUri}?stack={$model}&action=c";
+		}
+
+		//////////////////////////////////////////
+		// 	End of stack functions
+		//////////////////////////////////////////
 
 		public static function arrayToObject($array)
 		{
@@ -123,15 +282,6 @@
 			return str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'])."{$action}";;
 		}
 
-		public static function redirectUrlChildSaveFailed($parent, $pid, $id)
-		{
-			$action = "?action=e&id={$id}&pid={$pid}&parent={$parent}";
-			$redirect = explode("?", $_SERVER['REQUEST_URI']);
-			$redirect = $redirect[0];
-			return $redirect.$action;
-		}
-		
-
 		/*
 		Replace last instancex
 		*/
@@ -145,14 +295,8 @@
 
 	    return $subject;
 		}
-		
 
-		public static function redirectBackToParentUrl($currentModel, $parentId)
-		{
-			$redirect = explode("?", $_SERVER['REQUEST_URI']);
-			$redirect = $redirect[0];
-			return self::str_lreplace("/".strtolower($currentModel), '', $redirect )."?action=e&id={$parentId}";
-		}
+
 
 		public static function splitReturnFirst($string, $delimiter)
 		{
@@ -313,7 +457,19 @@
     }
 
 
-    
+    public static function checkInfuseLoginFields($infuseLogin, $column) 
+		{
+        if ($infuseLogin && $column['field'] == 'password')
+        	return false;
+        if ($infuseLogin && $column['field'] == 'salt')
+        	return false;
+        if ($infuseLogin && $column['field'] == 'verified')
+        	return false;
+        if ($infuseLogin && $column['field'] == 'deleted_at')
+        	return false;
+
+        return true;
+    }
 
 		
  

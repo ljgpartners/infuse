@@ -6,8 +6,8 @@ class AuthenticationController extends BaseController {
 
 	public function __construct()
 	{
-		//Set infuse Model for admin login
-		Config::set('auth.model', 'InfuseAdminUser');
+		Config::set('auth.driver', 'verify');
+		Config::set('auth.model', 'InfuseUser');
 	}
 
 	public function login()
@@ -20,22 +20,35 @@ class AuthenticationController extends BaseController {
 		      'password'      => Input::get('infuseP')
 		  );
 
-		  if (Auth::attempt($userdata)){
-		  		$user = InfuseAdminUser::find(Auth::user()->id);
-		  		$user->logins += 1;
-		  		if (isset($_SERVER) && isset($_SERVER['REMOTE_ADDR'])) {
-		  			$user->last_login_ip = $_SERVER['REMOTE_ADDR'];
-		  			$user->last_login_date = date("Y-m-d");
-		  		}
-		  		$user->save();
-	        // we are now logged in, go to home
-	        return Redirect::route('dashboard');
-	    } else {
-	        // auth failure! lets go back to the login
-	        return Redirect::route('login')->with('login_errors', true);
-	    }
-	    $this->layout->content = View::make('infuse::authentication.login');
-		} else if (Schema::hasTable('infuse_admin_users')) {
+		  try {
+
+		  	Auth::attempt($userdata);
+		  	// we are now logged in, go to home
+	      return Redirect::route('dashboard');
+
+		  } catch (Toddish\Verify\UserNotFoundException $e)	{
+				$error = "User can't be found";
+			}	catch (Toddish\Verify\UserUnverifiedException $e)	{
+				$error = "User isn't verified";
+			}	catch (Toddish\Verify\UserDisabledException $e)	{
+				$error = "User has been disabled";
+			}	catch (Toddish\Verify\UserDeletedException $e)	{
+				$error = "User has been deleted";
+			}	catch (Toddish\Verify\UserPasswordIncorrectException $e)	{
+				$error = "User has entered the wrong password";
+			}
+
+			// auth failure! lets go back to the login
+	    $this->layout->content = View::make('infuse::authentication.login')->with("error", $error);
+
+	    // Check if migrations have been ran
+		} else if (Schema::hasTable('users') &&
+							 Schema::hasTable('permissions') &&
+							 Schema::hasTable('permission_role') &&
+							 Schema::hasTable('roles') &&
+							 Schema::hasTable('role_user') &&
+							 Schema::hasTable('users') ) {
+
 			if (Auth::check()) return Redirect::route('dashboard');
 			$this->layout->content = View::make('infuse::authentication.login');
 		} else {
@@ -48,6 +61,13 @@ class AuthenticationController extends BaseController {
 	{
 		Auth::logout();
     return Redirect::route('login');
+	}
+
+
+	public function create_password()
+	{
+		$this->layout->title = "Create Password | Infuse";
+		$this->layout->content = View::make('infuse::authentication.create_password');
 	}
 
 }

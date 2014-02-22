@@ -3,7 +3,7 @@
 use Exception;
 use Transit\Transit;
 use Transit\Validator\ImageValidator;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 
 class Scaffold {
@@ -27,11 +27,13 @@ class Scaffold {
 	private $list = array();
 	private $infuseLogin = false;
 	private $onlyOne = false;
+	private $manyToMany = array();
+	private $belongsToUser = false;
+	private $user = false;
 
 
 	public function __construct($model, $db)
 	{	
-
 		if (!isset($_SESSION)) session_start();
 		$this->action = Util::get("action");
 		$this->model = $model;
@@ -69,6 +71,58 @@ class Scaffold {
   	return new self($model, $db);
   }
 
+  public function checkPermissions($user, $redirectBack)
+  {	
+  	switch ($this->action) {
+			case 'l':
+			case 's':
+			case 'f':
+				$action = "view";
+				$redirect = "/admin/dashboard";
+				break;
+			case 'e':
+			case 'u':
+				$action = "update";
+				$redirect = $redirectBack;
+				break;
+			case 'd':
+				$action = "delete";
+				$redirect = $redirectBack;
+				break;
+			case 'c':
+			case 'cd':
+			case 'cu':
+				$action = "create";
+				$redirect = $redirectBack;
+				break;
+			default:
+				$action = "view";
+				$redirect = "/admin/dashboard";
+				break;
+		}
+
+		$resource = Util::camel2under(get_class($this->model)); 
+		
+		if ($user->can($resource."_".$action)) {
+			// User has permission let user continue action
+			return false;
+
+		} else {
+			$name = Util::cleanName($this->name);
+			Util::flash(array(
+				"message" => "{$user->username} is not authorized to {$action} {$name}.", 
+				"type" => "warning"
+				)
+			);
+
+			// User does not have permission don't let user continue action
+			return $redirect;
+		}
+
+		
+  	
+  }
+
 
 	private function route()
 	{
@@ -92,6 +146,7 @@ class Scaffold {
 				$this->createDuplicate();
 				break;
 			case 'u':
+			case 'cu':
 				$this->update();
 				break;
 			case 'f':
@@ -127,9 +182,11 @@ class Scaffold {
 			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"])->take($pagination['limit'])->skip($offset);
 		}
 
-		if (Util::get("toCSV"))	{
+		if ($this->belongsToUser)
+			$prepareModel->where("infuse_user_id", "=", $this->user->id);
+
+		if (Util::get("toCSV"))
 			$this->toCSV($prepareModel);
-		}
 
 		$this->entries = $prepareModel->get();
 		
@@ -159,7 +216,9 @@ class Scaffold {
 		$this->header = array(
 				"edit" => true,
 				"name" => $this->name,
+				"db" => $this->db,
 				"associations" => $this->hasMany,
+				"manyToManyAssociations" => $this->manyToMany,
 				"hasOneAssociation" => $this->hasOne,
 				"onlyOne" => $this->onlyOne,
 				"columnNames" => $this->columnNames
@@ -180,6 +239,7 @@ class Scaffold {
 		$this->header = array(
 				"name" => $this->name,
 				"associations" => $this->hasMany,
+				"manyToManyAssociations" => $this->manyToMany,
 				"hasOneAssociation" => $this->hasOne,
 				"columnNames" => $this->columnNames
 			);
@@ -198,6 +258,7 @@ class Scaffold {
 		$this->header = array(
 				"name" => $this->name,
 				"associations" => $this->hasMany,
+				"manyToManyAssociations" => $this->manyToMany,
 				"columnNames" => $this->columnNames
 			);
 		$post = Util::flashArray("post");
@@ -219,8 +280,8 @@ class Scaffold {
 			)
 		); 
 
-		if (Util::get("parent") && Util::get("pid")) {
-			$redirect_path = Util::redirectBackToParentUrl(Util::classToString($model), Util::get("pid"));
+		if (Util::get("stack")) {
+			$redirect_path = Util::childBackLink(true);
 		} else {
 			$redirect_path = Util::redirectUrl();
 		}
@@ -234,9 +295,9 @@ class Scaffold {
 		if (Util::get("id")) {
 			$entry = $model::find(Util::get("id"));
 			$message = array("message" => "Updated {$this->name} user with id of ".Util::get("id").".", "type" => "success");
-		} elseif (Util::get("parent") && Util::get("pid")) {
+		} elseif (Util::get("stack")) {
 			$entry = $model;
-			$message = array("message" => "Added {$this->name} to ".Util::cleanName(Util::get("parent"))." with id of ".Util::get("pid").".", "type" => "success");
+			$message = array("message" => "Added {$this->name}.", "type" => "success");
 		} else {
 			$entry = $model;
 			$message = array("message" => "Created {$this->name}.", "type" => "success");
@@ -324,22 +385,18 @@ class Scaffold {
 				if ($column['field'] != "created_at" && $column['field'] != "updated_at" ) {
 
 					$inputsTemp = Util::get($column['field']);
-					if ($this->infuseLogin && $column['field'] == "password") {
-						$inputsTemp = Hash::make(Util::get($column['field']));
-					}
 
-					if (isset($column['displayOrder']) && Util::get("parent") && Util::get("pid") && $inputsTemp == "") {
-						$count = $model::where(Util::foreignKeyString(Util::get("parent")), "=", Util::get("pid"))->count();
+					if ($this->belongsToUser && $column['field'] == "infuse_user_id")
+						$inputsTemp = $this->user->id;
+
+
+					if (isset($column['displayOrder']) && Util::get("stack") && $inputsTemp == "") {
+						$count = $model::where(Util::foreignKeyString(Util::stackParent()), "=", Util::stackParentId())->count();
 						$count = 1+(int)$count;
 						$inputsTemp = $count;
 					} 
 
 					$entry->{$column['field']} = $inputsTemp;
-
-					if ($this->infuseLogin && $column['field'] == "password_confirmation") {
-						unset($entry->{$column['field']});
-					}
-						
 					
 				}
 			}
@@ -352,6 +409,37 @@ class Scaffold {
 		
 		if ($entry->validate($data) && count($fileErrors) == 0) {
 
+			// Check if brand new user
+			if ($this->infuseLogin && !property_exists($entry, "id")) {
+				$entry->verified = 1;
+				$entry->deleted_at = null;
+				$entry->sendPasswordCreateEmail();
+			}
+
+			// Do many to many relationship saving
+			if (Util::get("id") && count($this->manyToMany) > 0) {
+				foreach ($this->manyToMany as $association) {
+					$firstModel = $association[0];
+					$secondModel = $association[2];
+					$manyToManyTable = $association[4];
+					$model = get_class($entry);
+
+					if ($model == $firstModel) {
+						$belongsToModel = $secondModel;
+						$firstForeignId =	$association[1];
+						$secondForeignId = $association[3] ;
+					} else if ($model == $secondModel) {
+						$belongsToModel = $firstModel;
+						$firstForeignId =	$association[3];
+						$secondForeignId = $association[1];
+					}
+
+					$idsForSync = Util::get($manyToManyTable);
+					if ($idsForSync)
+						$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->sync($idsForSync);
+				}
+			}
+
 			$entry->save();
 			Util::flash($message);
 
@@ -361,8 +449,8 @@ class Scaffold {
 				$entry->belongsTo(ucfirst(Util::get("oneToOne")))->get()->{Util::getForeignKeyString($entry)} = $entry->id;
 			}
 
-			if (Util::get("parent") && Util::get("pid")) {
-				$redirect_path = Util::redirectBackToParentUrl(Util::classToString($entry), Util::get("pid"));
+			if (Util::get("stack")) {
+				$redirect_path = Util::childBackLink(true);
 			} else {
 				$redirect_path = Util::redirectUrl();
 			}
@@ -377,8 +465,8 @@ class Scaffold {
 			Util::flashArray("file_errors", $fileErrors);
 			Util::flashArray("post", Util::getAll());
 
-			if (Util::get("parent") && Util::get("pid")) {
-				$redirect_path = Util::redirectUrlChildSaveFailed(Util::get("parent"), Util::get("pid"), $entry->id);
+			if (Util::get("stack")) {
+				$redirect_path = Util::redirectUrlChildSaveFailed();
 			} else {
 				$redirect_path = Util::redirectUrlSaveFailed(Util::get("id"));
 			}
@@ -518,10 +606,6 @@ class Scaffold {
 	public function infuseLogin()
 	{
 		$this->infuseLogin = true;
-		Util::insertAfter($this->columns, "password", array( 
-			"password_confirmation" => array("field" => "password_confirmation", "type"  => "varchar")
-			)
-		);
 		return $this;
 	}
 
@@ -599,12 +683,12 @@ class Scaffold {
 		}
 	}
 
-	public function hasMany($model)
+	public function hasMany($models)
 	{	
-		if (!is_array($model)) 
-			throw new Exception('hasMany(array("SomeModelName", "model_title", array("column_1", "column_2"))); First argument should be an array with all the info of the model. 
+		if (!is_array($models)) 
+			throw new Exception('hasMany(array(array("SomeModelName", "model_title", array("column_1", "column_2")))); First argument should be an array with all the info of the model. 
 				First index in the array should be the model name, second should be the wanted model title and third should be the column names to list.');
-		$this->hasMany = $model;
+		$this->hasMany = $models;
 		return $this;
 	}
 
@@ -614,6 +698,14 @@ class Scaffold {
 			throw new Exception('hasOne(array("model_name" => array("model_title", array("column_1", "column_2")))); First argument should be an array of the model. 
 				With name as the index and another array with the title as the first and the second array with columns to list.');
 		$this->hasOne = $model;
+		return $this;
+	}
+
+	public function manyToMany($models)
+	{
+		if (!is_array($models)) 
+			throw new Exception('manyToMany(array(array("FirstModelName", "FirstForeignId", "SecondModelName", "SecondForeignId", "many_to_many_table", "FirstColumnName", "SecondColumnName"))); ');
+		$this->manyToMany = $models;
 		return $this;
 	}
 
@@ -676,6 +768,21 @@ class Scaffold {
 			throw new Exception('displayOrderColumn("name");  Column doesn\'t exist.');
 		}
 	}
+
+	public function loadUser($user)
+	{
+		if ($user instanceof InfuseUser)
+			throw new Exception('loadUser($user);  User argument is required and should be an instance of InfuseUser.');
+		$this->user = $user;
+		return $this;
+	}
+
+	public function belongsToUser()
+	{
+		$this->belongsToUser = true;
+		return $this;
+	}
+	
 
 
 

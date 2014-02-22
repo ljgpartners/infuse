@@ -52,11 +52,11 @@ $infuseLogin = $data['infuseLogin'];
 
 			<tr>
 				<td colspan="2"> 
-					@if (Util::get("parent") && Util::get("pid"))
-					<div class="btn-group">
-					    <a class="btn btn-small" href="{{Util::redirectBackToParentUrl(Util::classToString($entries), Util::get("pid"))}}">Back</a>
-					    <a class="btn btn-small" href="?action=e&id={{$entries->id}}&pid={{Util::get("pid")}}&parent={{Util::get("parent")}}">Edit</a>
-							<a class="btn btn-small" href="?action=d&id={{$entries->id}}&pid={{Util::get("pid")}}&parent={{Util::get("parent")}}" onclick="return confirm('Confirm delete?');">Delete</a>
+					@if (Util::get("stack"))
+					<div class="btn-group"> 
+					    <a class="btn btn-small" href="{{Util::childBackLink()}}">Back</a>
+					    <a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 'e', $entries->id)}}">Edit</a>
+							<a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 'd', $entries->id)}}" onclick="return confirm('Confirm delete?');">Delete</a>
 					</div>
 					@else
 					<div class="btn-group">

@@ -1,8 +1,12 @@
+<?php use Bpez\Infuse\Util; ?>
+
 <div class="infuseInner">
 	<div class="page-header"> 
 	  <div class="hero-unit">
       <h1>Dashboard</h1>
       <p>Click on manage tab to make updates.</p>
     </div>
+
+    {{Util::fuseAlerts(Util::flash())}}
 	</div>
 </div>

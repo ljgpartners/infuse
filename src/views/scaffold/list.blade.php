@@ -26,31 +26,29 @@ endif;
 
 	{{Util::fuseAlerts(Util::flash())}}
 
-	<table class="table  table-bordered table-striped">
+	@if(!$header['onlyOne'])
+	<div class="infuseTopButtonGroup"> 
+		<div class="btn-group">
+			<a class="btn mainColor" href="?action=c">Create {{$header['name']}}</a>
+		</div>
+    <div class="btn-group">
+      <button class="btn altColor btn-info  dropdown-toggle" data-toggle="dropdown">Add Filter <span class="caret"></span></button>
+      <ul class="dropdown-menu filtersDropDown">
+      	@foreach ($columns as $column)
+						<li><a href="" class="filterColumn filter{{$column['field']}}" data-filter-column="{{$column['field']}}">{{Util::cleanName($column['field'])}}</a></li>
+				@endforeach
+      </ul>
+    </div>
+    <div class="btn-group">
+      <button class="btn altColor btn-info  dropdown-toggle" data-toggle="dropdown">Other Actions <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a target="_BLANK" class="downloadCSVLink" href='?action=l&pg=a&toCSV=1' data-filter-download='?action=f&pg=a&toCSV=1{{$filters}}'>Download CSV</a></li> 
+      </ul>
+    </div>
+	</div>
+	@endif
 
-		@if(!$header['onlyOne'])
-		<tr>
-			<td colspan="{{count($columns)+1}}">
-				<div class="btn-group">
-					<a class="btn btn-small btn-success" href="?action=c">Create {{$header['name']}}</a>
-				</div>
-        <div class="btn-group">
-          <button class="btn btn-small btn-inverse dropdown-toggle" data-toggle="dropdown">Add Filter <span class="caret"></span></button>
-          <ul class="dropdown-menu filtersDropDown">
-          	@foreach ($columns as $column)
-								<li><a href="" class="filterColumn filter{{$column['field']}}" data-filter-column="{{$column['field']}}">{{Util::cleanName($column['field'])}}</a></li>
-						@endforeach
-          </ul>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-small btn-inverse dropdown-toggle" data-toggle="dropdown">Other Actions <span class="caret"></span></button>
-          <ul class="dropdown-menu">
-            <li><a target="_BLANK" class="downloadCSVLink" href='?action=l&pg=a&toCSV=1' data-filter-download='?action=f&pg=a&toCSV=1{{$filters}}'>Download CSV</a></li> 
-          </ul>
-        </div>
-			</td>
-		</tr>
-		@endif
+	<table class="table  table-bordered table-striped">
 
 		<tr class="filtersContainer">
 			<td colspan="{{count($columns)+1}}">

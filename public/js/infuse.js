@@ -269,7 +269,17 @@ $(document).ready(function() {
 		});
 	});
 	
+	$(".placeholder").placeholder();
 
+	$(".focusPassword").focus(function() {
+  	$(this).attr("type", "password");
+  });
+  
+  $(".placeholder").placeholder();
+  $(".infuseLogin form").submit( function() {
+    var submitValidation = $(this).validate({errorClass: "errorInput"});
+    return submitValidation.bool;
+  });
 	
 });
 })(jQuery);

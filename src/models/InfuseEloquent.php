@@ -3,72 +3,72 @@
 // Provides validation rules for all models
  // Also adds functionailty for files
 
-class InfuseEloquent extends Eloquent
-{
-    protected $rules = array();
+class InfuseEloquent extends Eloquent {
 
-    protected $errors;
+  protected $rules = array();
 
-    public $timestamps = true;
+  protected $errors;
 
-    public function validate($data)
-    {
-        $replace = ($this->getKey() > 0) ? $this->getKey() : '';
-        foreach ($this->rules as $key => $rule) {
-            $this->rules[$key] = str_replace('[id]', $replace, $rule);
-        }
+  public $timestamps = true;
 
-        // make a new validator object
-        $v = Validator::make($data, $this->rules);
+  public function validate($data)
+  {
+      $replace = ($this->getKey() > 0) ? $this->getKey() : '';
+      foreach ($this->rules as $key => $rule) {
+          $this->rules[$key] = str_replace('[id]', $replace, $rule);
+      }
 
-        // check for failure
-        if ($v->fails()) {
-            // set errors and return false
-            $this->errors = $v->messages();
-            return false;
-        }
+      // make a new validator object
+      $v = Validator::make($data, $this->rules);
 
-        // validation pass
-        return true;
-    }
+      // check for failure
+      if ($v->fails()) {
+          // set errors and return false
+          $this->errors = $v->messages();
+          return false;
+      }
 
-    protected function processRules(array $rules)
-    {
-        $id = $this->getKey();
-        array_walk($rules, function(&$item) use ($id)
-        {
-            // Replace placeholders
-            $item = stripos($item, ':id:') !== false ? str_ireplace(':id:', $id, $item) : $item;
-        });
+      // validation pass
+      return true;
+  }
 
-        return $rules;
-    }
+  protected function processRules(array $rules)
+  {
+      $id = $this->getKey();
+      array_walk($rules, function(&$item) use ($id)
+      {
+          // Replace placeholders
+          $item = stripos($item, ':id:') !== false ? str_ireplace(':id:', $id, $item) : $item;
+      });
 
-
-    public function errors()
-    {
-        return $this->errors;
-    }
-
-    
+      return $rules;
+  }
 
 
-    // Added functionailty for files
-    protected $uploadFolder = "/uploads";
+  public function errors()
+  {
+      return $this->errors;
+  }
 
-    public function uploadPath($column)
-    {
-        return strtolower($_SERVER['DOCUMENT_ROOT'].$this->uploadFolder.DIRECTORY_SEPARATOR
-                    .get_class($this).DIRECTORY_SEPARATOR
-                    .$column.DIRECTORY_SEPARATOR);
-    }
 
-    public function url($column)
-    {
-        return strtolower($this->uploadFolder.DIRECTORY_SEPARATOR
-                    .get_class($this).DIRECTORY_SEPARATOR
-                    .$column.DIRECTORY_SEPARATOR).$this->{$column};
-    }
+
+
+  // Added functionailty for files
+  protected $uploadFolder = "/uploads";
+
+  public function uploadPath($column)
+  {
+      return strtolower($_SERVER['DOCUMENT_ROOT'].$this->uploadFolder.DIRECTORY_SEPARATOR
+                  .get_class($this).DIRECTORY_SEPARATOR
+                  .$column.DIRECTORY_SEPARATOR);
+  }
+
+  public function url($column)
+  {
+      return strtolower($this->uploadFolder.DIRECTORY_SEPARATOR
+                  .get_class($this).DIRECTORY_SEPARATOR
+                  .$column.DIRECTORY_SEPARATOR).$this->{$column};
+  }
 
 
 }

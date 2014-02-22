@@ -19,27 +19,39 @@ $infuseLogin = $data['infuseLogin'];
 	{{Util::fuseAlerts(Util::flash())}}
 
 	<table class="table table-striped table-bordered">
-			<form method="post" action="?{{(Util::get("parent") && Util::get("pid"))? "parent=".Util::get("parent")."&pid=".Util::get("pid") : ""}}" enctype="multipart/form-data">
-				<input type="hidden" name="action" value="u">
+			<form method="post" action="?{{(Util::get("stack"))? "stack=".Util::get("stack") : ""}}" enctype="multipart/form-data">
+
+				
 			@if (Util::get("id") && Util::get("action") != "cd")
+				<input type="hidden" name="action" value="u">
 				<input type="hidden" name="id" value="{{Util::get("id")}}">
+			@else
+				<input type="hidden" name="action" value="cu">
 			@endif
 
-			@if (Util::get("pid") && Util::get("parent"))
-				<input type="hidden" name="{{Util::foreignKeyString(Util::get("parent"))}}" value="{{Util::get("pid")}}">
+			@if (Util::get("stack"))
+				<input type="hidden" name="{{Util::foreignKeyString(Util::stackParentName())}}" value="{{Util::stackParentId()}}">
 				@if (Util::get("oneToOne"))
-					<input type="hidden" name="oneToOne" value="{{Util::get("parent")}}">
+					<input type="hidden" name="oneToOne" value="{{Util::stackParentName()}}">
 				@endif
 			@endif
 
+
+
+			<!-- Iterate through all columns -->
+
 			@foreach ($columns as $column)
-			@if ($column['field'] != "created_at" && $column['field'] != "updated_at" && !Util::isForeignKey($column['field']) )
-			<tr>  
+
+			<!-- Hide certain fields -->
+			@if ($column['field'] != "created_at" && $column['field'] != "updated_at" && !Util::isForeignKey($column['field']) && Util::checkInfuseLoginFields($infuseLogin, $column) )
+
+			<tr> 
 				@if (array_key_exists($column['field'], $header['columnNames']))
 					<th>{{$header['columnNames']["{$column['field']}"]}}</th>
 				@else
 					<th>{{Util::cleanName($column['field'])}}</th>
 				@endif
+
 				<td> 
 
 				@if ($column['field'] == Util::getForeignKeyString($entries))
@@ -123,14 +135,6 @@ $infuseLogin = $data['infuseLogin'];
 
 					@endif
 
-
-
-				@elseif ($infuseLogin && ($column['field'] == "password" || $column['field'] == "password_confirmation" ) )
-					<input type="password" name="<?php echo $column['field']; ?>" value="">
-
-				@elseif ($infuseLogin && ($column['field'] == "last_login_date" || $column['field'] == "last_login_ip" || $column['field'] == "logins" ) )
-					<input type="text" disabled="disabled" name="{{$column['field']}}" value="{{(property_exists($entries, $column['field']))? $entries->{$column['field']} : ""}}">
-				
 				@else
 
 					<?php switch ($column['type']):
@@ -193,13 +197,13 @@ $infuseLogin = $data['infuseLogin'];
 
 			<tr>
 				<td>
-					@if (Util::get("parent") && Util::get("pid"))
+					@if (Util::get("stack"))
 					<div class="btn-group">
-				    <a class="btn btn-small" href="{{Util::redirectBackToParentUrl(Util::classToString($entries), Util::get("pid"))}}">Back</a>
+				    <a class="btn btn-small" href="{{Util::childBackLink()}}">Back</a>
 				  	@if (isset($header['edit']))
-				  	<a class="btn btn-small" href="?action=s&id={{$entries->id}}&pid={{Util::get("pid")}}&parent={{Util::get("parent")}}">Show</a>
+				  	<a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 's', $entries->id)}}">Show</a>
 					  	@if(!$header['onlyOne'])
-							<a class="btn btn-small" href="?action=d&id={{$entries->id}}&pid={{Util::get("pid")}}&parent={{Util::get("parent")}}" onclick="return confirm('Confirm delete?');">Delete</a>
+							<a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 'd', $entries->id)}}" onclick="return confirm('Confirm delete?');">Delete</a>
 							@endif
 						@endif
 				  </div>
@@ -217,13 +221,15 @@ $infuseLogin = $data['infuseLogin'];
 					
 				</td>
 				<td> 
-					<input type="submit" value="submit" class="btn btn-small btn-success">
+					<input type="submit" value="submit" class="btn submitButton">
 				</td>
 			</tr>
 
-			@include('infuse::scaffold.has_one')
+			@include('infuse::scaffold._has_one')
 
-			@include('infuse::scaffold.children')
+			@include('infuse::scaffold._children')
+
+			@include('infuse::scaffold._many_to_many')
 			
 			</form>
 	</table>
