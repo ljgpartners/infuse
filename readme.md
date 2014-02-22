@@ -9,6 +9,10 @@ Steps for installing
 
 ### From a composer package
 
+> Install through composer package
+>
+> require: "bpez/infuse": "dev-master"
+>
 > Add the Infuse Service Provider to your config in app/config/app.php: 
 >
 > 'Bpez\Infuse\InfuseServiceProvider'
