@@ -183,7 +183,7 @@
   "projectAttributes" : {
     "bourbonEnabled" : 0,
     "displayValue" : "infuse",
-    "displayValueWasSetByUser" : 0,
+    "displayValueWasSetByUser" : 1,
     "compassEnabled" : 0
   }
 }

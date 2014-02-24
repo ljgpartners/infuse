@@ -1,14 +1,19 @@
-<?php use Bpez\Infuse\Util; ?>
+<?php 
+use Bpez\Infuse\Util; 
+
+$entries = $data['enrties'];
+$columns = $data['columns'];
+$header  = $data['header'];
+?>
 
 @if (isset($header['edit']) && $header['hasOneAssociation'] != false)
 <tr>
 
 	<?php
-		$hasOneAssociation = $header['hasOneAssociation'];
-		$model = key($hasOneAssociation);
-		$hasOneAssociation = current($hasOneAssociation);
-		$childTitle = $hasOneAssociation[0];
-		$childColumns = $hasOneAssociation[1];
+		$association = $header['hasOneAssociation'];
+		$model = $association[0];
+		$childTitle = $association[1];
+		$childColumns = $association[2];
 		$numColumns = count($childColumns)+1;
 	?>
 	<table class="table table-striped table-bordered">
@@ -19,24 +24,52 @@
 		</tr>
 		<tr>
 			@foreach ($childColumns as $column)
-			<th>{{$column}}</th>
-			@endforeach
+				@if (is_array($column))
+					<th>{{Util::cleanName(key($column))}}</th> 
+				@elseif (Util::splitReturnFirst(Util::cleanName($column), "@"))
+					<th>{{Util::splitReturnFirst(Util::cleanName($column), "@")}}</th>
+				@else
+					<th>{{Util::cleanName($column)}}</th>
+				@endif
+			@endforeach 
+
 			<th>
 				@if ($entries->hasOne(ucfirst($model))->count() == 0)
-					<a href="{{Util::getPath()."/".$model}}?action=c&pid={{$entries->id}}&parent={{Util::classToString($entries)}}&oneToOne=1">Create one</a>
+					<a href="{{Util::childActionLink($model, 'c')}}">Create</a>
 				@endif
 			</th>
 		</tr>
 				
 		@foreach ($entries->hasOne(ucfirst($model))->get() as $key => $child)
 		<tr>
+
 			@foreach ($childColumns as $column)
-			<td>{{$child->{$column} }}</td>
+				@if (is_array($column)) 
+					@foreach (current($column) as $value)
+							@if ($child->{key($column)} == $value["id"])
+								<td>{{end($value)}}</td>
+							@endif
+					@endforeach
+				@else
+					@if (Util::splitReturnFirst($column, "@"))
+						<td>
+							@if ($child->{Util::splitReturnFirst($column, "@")} != "")
+							<div class="previewImage">
+								<img src="{{$child->url(Util::splitReturnFirst($column, "@"))}}" alt="">  
+							</div>
+							@endif
+						</td>
+					@else
+						<td>{{$child->{$column} }}</td>
+					@endif
+					
+				@endif
 			@endforeach
+
 			<td>
-				<a href="{{Util::getPath()."/".$model}}?action=s&id={{$child->id}}&pid={{$entries->id}}&parent={{Util::classToString($entries)}}">show</a>
-				<a href="{{Util::getPath()."/".$model}}?action=e&id={{$child->id}}&pid={{$entries->id}}&parent={{Util::classToString($entries)}}">edit</a>
-				<a href="{{Util::getPath()."/".$model}}?action=d&id={{$child->id}}&pid={{$entries->id}}>&parent={{Util::classToString($entries)}}" onclick="return confirm('Confirm delete?');">delete</a>
+				<a href="{{Util::childActionLink($model, 's', $child->id)}}">show</a>
+				<a href="{{Util::childActionLink($model, 'e', $child->id)}}">edit</a>
+				<a href="{{Util::childActionLink($model, 'd', $child->id)}}" onclick="return confirm('Confirm delete?');">delete</a>
 			</td>
 		</tr>
 		@endforeach

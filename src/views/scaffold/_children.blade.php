@@ -25,6 +25,7 @@ $infuseLogin = $data['infuseLogin'];
 				<h4>{{$childTitle}}</h4>
 			</td>
 		</tr>
+		
 		<tr>
 			@foreach ($childColumns as $column)
 				@if (is_array($column))
