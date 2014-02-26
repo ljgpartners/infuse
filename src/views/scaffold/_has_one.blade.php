@@ -8,9 +8,9 @@ $header  = $data['header'];
 
 @if (isset($header['edit']) && $header['hasOneAssociation'] != false)
 <tr>
-
+	@foreach ($header['hasOneAssociation'] as $association)
 	<?php
-		$association = $header['hasOneAssociation'];
+		$association = $association;
 		$model = $association[0];
 		$childTitle = $association[1];
 		$childColumns = $association[2];
@@ -78,6 +78,6 @@ $header  = $data['header'];
 	</table>
 
 
-
+	@endforeach
 </tr>
 @endif

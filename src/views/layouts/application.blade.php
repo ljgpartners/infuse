@@ -33,7 +33,7 @@
 	.infuseSideMenu .nav-list a,  .infuseSideMenu .nav-list a:hover{ color: {{Config::get('infuse::colors.side_menu_sub_section_title')}}; }
 	.infuseSideMenu .accordion-group{ border-color: {{Config::get('infuse::colors.side_menu_border')}}; }
 
-	.infuseTopButtonGroup .btn.mainColor{ background-color: {{Config::get('infuse::colors.button_color')}} !important; }
+	.infuseTopButtonGroup .btn.mainColor, .infuseWrapper .hero-unit .btn.mainColor{ background-color: {{Config::get('infuse::colors.button_color')}} !important; }
 	.infuseTopButtonGroup .btn.altColor{ background-color: {{Config::get('infuse::colors.button_alt_color')}} !important; }
 	.infuseWrapper .submitButton{  background-color: {{Config::get('infuse::colors.button_color')}} !important; }
 

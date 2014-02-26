@@ -75,7 +75,7 @@ $infuseLogin = $data['infuseLogin'];
 							@endif
 						</td>
 					@else
-						@if ($childOrderColumn && $childOrderDirection)
+						@if ($childOrderColumn && $childOrderDirection && ($childOrderColumn == $column))
 							<td class="childOrderColumn">
 								<a class="childUpOrder" data-previous-id="{{$previoustChildId}}" data-id="{{$child->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column}}" data-model="{{get_class($child)}}" href="">[up]</a> 
 								<a class="childDownOrder" href="">[down]</a>

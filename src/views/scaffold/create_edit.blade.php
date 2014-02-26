@@ -199,7 +199,7 @@ $infuseLogin = $data['infuseLogin'];
 				<td>
 					@if (Util::get("stack"))
 					<div class="btn-group">
-				    <a class="btn btn-small" href="{{Util::childBackLink()}}">Back</a>
+				    <a class="btn btn-small childBackLink" href="{{Util::childBackLink()}}">Back</a>
 				  	@if (isset($header['edit']))
 				  	<a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 's', $entries->id)}}">Show</a>
 					  	@if(!$header['onlyOne'])

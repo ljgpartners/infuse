@@ -145,7 +145,7 @@ endif;
 				  <h1>{{$header['name']}} listing is empty.</h1>
 				  <p>To create the first one click the create button below.</p>
 				  <p>
-				    <a href="?action=c" class="btn btn-success btn">
+				    <a href="?action=c" class="btn mainColor">
 				      Create {{$header['name']}}
 				    </a>
 				  </p>

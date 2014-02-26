@@ -150,6 +150,8 @@ return array(
 													array("SpotlightImage", "Spotlight Images", array("image")),
 													// category column is a select for use this method for filling in 
 													array("ShopCategory", "Shop Category", array( array("category" => Category::orderBy('name', 'asc')->get(array('id', 'name'))->toArray())))
+													// Add display order to children
+													array("Photo", "Photo", array("photo@image", "display_order"), array("order_column" => "display_order", "order_direction" => "ASC"))
 												)),
 					'children' => array(
 						"spotlight_image" =>  Scaffold::newInstance(new SpotlightImage, new DB)
