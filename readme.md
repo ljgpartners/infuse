@@ -45,9 +45,11 @@ Steps for installing
 ### Future features 
 
 > add Throttling
->
 > https://github.com/websoftwares/Throttle
 > http://laravel.com/docs/cache
+>
+> add https://www.authy.com/
+>
 
 
 
