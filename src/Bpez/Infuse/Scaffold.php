@@ -30,7 +30,8 @@ class Scaffold {
 	private $manyToMany = array();
 	private $belongsToUser = false;
 	private $user = false;
-
+	private $onlyLoadSameChildren = false;
+	private $associateToSameParent = false;
 
 	public function __construct($model, $db)
 	{	
@@ -62,7 +63,7 @@ class Scaffold {
 					);
 			}
 		}
-		
+
 	}
 
 
@@ -168,7 +169,12 @@ class Scaffold {
 			"count" => 0
 		);
 		
-		$pagination['count'] = $model::count();
+		
+		if (!$this->belongsToUser)
+			$pagination['count'] = $model::count(); 
+		else
+			$pagination['count'] = $model::where("infuse_user_id", "=", $this->user->id)->count();
+
 		$offset = 0;
 		$page = Util::get("pg");
 		if ($page && $page != 1 && $page != 'a') {
@@ -182,8 +188,15 @@ class Scaffold {
 			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"])->take($pagination['limit'])->skip($offset);
 		}
 
+		if ($this->infuseLogin)
+			$prepareModel->where("id", "!=", 1)->where("username", "!=", 'super');
+
 		if ($this->belongsToUser)
 			$prepareModel->where("infuse_user_id", "=", $this->user->id);
+
+		if ($this->onlyLoadSameChildren)
+			$prepareModel->where($this->onlyLoadSameChildren, "=", $this->user->{$this->onlyLoadSameChildren});
+		
 
 		if (Util::get("toCSV"))
 			$this->toCSV($prepareModel);
@@ -273,12 +286,24 @@ class Scaffold {
 	private function delete()
 	{
 		$model = $this->model;
-		$model::find(Util::get("id"))->delete();
-		Util::flash(array(
-			"message" => "Deleted {$this->name} with id of ".Util::get("id").".", 
-			"type" => "error"
-			)
-		); 
+		$user = $model::find(Util::get("id"));
+
+		if ($this->infuseLogin && $user->id == 1 && $user->username == 'super' ) {
+			Util::flash(array(
+				"message" => "Can't delete super.", 
+				"type" => "error"
+				)
+			);
+
+		} else {
+			$user->delete();
+			Util::flash(array(
+				"message" => "Deleted {$this->name} with id of ".Util::get("id").".", 
+				"type" => "error"
+				)
+			);
+		}
+		 
 
 		if (Util::get("stack")) {
 			$redirect_path = Util::childBackLink(true);
@@ -304,7 +329,7 @@ class Scaffold {
 		}
 
 		$fileErrors = array(); 
-
+		
 		foreach ($this->columns as $column) {
 
 			if (array_key_exists("upload", $column) && array_key_exists($column['field'], $_FILES) && $_FILES["{$column['field']}"] != "") {
@@ -414,8 +439,10 @@ class Scaffold {
 				$entry->verified = 1;
 				$entry->deleted_at = null;
 				$entry->sendPasswordCreateEmail();
+				if ($this->associateToSameParent)
+					$entry->{$this->associateToSameParent} = $this->user->{$this->associateToSameParent};
 			}
-
+			
 			// Do many to many relationship saving
 			if (Util::get("id") && count($this->manyToMany) > 0) {
 				foreach ($this->manyToMany as $association) {
@@ -435,11 +462,19 @@ class Scaffold {
 					}
 
 					$idsForSync = Util::get($manyToManyTable);
-					if ($idsForSync)
-						$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->sync($idsForSync);
+					if ($idsForSync) {
+						$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach();
+						if ($this->infuseLogin && $entry->id == 1 && $entry->username == 'super' )
+							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach(1);
+						foreach($idsForSync as $id) {
+							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach($id);
+						}
+						//$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->sync($idsForSync);
+					}
+						
 				}
 			}
-
+			
 			$entry->save();
 			Util::flash($message);
 
@@ -467,7 +502,7 @@ class Scaffold {
 
 			if (Util::get("stack")) {
 				$redirect_path = Util::redirectUrlChildSaveFailed();
-			} else {
+			} else { 
 				$redirect_path = Util::redirectUrlSaveFailed(Util::get("id"));
 			}
 
@@ -606,6 +641,8 @@ class Scaffold {
 	public function infuseLogin()
 	{
 		$this->infuseLogin = true;
+		unset($this->columns['password']);
+		unset($this->columns['salt']);
 		return $this;
 	}
 
@@ -783,7 +820,18 @@ class Scaffold {
 		return $this;
 	}
 	
+	public function associateToSameParent($foreignKey)
+	{
+		$this->associateToSameParent = $foreignKey;
+		return $this;
+	}
 
+	public function onlyLoadSameChildren($foreignKey)
+	{
+		$this->onlyLoadSameChildren = $foreignKey;
+		return $this;
+	}
+	
 
 
 	/******************************
@@ -799,7 +847,8 @@ class Scaffold {
 				"enrties" => $this->entries,
 				"header" => $this->header,
 				"columns" => $this->columns,
-				"infuseLogin" => $this->infuseLogin
+				"infuseLogin" => $this->infuseLogin,
+				"user" => $this->user
 			);
 
 		return $data;

@@ -19,10 +19,11 @@ class AuthenticationController extends BaseController {
 		      'username'      => Input::get('infuseU'),
 		      'password'      => Input::get('infuseP')
 		  );
-
+		  	
 		  try {
-
+		  	
 		  	Auth::attempt($userdata);
+
 		  	// we are now logged in, go to home
 	      return Redirect::route('dashboard');
 
@@ -63,11 +64,5 @@ class AuthenticationController extends BaseController {
     return Redirect::route('login');
 	}
 
-
-	public function create_password()
-	{
-		$this->layout->title = "Create Password | Infuse";
-		$this->layout->content = View::make('infuse::authentication.create_password');
-	}
 
 }

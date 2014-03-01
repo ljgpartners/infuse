@@ -12,7 +12,8 @@ $infuseLogin = $data['infuseLogin'];
 <tr>
 <?php
 $db = $header['db'];
-$model = get_class($entry);
+$model = (array_key_exists('actualModel', $header))? get_class($header['actualModel']) : get_class($entry);
+
 ?>
 
 	@foreach ($header['manyToManyAssociations'] as $association)

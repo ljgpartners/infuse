@@ -47,16 +47,19 @@ use Illuminate\Support\Facades\Log;
 			return (preg_match("/_id$/", $columnString, $matches, PREG_OFFSET_CAPTURE) == 0)? false : true;
 		}
 
-		public static function debug($var)
+		public static function debug($var, $laravelLogger = false)
 		{
 			ob_start();
 			echo "<pre>";
 			var_dump($var);//print_r($var);
 			echo "</pre>";
-      return ob_get_clean();
-			
-		}
 
+			if ($laravelLogger) {
+				Log::error(ob_get_clean());
+			} else {
+				return ob_get_clean();
+			}
+		}
 
 
 

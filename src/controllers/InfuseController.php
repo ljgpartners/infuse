@@ -35,9 +35,9 @@ class InfuseController extends BaseController {
 		$this->layout->content = $content;
 	}
 
-	public function resource($resource)
+	public function resource($resource) 
 	{
-		$this->layout->title = "Resource | Infuse";
+		$this->layout->title = "Resource | Infuse"; 
 		View::share('manageActive', true);
 		$uri = Request::path();
 		
@@ -98,21 +98,13 @@ class InfuseController extends BaseController {
 		View::share('userActive', true);
 		$uri = Request::path();
 
-		$resource = Scaffold::newInstance(new InfuseUser, new DB)
-			->name("Infuse User")
-			->infuseLogin()
-			->limit(10)
-			->order(array("order" => "desc", "column" => "created_at"))
-			->listColumns(array("username", "email"))
-			->manyToMany(array(
-				array("InfuseRole", "role_id", "InfuseUser", "user_id", "role_user", "name", "username")
-			));
-
-		$redirect = $resource->checkPermissions($this->user, $uri);
+		$data = Config::get('infuse::user_resource');
+		
+		$redirect = $data['scaffold']->checkPermissions($this->user, $uri);
 		if ($redirect)
 			return Redirect::to($redirect);
 			
-		$data = $resource->config();
+		$data = $data['scaffold']->loadUser($this->user)->config();
 		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
 		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold); 
 	}
@@ -139,7 +131,7 @@ class InfuseController extends BaseController {
 			->manyToMany(array(
 				array("InfuseRole", "role_id", "InfusePermission", "permission_id", "permission_role", "name", "name")
 			))
-			->config();
+			->loadUser($this->user)->config();
 
 		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
 		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold); 
@@ -166,7 +158,7 @@ class InfuseController extends BaseController {
 				array("InfusePermission", "permission_id", "InfuseRole", "role_id", "permission_role", "name", "name"),
 				array("InfuseUser", "user_id", "InfuseRole", "role_id", "role_user", "username", "name")
 			)) 
-			->config();
+			->loadUser($this->user)->config();
 
 		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
 		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold); 

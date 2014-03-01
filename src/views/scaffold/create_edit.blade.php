@@ -5,6 +5,8 @@ $entries = $data['enrties'];
 $columns = $data['columns'];
 $header  = $data['header'];
 $infuseLogin = $data['infuseLogin'];
+$user  = $data['user'];
+
 ?>
 
 <div class="infuseScaffold">
@@ -21,7 +23,8 @@ $infuseLogin = $data['infuseLogin'];
 	<table class="table table-striped table-bordered">
 			<form method="post" action="?{{(Util::get("stack"))? "stack=".Util::get("stack") : ""}}" enctype="multipart/form-data">
 
-				
+			{{-- Added infuse action and id to the form --}}
+
 			@if (Util::get("id") && Util::get("action") != "cd")
 				<input type="hidden" name="action" value="u">
 				<input type="hidden" name="id" value="{{Util::get("id")}}">
@@ -29,36 +32,66 @@ $infuseLogin = $data['infuseLogin'];
 				<input type="hidden" name="action" value="cu">
 			@endif
 
+			
+			{{-- 	Added foreign keys to the form --}}
+			{{-- 	If foreign key is select do not hide 	--}}
+
 			@if (Util::get("stack"))
-				<input type="hidden" name="{{Util::foreignKeyString(Util::stackParentName())}}" value="{{Util::stackParentId()}}">
+				<?php $column = $columns[Util::foreignKeyString(Util::stackParentName())]; ?>
+				@if (array_key_exists("select", $column))
+					<div class="form-horizontal pull-right">
+					<div class="control-group">
+				    <label class="control-label">{{Util::cleanName(Util::stackParentName())}} </label>
+				    <div class="controls">
+				      <select name="{{$column['field']}}">
+								@if (array_key_exists("select_blank", $column))
+									<option value=""></option>
+								@endif
+								@foreach ($column['select'] as $value)
+										<?php $columnName = end($value); ?>
+										@if ($entries->{$column['field']} == $value["id"])
+											<option value="{{$value["id"]}}" selected="selected">{{$columnName}}</option>
+										@else
+											<option value="{{$value["id"]}}">{{$columnName}}</option>
+										@endif
+								@endforeach
+							</select>
+				    </div>
+  				</div>
+  				</div>
+				@else
+					<input type="hidden" name="{{Util::foreignKeyString(Util::stackParentName())}}" value="{{Util::stackParentId()}}">
+				@endif
+
 				@if (Util::get("oneToOne"))
 					<input type="hidden" name="oneToOne" value="{{Util::stackParentName()}}">
 				@endif
 			@endif
 
 
-
-			<!-- Iterate through all columns -->
+			{{-- Iterate through all columns and display correlating form input  --}}
 
 			@foreach ($columns as $column)
 
-			<!-- Hide certain fields -->
-			@if ($column['field'] != "created_at" && $column['field'] != "updated_at" && !Util::isForeignKey($column['field']) && Util::checkInfuseLoginFields($infuseLogin, $column) )
+			{{-- Hide certain fields. Laravel create and updated flags. Foreign keys. Infuse logins fields.  --}}
 
-			<tr> 
+			@if ($column['field'] != "created_at" && $column['field'] != "updated_at" && !Util::isForeignKey($column['field'])  && Util::checkInfuseLoginFields($infuseLogin, $column) )
+
+			<tr>
+				{{-- Column Names  --}}
 				@if (array_key_exists($column['field'], $header['columnNames']))
 					<th>{{$header['columnNames']["{$column['field']}"]}}</th>
 				@else
 					<th>{{Util::cleanName($column['field'])}}</th>
 				@endif
 
+				{{-- Column Values/Form Input  --}}
 				<td> 
-
-				@if ($column['field'] == Util::getForeignKeyString($entries))
-				
-				@elseif (array_key_exists("ckeditor", $column))
+				{{-- ckeditor  --}}
+				@if (array_key_exists("ckeditor", $column))
 					<textarea class="ckeditor" name="{{$column['field']}}">{{$entries->{$column['field']} }}</textarea>
 
+				{{-- select  --}}
 				@elseif (array_key_exists("select", $column))
 
 					<select name="{{$column['field']}}">
@@ -75,6 +108,7 @@ $infuseLogin = $data['infuseLogin'];
 						@endforeach
 					</select>
 
+				{{-- multi select  --}}
 				@elseif (array_key_exists("multi_select", $column))
 
 					<?php
@@ -88,7 +122,7 @@ $infuseLogin = $data['infuseLogin'];
 					<div class="multiSelect"  data-name="{{$column['field']}}" data-data='{{json_encode($dataMultiSelect)}}' data-value="{{$entries->{$column['field']} }}"></div>
 					<input class="multiSelect{{$column['field']}}" name="{{$column['field']}}" type="hidden" value='{{$entries->{$column['field']} }}'>
 
-
+				{{-- upload  --}}
 				@elseif (array_key_exists("upload", $column))
 
 					<input type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "livePreviewCrop": "" )}}" id="upload{{$column['field']}}" >
@@ -135,6 +169,7 @@ $infuseLogin = $data['infuseLogin'];
 
 					@endif
 
+				{{-- other inputs based on column type  --}}
 				@else
 
 					<?php switch ($column['type']):
@@ -168,19 +203,19 @@ $infuseLogin = $data['infuseLogin'];
 
 				@endif
 
-				
+				{{-- Add column description  --}}
 				@if (array_key_exists("description", $column))
 					</br><span class="label label-info">{{$column['description']}}</span>
 				@endif
 				
+				{{-- Display validation errors --}}
 				@if ($errors && $errors->has("{$column['field']}"))
 						@foreach ($errors->get("{$column['field']}") as $err)
 							</br><span class="label label-important">{{$err}}</span>
 						@endforeach
 				@endif
 
-
-
+				{{-- Display file errors --}}
 				@if ($fileErrors && array_key_exists($column['field'], $fileErrors) && count($fileErrors) > 0)
 					@foreach ($fileErrors as $err)
 							</br><span class="label label-important">{{$err}}</span>
@@ -195,6 +230,8 @@ $infuseLogin = $data['infuseLogin'];
 			@endif
 			@endforeach
 
+
+			{{-- Display controls --}}
 			<tr>
 				<td>
 					@if (Util::get("stack"))
@@ -224,6 +261,8 @@ $infuseLogin = $data['infuseLogin'];
 					<input type="submit" value="submit" class="btn submitButton">
 				</td>
 			</tr>
+
+			{{-- Relationship subviews --}}
 
 			@include('infuse::scaffold._has_one')
 

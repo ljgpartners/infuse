@@ -39,6 +39,7 @@
 
 	.infuseLogin .infuseSiteTitle, .infuseLogin .infuseTextLogo, .infuseLogin .infuseTextLogoAbove{ color: {{Config::get('infuse::colors.login_text')}}; }
 	.infuseLogin .infuseU, .infuseLogin .infuseP{ color: {{Config::get('infuse::colors.login_input_text')}}; }
+	input.infuseLoginSubmit{ background-color: {{Config::get('infuse::colors.button_color')}}; }
 
 	.fixTextEditorHighlightingClass{}
 	</style>

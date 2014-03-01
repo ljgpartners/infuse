@@ -35,7 +35,9 @@ endif;
       <button class="btn altColor btn-info  dropdown-toggle" data-toggle="dropdown">Add Filter <span class="caret"></span></button>
       <ul class="dropdown-menu filtersDropDown">
       	@foreach ($columns as $column)
-						<li><a href="" class="filterColumn filter{{$column['field']}}" data-filter-column="{{$column['field']}}">{{Util::cleanName($column['field'])}}</a></li>
+      			@if (!Util::isForeignKey($column['field']))
+							<li><a href="" class="filterColumn filter{{$column['field']}}" data-filter-column="{{$column['field']}}">{{Util::cleanName($column['field'])}}</a></li>
+						@endif
 				@endforeach
       </ul>
     </div>

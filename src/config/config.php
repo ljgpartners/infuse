@@ -23,6 +23,7 @@ return array(
 	*/
 	'dashboard_template' => '', 
 
+
 	/*
 	| The "expire" time is the number of minutes that the reminder should be
 	| considered valid. This security feature keeps tokens short-lived so
@@ -175,7 +176,27 @@ return array(
 	'resources' => array(
 
 
-	)
+	), // End of resources
+	
+
+
+	/*
+	|--------------------------------------------------------------------------
+	| User Config
+	|--------------------------------------------------------------------------
+	*/		
+
+	'user_resource'  => array(
+				'scaffold' => Scaffold::newInstance(new InfuseUser, new DB)
+												->name("Infuse User")
+												->infuseLogin()
+												->limit(10)
+												->order(array("order" => "desc", "column" => "created_at"))
+												->listColumns(array("username", "email"))
+												->manyToMany(array(
+													array("InfuseRole", "role_id", "InfuseUser", "user_id", "role_user", "name", "username")
+												))					
+	) 
 		
 
 
