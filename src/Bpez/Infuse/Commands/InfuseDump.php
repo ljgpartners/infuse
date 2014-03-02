@@ -4,6 +4,7 @@
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Clouddueling\Mysqldump\Mysqldump;
 
 class InfuseDump extends Command {
 
@@ -38,7 +39,25 @@ class InfuseDump extends Command {
 	 */
 	public function fire()
 	{
-		//
+		$this->info("Infuse mysql dump started...");
+		$dumpSettings = array(
+		  'include-tables' => array(),
+		  'exclude-tables' => array(),
+		  'compress' => 'GZIP',
+		  'no-data' => false,
+		  'add-drop-database' => false,
+		  'add-drop-table' => false,
+		  'single-transaction' => true,
+		  'lock-tables' => false,
+		  'add-locks' => true,
+		  'extended-insert' => true,
+		  'disable-foreign-keys-check' => false
+		);
+
+		$config = \Config::get("database.connections.mysql");
+		$dump = new Mysqldump($config['database'], $config['username'], $config['password'], $config['host'], 'mysql', $dumpSettings);
+    $dump->start(base_path().$config['database'].'_dump.sql');
+    $this->info("Infuse mysql dump finished");
 	}
 
 	/**

@@ -42,18 +42,26 @@ class InfuseServiceProvider extends ServiceProvider {
 		$this->app->booting(function()
 		{
 			$loader = \Illuminate\Foundation\AliasLoader::getInstance();
+
 			$loader->alias('Scaffold', 'Bpez\Infuse\Scaffold');
 			$loader->alias('WebService', 'Bpez\Infuse\WebService');
 			$loader->alias('Util', 'Bpez\Infuse\Util');
 			$loader->alias('InfuseDeploy', 'Bpez\Infuse\Commands\InfuseDeploy');
 		});
+		
+		$this->app['command.infuse.dump'] = $this->app->share(function($app)
+    {
+        return new Commands\InfuseDump();
+    });
 
 		$this->app['command.infuse.deploy'] = $this->app->share(function($app)
     {
         return new Commands\InfuseDeploy();
     });
+
+    
  
-    $this->commands('command.infuse.deploy');
+    $this->commands(array('command.infuse.deploy', 'command.infuse.dump'));
 	}
 
 	/**
@@ -63,7 +71,7 @@ class InfuseServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		
+		return array();
 	}
 
 }
