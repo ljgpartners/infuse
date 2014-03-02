@@ -56,7 +56,7 @@ class InfuseDump extends Command {
 
 		$config = \Config::get("database.connections.mysql");
 		$dump = new Mysqldump($config['database'], $config['username'], $config['password'], $config['host'], 'mysql', $dumpSettings);
-    $dump->start(base_path().$config['database'].'_dump.sql');
+    $dump->start(base_path()."/".$config['database'].'_dump.sql');
     $this->info("Infuse mysql dump finished");
 	}
 
