@@ -42,14 +42,27 @@ Steps for installing
 >
 
 
+### After installing
+
+
+> Add local and production environments
+>
+> $env = $app->detectEnvironment(array(
+>		'local'   => array('imac.local'),
+> 	'production' => array('dev.domain.com')
+>	));
+>
+
+### After any additonal migrations added to the project clear the cache
+
+> php artisan cache:clear
+
 ### Future features 
 
 > add Throttling
+>
 > https://github.com/websoftwares/Throttle
 > http://laravel.com/docs/cache
->
-> add https://www.authy.com/
->
 
 
 

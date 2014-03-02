@@ -1,6 +1,4 @@
 <?php 
-use Bpez\Infuse\Util; 
-
 $entries = $data['enrties'];
 $columns = $data['columns'];
 $header  = $data['header'];

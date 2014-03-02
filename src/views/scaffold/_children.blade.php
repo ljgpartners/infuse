@@ -1,5 +1,5 @@
 <?php 
-use Bpez\Infuse\Util; 
+use \DB;
 
 $entries = $data['enrties'];
 $columns = $data['columns'];

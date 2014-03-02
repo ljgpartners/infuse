@@ -1,5 +1,3 @@
-<?php use Bpez\Infuse\Util; ?>
-
 <div class="infuseInner">
 	<div class="page-header"> 
 	  <div class="hero-unit">

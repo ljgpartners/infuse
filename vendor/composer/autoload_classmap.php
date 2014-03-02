@@ -8,7 +8,12 @@ $baseDir = dirname($vendorDir);
 return array(
     'AuthenticationController' => $baseDir . '/src/controllers/AuthenticationController.php',
     'CreateInfuseAdminUsers' => $baseDir . '/src/migrations/2013_06_05_173913_create_infuse_admin_users.php',
-    'InfuseAdminUser' => $baseDir . '/src/models/InfuseAdminUser.php',
+    'CreateUserSoftDelete' => $baseDir . '/src/migrations/2013_06_03_173913_create_user_soft_delete.php',
+    'CreateVerifyInit' => $baseDir . '/src/migrations/2013_06_02_173913_create_verify_init.php',
     'InfuseController' => $baseDir . '/src/controllers/InfuseController.php',
     'InfuseEloquent' => $baseDir . '/src/models/InfuseEloquent.php',
+    'InfusePermission' => $baseDir . '/src/models/InfusePermission.php',
+    'InfuseRole' => $baseDir . '/src/models/InfuseRole.php',
+    'InfuseUser' => $baseDir . '/src/models/InfuseUser.php',
+    'RemindersController' => $baseDir . '/src/controllers/RemindersController.php',
 );

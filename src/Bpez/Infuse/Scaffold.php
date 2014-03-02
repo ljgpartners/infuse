@@ -4,12 +4,13 @@ use Exception;
 use Transit\Transit;
 use Transit\Validator\ImageValidator;
 use Illuminate\Support\Facades\Log;
-
+use \DB;
+use \App;
+use \Cache;
 
 class Scaffold {
-
+	
 	private $model;
-	private $db;
 	private $columns;
 	private $action;
 	private $entries = array();
@@ -33,15 +34,15 @@ class Scaffold {
 	private $onlyLoadSameChildren = false;
 	private $associateToSameParent = false;
 
-	public function __construct($model, $db)
+	public function __construct($model)
 	{	
-		if (!isset($_SESSION)) session_start();
 		$this->action = Util::get("action");
 		$this->model = $model;
-		$this->db = $db;
 		$this->name = get_class($model);
 		
-		$columns = $db::select("SHOW COLUMNS FROM ".$model->getTable());
+		$columns = Cache::rememberForever("infuse::columns.{$this->name}", function() use ($model) {
+			return DB::select("SHOW COLUMNS FROM ".$model->getTable());
+		});
 		
 		foreach ($columns as $column) {
 			if ($column->Field != 'id' ) {
@@ -67,9 +68,9 @@ class Scaffold {
 	}
 
 
-	public static function newInstance($model, $db)
-  {
-  	return new self($model, $db);
+	public static function newInstance($model)
+  {	
+  	return new self($model);
   }
 
   public function checkPermissions($user, $redirectBack)
@@ -170,7 +171,7 @@ class Scaffold {
 		);
 		
 		
-		if (!$this->belongsToUser)
+		if (!$this->belongsToUser || $this->user->is('Super Admin'))
 			$pagination['count'] = $model::count(); 
 		else
 			$pagination['count'] = $model::where("infuse_user_id", "=", $this->user->id)->count();
@@ -191,7 +192,7 @@ class Scaffold {
 		if ($this->infuseLogin)
 			$prepareModel->where("id", "!=", 1)->where("username", "!=", 'super');
 
-		if ($this->belongsToUser)
+		if ($this->belongsToUser && !$this->user->is('Super Admin'))
 			$prepareModel->where("infuse_user_id", "=", $this->user->id);
 
 		if ($this->onlyLoadSameChildren)
@@ -229,17 +230,19 @@ class Scaffold {
 		$this->header = array(
 				"edit" => true,
 				"name" => $this->name,
-				"db" => $this->db,
 				"associations" => $this->hasMany,
 				"manyToManyAssociations" => $this->manyToMany,
 				"hasOneAssociation" => $this->hasOne,
 				"onlyOne" => $this->onlyOne,
 				"columnNames" => $this->columnNames
 			);
+
 		$post = Util::flashArray("post");
 		if (!$post) {
 			$this->entries = $model::find(Util::get("id"));
+
 		} else {
+
 			$this->entries = Util::arrayToObject($post);
 			$this->header['actualModel'] = $model::find($post["id"]);
 		}
@@ -411,7 +414,7 @@ class Scaffold {
 
 					$inputsTemp = Util::get($column['field']);
 
-					if ($this->belongsToUser && $column['field'] == "infuse_user_id")
+					if ($this->belongsToUser && $column['field'] == "infuse_user_id" && !$this->user->is('Super Admin'))
 						$inputsTemp = $this->user->id;
 
 

@@ -1,5 +1,5 @@
 <?php
-use Bpez\Infuse\Util;
+use \DB;
 
 $entry = $data['enrties'];
 $columns = $data['columns'];
@@ -11,7 +11,7 @@ $infuseLogin = $data['infuseLogin'];
 @if (isset($header['edit']) && count($header['manyToManyAssociations']) > 0)
 <tr>
 <?php
-$db = $header['db'];
+
 $model = (array_key_exists('actualModel', $header))? get_class($header['actualModel']) : get_class($entry);
 
 ?>
@@ -45,8 +45,8 @@ $model = (array_key_exists('actualModel', $header))? get_class($header['actualMo
 			<td>
 				<?php
 					$belongsToModelInstance = Util::stringToCLass($belongsToModel);
-					$ids = $db::table($manyToManyTable)->where($secondForeignId, "=", $entry->id)->lists($firstForeignId);
-					$allPossible = $db::table($belongsToModelInstance->getTable())->select('id', $columnName)->orderBy($columnName, 'asc')->get();
+					$ids = DB::table($manyToManyTable)->where($secondForeignId, "=", $entry->id)->lists($firstForeignId);
+					$allPossible = DB::table($belongsToModelInstance->getTable())->select('id', $columnName)->orderBy($columnName, 'asc')->get();
 				?>
 
 				@foreach ($allPossible as $a)

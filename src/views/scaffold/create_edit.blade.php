@@ -1,6 +1,4 @@
 <?php 
-use Bpez\Infuse\Util; 
-
 $entries = $data['enrties'];
 $columns = $data['columns'];
 $header  = $data['header'];
@@ -171,7 +169,7 @@ $user  = $data['user'];
 
 				{{-- other inputs based on column type  --}}
 				@else
-
+				
 					<?php switch ($column['type']):
 							case 'varchar': ?>
 							<input type="text" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}">

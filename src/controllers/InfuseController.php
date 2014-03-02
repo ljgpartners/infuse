@@ -1,12 +1,5 @@
 <?php
 
-use Bpez\Infuse\Scaffold;
-use Bpez\Infuse\Util;
-use Bpez\Infuse\WebService;
-
-// Debug
-use Illuminate\Support\Facades\Log;
-
 class InfuseController extends BaseController {
 
 	public $layout = 'infuse::layouts.application';
@@ -49,16 +42,15 @@ class InfuseController extends BaseController {
 		Util::stackReset();
 		Util::stackPush($resource, Input::get('id', null), $uri);
 		
-		$data = Config::get('infuse::resources');
-		$redirect = $data["{$resource}"]['scaffold']->checkPermissions($this->user, Util::childBackLink());
+		$scaffold = Config::get("infuse::{$resource}.scaffold");
+		
+		$redirect = $scaffold->checkPermissions($this->user, Util::childBackLink());
 		if ($redirect)
 			return Redirect::to($redirect);
 		
-		$data = $data["{$resource}"]['scaffold']->loadUser($this->user)->config();
-		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
+		$scaffold = $scaffold->loadUser($this->user)->config();
+		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $scaffold);
 		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold); 
-
-		
 	}
 
 	public function child($resource)
@@ -76,17 +68,15 @@ class InfuseController extends BaseController {
 		if (Input::has("pop"))
 			Util::stackPop(); 
 		Util::stackPush($child, Input::get('id', null), $uri); 
-
-		$data = Config::get('infuse::resources');
-		$redirect = $data["{$resource}"]["children"]["{$child}"]->checkPermissions($this->user, Util::childBackLink());
-
+		
+		$scaffold = Config::get("infuse::{$resource}.children.{$child}"); 
+		
+		$redirect = $scaffold->checkPermissions($this->user, Util::childBackLink());
 		if ($redirect)
 			return Redirect::to($redirect);
 
-		
-
-		$data = $data["{$resource}"]["children"]["{$child}"]->loadUser($this->user)->config();
-		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
+		$scaffold = $scaffold->loadUser($this->user)->config();
+		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $scaffold);
 		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold);  
 		
 		
@@ -97,16 +87,15 @@ class InfuseController extends BaseController {
 		$this->layout->title = "User | Infuse";
 		View::share('userActive', true);
 		$uri = Request::path();
-
-		$data = Config::get('infuse::user_resource');
 		
-		$redirect = $data['scaffold']->checkPermissions($this->user, $uri);
+		$resource = Config::get('infuse::infuse_user.scaffold');
+		$redirect = $resource->checkPermissions($this->user, $uri);
 		if ($redirect)
 			return Redirect::to($redirect);
 			
-		$data = $data['scaffold']->loadUser($this->user)->config();
-		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
-		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold); 
+		$resource = $resource->loadUser($this->user)->config();
+		$resource = View::make(Scaffold::getBladeTemplate())->with('data', $resource);
+		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $resource); 
 	}
 
 
@@ -123,7 +112,7 @@ class InfuseController extends BaseController {
 	
 		
 		$this->layout->title = "Permissions | Infuse";
-		$data = Scaffold::newInstance(new InfusePermission, new DB)
+		$resource = Scaffold::newInstance(new InfusePermission, new DB)
 			->name("Infuse Permission")
 			->limit(100)
 			->order(array("order" => "desc", "column" => "created_at"))
@@ -133,8 +122,8 @@ class InfuseController extends BaseController {
 			))
 			->loadUser($this->user)->config();
 
-		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
-		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold); 
+		$resource = View::make(Scaffold::getBladeTemplate())->with('data', $resource);
+		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $resource); 
 	}
 
 	public function role()
@@ -149,7 +138,7 @@ class InfuseController extends BaseController {
 		}
 		
 		$this->layout->title = "Roles | Infuse";
-		$data = Scaffold::newInstance(new InfuseRole, new DB)
+		$resource = Scaffold::newInstance(new InfuseRole, new DB)
 			->name("Infuse Role")
 			->limit(100)
 			->order(array("order" => "desc", "column" => "created_at"))
@@ -160,8 +149,8 @@ class InfuseController extends BaseController {
 			)) 
 			->loadUser($this->user)->config();
 
-		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $data);
-		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold); 
+		$resource = View::make(Scaffold::getBladeTemplate())->with('data', $resource);
+		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $resource); 
 	}
 
 }
