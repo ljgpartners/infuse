@@ -1,5 +1,6 @@
 <?php
 use Toddish\Verify\Models\User as VerifyUser;
+use Illuminate\Support\Facades\Password;
 
 class InfuseUser extends VerifyUser {
 
@@ -82,17 +83,48 @@ class InfuseUser extends VerifyUser {
   }
 
 
-  public function sendPasswordCreateEmail()
+  public function sendRequestResetPasswordPage()
   {
   	$email = $this->email;
   	$server = $_SERVER['SERVER_NAME'];
-		$data = array("full_name" => $this->full_name, "username" => $this->username);
-  	
-  	Mail::send('infuse::emails.user_created', $data  , function($message)  use ($email, $server) {
+
+  	Mail::send('infuse::emails.request_reset', array(), function($message)  use ($email, $server) {
 	    $message->from("no-reply@{$server}");
-	    $message->subject('[Infuse] New User Created');
+	    $message->subject('[Infuse] Request Reset Password ');
 	    $message->to($email); 
 		});
+  }
+
+
+  public function save(array $options = array())
+  {
+    if (!$this->exists) {
+      $saved = parent::save($options);
+
+      $email = $this->email;
+      $server = $_SERVER['SERVER_NAME'];
+      $data = array("full_name" => $this->full_name, "username" => $this->username, "email" => $email, "create" => true);
+
+      Config::set('auth.driver', 'verify');
+      Config::set('auth.model', 'InfuseUser');
+      Config::set('auth.reminder.email', 'infuse::emails.reminder');
+      Config::set('auth.reminder.expire', Config::get('infuse::reminder_expire'));
+
+      View::composer('infuse::emails.reminder', function($view) use ($data) {
+        $view->with($data);
+      });
+
+      Password::remind(array("email" => $email), function($message)  use ($server)  {
+        $message->subject('[Infuse] User Account Created');
+        $message->from("no-reply@{$server}");
+      });
+
+      return $saved;
+
+    } else {
+      return parent::save($options);
+    }
+    
   }
 
 }

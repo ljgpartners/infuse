@@ -5,8 +5,13 @@
   @else
     <div class="infuseTextLogo">Infuse</div>
   @endif
-
-  <p>Reset</p>
+  
+   @if ($create)
+    <p>Create password</p>
+  @else
+    <p>Reset password</p>
+  @endif
+  
 
   @if (isset($error))
 	  <p class="errorMessage">{{$error}}</p>

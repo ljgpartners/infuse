@@ -235,12 +235,15 @@ use Illuminate\Support\Facades\Log;
 				
 		}
 
-		public static function redirectUrlChildSaveFailed()
+		public static function redirectUrlChildSaveFailed($id = false)
 		{
 			$parent = self::stackPop(); 
 			$model = $parent[0];
 			$baseUri = $parent[2];
-			return "/{$baseUri}?stack={$model}&action=c";
+			if ($id) 
+				return "/{$baseUri}?stack={$model}&action=e&id={$id}";
+			else
+				return "/{$baseUri}?stack={$model}&action=c";
 		}
 
 		//////////////////////////////////////////

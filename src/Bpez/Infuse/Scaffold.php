@@ -154,6 +154,8 @@ class Scaffold {
 			case 'f':
 				$this->listAllFilter();
 				break;
+			case 'rrpp':
+				$this->sendRequestResetPasswordPage();
 
 			default:
 				$this->listAll();
@@ -317,11 +319,31 @@ class Scaffold {
 		exit();
 	}
 
+	private function sendRequestResetPasswordPage()
+	{
+		$model = $this->model;
+		$user = $model::find(Util::get("id"));
+
+		$user->sendRequestResetPasswordPage();
+		Util::flash(array(
+			"message" => "Sent email with link to reset password.", 
+			"type" => "success"
+			)
+		);
+		
+		$redirect_path = Util::redirectUrl();
+		
+		header("Location: {$redirect_path}");
+		exit();
+	}
+
+
 	private function update() 
 	{	
 		$model = $this->model;
-		if (Util::get("id")) {
+		if (Util::get("id")) { 
 			$entry = $model::find(Util::get("id"));
+
 			$message = array("message" => "Updated {$this->name} user with id of ".Util::get("id").".", "type" => "success");
 		} elseif (Util::get("stack")) {
 			$entry = $model;
@@ -410,7 +432,7 @@ class Scaffold {
 				
 
 			} else {
-				if ($column['field'] != "created_at" && $column['field'] != "updated_at" ) {
+				if ($column['field'] != "created_at" && $column['field'] != "updated_at" && Util::checkInfuseLoginFields($this->infuseLogin, $column) ) {
 
 					$inputsTemp = Util::get($column['field']);
 
@@ -423,7 +445,7 @@ class Scaffold {
 						$count = 1+(int)$count;
 						$inputsTemp = $count;
 					} 
-
+					
 					$entry->{$column['field']} = $inputsTemp;
 					
 				}
@@ -432,19 +454,23 @@ class Scaffold {
 
 		$data = Util::getAll();
 
+
+
 		// Remove any FALSE values. This includes NULL values, EMPTY arrays, etc.
 		$data = array_filter($data);
 		
 		if ($entry->validate($data) && count($fileErrors) == 0) {
-
+			
+			
 			// Check if brand new user
-			if ($this->infuseLogin && !property_exists($entry, "id")) {
+			if ($this->infuseLogin && !Util::get("id")) { 
 				$entry->verified = 1;
 				$entry->deleted_at = null;
-				$entry->sendPasswordCreateEmail();
 				if ($this->associateToSameParent)
 					$entry->{$this->associateToSameParent} = $this->user->{$this->associateToSameParent};
 			}
+
+			
 			
 			// Do many to many relationship saving
 			if (Util::get("id") && count($this->manyToMany) > 0) {
@@ -464,17 +490,17 @@ class Scaffold {
 						$secondForeignId = $association[1];
 					}
 
-					$idsForSync = Util::get($manyToManyTable);
+					$idsForSync = Util::get($manyToManyTable); 
 					if ($idsForSync) {
 						$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach();
 						if ($this->infuseLogin && $entry->id == 1 && $entry->username == 'super' )
 							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach(1);
-						foreach($idsForSync as $id) {
+						foreach($idsForSync as $id) { 
 							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach($id);
 						}
-						//$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->sync($idsForSync);
+					} else {
+						$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach();
 					}
-						
 				}
 			}
 			
@@ -504,7 +530,11 @@ class Scaffold {
 			Util::flashArray("post", Util::getAll());
 
 			if (Util::get("stack")) {
-				$redirect_path = Util::redirectUrlChildSaveFailed();
+				if (!property_exists($entry, "id")) {
+					$redirect_path = Util::redirectUrlChildSaveFailed();
+				}	else {
+					$redirect_path = Util::redirectUrlChildSaveFailed($entry->id);
+				}
 			} else { 
 				$redirect_path = Util::redirectUrlSaveFailed(Util::get("id"));
 			}

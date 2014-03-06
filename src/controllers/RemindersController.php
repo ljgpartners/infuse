@@ -95,7 +95,21 @@ class RemindersController extends BaseController {
 		if (Session::has('error'))
 			$response['error'] = Session::get('error');
 
+		$reset = DB::table('password_reminders')->where('token', '=', $token)->first();
+		
 		$response['token'] = $token;
+
+		if (count($reset) > 0) {
+			$user = InfuseUser::where("email", "=", $reset->email)->first();
+			if (count($user) > 0 && ($user->password == "" || $user->password == null)) {
+				$response['create'] = true;
+			} else {
+				$response['create'] = false;
+			}
+		} else {
+			$response['create'] = false; 
+		}
+		
 
 		$this->layout->content = View::make('infuse::password.reset', $response);
 	}

@@ -65,7 +65,8 @@ Steps for installing
 > http://laravel.com/docs/cache
 
 
-
+### artisan install 
+> sudo curl https://raw.github.com/villimagg/Artisan-on-Steroids/master/artisan -o /usr/local/bin/artisan && sudo chmod +x /usr/local/bin/artisan
 
 
 

@@ -129,8 +129,12 @@ endif;
 						<li><a href="?action=e&id={{$entry->id}}">Edit</a></li>
 						@if(!$header['onlyOne'])
 						<li><a href="?action=d&id={{$entry->id}}" onclick="return confirm('Confirm delete?');">Delete</a></li>
-						<li><a href="?action=cd&id={{$entry->id}}">Duplicate</a></li>
+						<!--<li><a href="?action=cd&id={{$entry->id}}">Duplicate</a></li>-->
 						@endif
+						@if($infuseLogin)
+						<li><a href="?action=rrpp&id={{$entry->id}}">Send Reset</a></li>
+						@endif
+						
 				  </ul>
 				</div>
 				

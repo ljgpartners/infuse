@@ -31,7 +31,7 @@ $user  = $data['user'];
 			@endif
 
 			
-			{{-- 	Added foreign keys to the form --}}
+			{{-- 	Added foreign keys to the form for children --}}
 			{{-- 	If foreign key is select do not hide 	--}}
 
 			@if (Util::get("stack"))
@@ -67,9 +67,16 @@ $user  = $data['user'];
 			@endif
 
 
+
 			{{-- Iterate through all columns and display correlating form input  --}}
 
 			@foreach ($columns as $column)
+
+			{{-- 	Added foreign keys to the form for top level parent --}}
+
+			@if (!Util::get("stack") && Util::isForeignKey($column['field']))
+				<input type="hidden" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}">
+			@endif
 
 			{{-- Hide certain fields. Laravel create and updated flags. Foreign keys. Infuse logins fields.  --}}
 
