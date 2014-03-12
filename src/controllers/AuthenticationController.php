@@ -1,5 +1,13 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| AuthenticationController 
+|--------------------------------------------------------------------------
+| Logic for authenticating a user in infuse
+|
+*/
+
 class AuthenticationController extends BaseController {
 
 	public $layout = 'infuse::layouts.application'; 

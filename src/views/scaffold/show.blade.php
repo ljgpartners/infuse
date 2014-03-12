@@ -1,10 +1,5 @@
-<?php 
-$entries = $data['enrties'];
-$columns = $data['columns'];
-$header  = $data['header'];
-$infuseLogin = $data['infuseLogin'];
+<div class="infuseInner">
 
-?>
 <div class="infuseScaffold">
 
 	<div class="page-header">
@@ -67,4 +62,6 @@ $infuseLogin = $data['infuseLogin'];
 			</tr>
 
 	</table>
+</div>
+
 </div>

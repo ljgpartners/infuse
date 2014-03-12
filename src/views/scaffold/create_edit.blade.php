@@ -1,14 +1,7 @@
-<?php 
-$entries = $data['enrties'];
-$columns = $data['columns'];
-$header  = $data['header'];
-$infuseLogin = $data['infuseLogin'];
-$user  = $data['user'];
-
-?>
+<div class="infuseInner">
 
 <div class="infuseScaffold">
-
+	
 	<div class="page-header">
 	  <h1>{{$header['name']}} <small> {{$header['description']}}</small></h1>
 	</div>
@@ -19,7 +12,7 @@ $user  = $data['user'];
 	{{Util::fuseAlerts(Util::flash())}}
 
 	<table class="table table-striped table-bordered">
-			<form method="post" action="?{{(Util::get("stack"))? "stack=".Util::get("stack") : ""}}" enctype="multipart/form-data">
+			<form method="post" action="?" enctype="multipart/form-data">
 
 			{{-- Added infuse action and id to the form --}}
 
@@ -29,6 +22,12 @@ $user  = $data['user'];
 			@else
 				<input type="hidden" name="action" value="cu">
 			@endif
+
+			{{-- Added stack if child --}}
+			@if (Util::get("stack"))
+				<input type="hidden" name="stack" value="{{Util::get("stack")}}">
+			@endif
+			
 
 			
 			{{-- 	Added foreign keys to the form for children --}}
@@ -132,20 +131,28 @@ $user  = $data['user'];
 
 					<input type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "livePreviewCrop": "" )}}" id="upload{{$column['field']}}" >
 					
-					@if (property_exists($entries, $column['field']) && $entries->{$column['field']} != "")
-						</br>
-						<button type="button" class="btn btn-mini btn-link" data-toggle="modal" data-target="#{{"Modal".$column['field'].$entries->id}}">
-							View current
-						</button>
+					<?php //  $isEmptyFunc = Util::under2camel($column['field'])."IsEmpty";  !$entries->$isEmptyFunc() ?>
+					
+					@if ($entries->{$column['field']} != "" && $entries->{$column['field']} != null)
 
-						<div id="{{"Modal".$column['field'].$entries->id}}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-						  <div class="modal-header">
-						    <h3 id="myModalLabel">{{$entries->{$column['field']} }}</h3>
-						  </div>
-						  <div class="modal-body">
-						    <img src="{{$entries->url($column['field'])}}">
-						  </div>
-						</div>
+						</br>
+						@if ($entries->{$column['field']} != "" && preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $entries->{$column['field']} ))
+							<button type="button" class="btn btn-mini btn-link" data-toggle="modal" data-target="#{{"Modal".$column['field'].$entries->id}}">
+								preview current
+							</button>
+
+							<div id="{{"Modal".$column['field'].$entries->id}}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							  <div class="modal-header">
+							    <h3 id="myModalLabel">{{$entries->{$column['field']} }}</h3>
+							  </div>
+							  <div class="modal-body">
+							    <img src="{{$entries->url($column['field'])}}">
+							  </div>
+							</div>
+						@else
+							<a href="<?php echo $entries->url($column['field']); ?>">current: {{$entries->{$column['field']} }}</a>
+						@endif
+						
 					@endif
 
 					@foreach ($column['upload']['validations'] as $val)
@@ -207,7 +214,7 @@ $user  = $data['user'];
 					?>
 
 				@endif
-
+				
 				{{-- Add column description  --}}
 				@if (array_key_exists("description", $column))
 					</br><span class="label label-info">{{$column['description']}}</span>
@@ -244,7 +251,7 @@ $user  = $data['user'];
 				    <a class="btn btn-small childBackLink" href="{{Util::childBackLink()}}">Back</a>
 				  	@if (isset($header['edit']))
 				  	<a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 's', $entries->id)}}">Show</a>
-					  	@if(!$header['onlyOne'])
+					  	@if(!$header['onlyOne'] && $header['deleteAction'])
 							<a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 'd', $entries->id)}}" onclick="return confirm('Confirm delete?');">Delete</a>
 							@endif
 						@endif
@@ -254,7 +261,7 @@ $user  = $data['user'];
 				    <a class="btn btn-small" href="?action=l">List</a>
 				  	@if (isset($header['edit']))
 				  	<a class="btn btn-small" href="?action=s&id={{$entries->id}}">Show</a>
-					  	@if(!$header['onlyOne'])
+					  	@if(!$header['onlyOne'] && $header['deleteAction'])
 							<a class="btn btn-small" href="?action=d&id={{$entries->id}}" onclick="return confirm('Confirm delete?');">Delete</a>
 							@endif
 						@endif
@@ -267,14 +274,23 @@ $user  = $data['user'];
 				</td>
 			</tr>
 
+			
+
 			{{-- Relationship subviews --}}
+
+			{{-- many to many needs to be in the main form --}}
+			@include('infuse::scaffold._many_to_many')
+
+			</form>
 
 			@include('infuse::scaffold._has_one')
 
 			@include('infuse::scaffold._children')
 
-			@include('infuse::scaffold._many_to_many')
 			
-			</form>
+			
+			
 	</table>
+</div>
+
 </div>

@@ -1,7 +1,6 @@
 <?php namespace Bpez\Infuse;
 
 use Illuminate\Support\ServiceProvider;
-use Bpez\Infuse\Commands\MysqlDumpCommand;
 
 
 
@@ -27,6 +26,8 @@ class InfuseServiceProvider extends ServiceProvider {
 		\Config::addNamespace('infuse', app_path().'/config/packages/bpez/infuse');
 		\Config::addNamespace('infuse_deploy', app_path().'/config/packages/bpez/infuse/deploy');
 
+		
+
 		include __DIR__.'/../../routes.php';
 		
 	}
@@ -38,17 +39,33 @@ class InfuseServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		
-		$this->app->booting(function()
-		{
-			$loader = \Illuminate\Foundation\AliasLoader::getInstance();
 
-			$loader->alias('Scaffold', 'Bpez\Infuse\Scaffold');
-			$loader->alias('WebService', 'Bpez\Infuse\WebService');
-			$loader->alias('Util', 'Bpez\Infuse\Util');
-			$loader->alias('InfuseDeploy', 'Bpez\Infuse\Commands\InfuseDeploy');
-		});
-		
+		$this->app->bind('InfuseController', function($app)
+    {
+        return new \InfuseController(
+        	$app->make("auth")->user()
+        );
+    });
+
+		$this->app['scaffold'] = $this->app->share(function($app)
+    {
+        return new  Scaffold(
+        	$app['view'],
+        	$app->make("auth")->user(),
+        	$app->make("DB")
+        );
+    });
+
+    $this->app['util'] = $this->app->share(function($app)
+    {
+        return new Util;
+    });
+
+    $this->app['web.service'] = $this->app->share(function($app)
+    {
+        return new WebService($app->make("DB"));
+    });
+
 		$this->app['command.infuse.dump'] = $this->app->share(function($app)
     {
         return new Commands\InfuseDump();
@@ -59,9 +76,17 @@ class InfuseServiceProvider extends ServiceProvider {
         return new Commands\InfuseDeploy();
     });
 
-    
- 
     $this->commands(array('command.infuse.deploy', 'command.infuse.dump'));
+
+
+    // Shortcut so developers don't need to add an Alias in app/config/app.php
+    $this->app->booting(function()
+    {
+        $loader = \Illuminate\Foundation\AliasLoader::getInstance();
+        $loader->alias('Util', 'Bpez\Infuse\Facades\Util');
+        $loader->alias('Scaffold', 'Bpez\Infuse\Facades\Scaffold');
+        $loader->alias('WebService', 'Bpez\Infuse\Facades\WebService');
+    });
 	}
 
 	/**
@@ -71,7 +96,7 @@ class InfuseServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array();
+		return array('scaffold', 'util', 'web.service');
 	}
 
 }

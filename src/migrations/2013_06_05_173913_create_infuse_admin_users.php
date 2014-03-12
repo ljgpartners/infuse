@@ -15,6 +15,12 @@ class CreateInfuseAdminUsers extends Migration {
 	 */
 	public function up()
 	{
+		Schema::create('password_reminders', function(Blueprint $table)
+		{
+			$table->string('email')->index();
+			$table->string('token')->index();
+			$table->timestamp('created_at');
+		});
 
 		Schema::table('users', function($table)
 		{
@@ -69,12 +75,7 @@ class CreateInfuseAdminUsers extends Migration {
 		// Assign the Role to the Default User 
 		$user->roles()->sync(array($role->id));
 
-		Schema::create('password_reminders', function(Blueprint $table)
-		{
-			$table->string('email')->index();
-			$table->string('token')->index();
-			$table->timestamp('created_at');
-		});
+		
 	}
 
 	/**

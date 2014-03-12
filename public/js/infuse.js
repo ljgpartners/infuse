@@ -168,14 +168,16 @@ $(document).ready(function() {
 	$('.childOrderColumn').on('click', ".childUpOrder", function(event){
 		event.preventDefault();
 		var self   = $(this),
-				prevId = self.data("previous-id"),
 				id 		 = self.data("id"),
 				url 	 = self.data("url"),
 				model  = self.data("model"),
-				column = self.data("column");
-
-		if (prevId != 0) {
-
+				column = self.data("column"),
+				cssClass = self.parent().parent().data("class"),
+				row = self.closest('tr'),
+				prevId = row.prev().find(".childUpOrder").data("id");
+			
+		
+		if ($("tr."+cssClass).index(self.parent().parent()) != 0) {
 			$.ajax({
 				type: 'POST',
 				url: url,
@@ -189,22 +191,8 @@ $(document).ready(function() {
 				},
 				success: function (data) { 
 				 
-				 if (data.success) {
-					 	var current  		 = self.parent().parent(),
-							 previous 		 = current.prev(),
-							 currentNewId  = previous.find(".childUpOrder").data("previous-id"),
-							 previousNewId = current.find(".childUpOrder").data("id");
-							 currentNewOrder	= previous.find(".childOrderColumn").find("span").text(),
-							 previousNewOrder	= current.find(".childOrderColumn").find("span").text();
-
-						
-						current.find(".childUpOrder").data("previous-id", currentNewId);
-						previous.find(".childUpOrder").data("previous-id", previousNewId);
-
-				    previous.insertAfter(previous.next());
-
-						current.find("span").text(currentNewOrder);
-						previous.find("span").text(previousNewOrder);
+				 if (data.success ) {
+					 row.prev().insertAfter(row);
 				 } else {
 				 	alert("Failed to reorder entries.");
 				 }
@@ -214,20 +202,49 @@ $(document).ready(function() {
 				  //console.log('AJAX call failed: ' + textStatus + ' ' + errorThrown);
 				}
 			}); // End of Ajax 
-
 		}
 
+		
 		return false;
 	});
 
 	$('.childOrderColumn').on('click', ".childDownOrder", function(event){
 		event.preventDefault();
-		var self = $(this).parent().parent(),
-				next = self.next();
-
-		if (next.length > 0) {
-			next.find(".childUpOrder").trigger("click");
+		var self   = $(this),
+				id 		 = self.data("id"),
+				url 	 = self.data("url"),
+				model  = self.data("model"),
+				column = self.data("column"),
+				row = self.closest('tr'),
+				prevId = row.next().find(".childUpOrder").data("id");
+				
+		if (row.next().length > 0) {
+			$.ajax({
+				type: 'POST',
+				url: url,
+				data: {
+					action: "swap_order",
+					column: column,
+					prevId: prevId, 
+					id: id, 
+					model: model, 
+					column: column
+				},
+				success: function (data) { 
+				 
+				 if (data.success ) {
+					 	row.insertAfter(row.next());
+				 } else {
+				 	alert("Failed to reorder entries.");
+				 }
+				 
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+				  //console.log('AJAX call failed: ' + textStatus + ' ' + errorThrown);
+				}
+			}); // End of Ajax 
 		}
+		
 		return false;
 	});
 

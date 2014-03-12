@@ -1,19 +1,9 @@
-<?php
-use \DB;
-
-$entry = $data['enrties'];
-$columns = $data['columns'];
-$header  = $data['header'];
-$infuseLogin = $data['infuseLogin']; 
-
-?>
-
 @if (isset($header['edit']) && count($header['manyToManyAssociations']) > 0)
 <tr>
 <?php
 
-$model = (array_key_exists('actualModel', $header))? get_class($header['actualModel']) : get_class($entry);
-
+//$model = (array_key_exists('actualModel', $header))? get_class($header['actualModel']) : get_class($entry);
+$model = get_class($entry);
 ?>
 
 	@foreach ($header['manyToManyAssociations'] as $association)
@@ -45,12 +35,12 @@ $model = (array_key_exists('actualModel', $header))? get_class($header['actualMo
 			<td>
 				<?php
 					$belongsToModelInstance = Util::stringToCLass($belongsToModel);
-					$ids = DB::table($manyToManyTable)->where($secondForeignId, "=", $entry->id)->lists($firstForeignId);
-					$allPossible = DB::table($belongsToModelInstance->getTable())->select('id', $columnName)->orderBy($columnName, 'asc')->get();
+					$ids = $db::table($manyToManyTable)->where($secondForeignId, "=", $entry->id)->lists($firstForeignId);
+					$allPossible = $db::table($belongsToModelInstance->getTable())->select('id', $columnName)->orderBy($columnName, 'asc')->get();
 				?>
 
 				@foreach ($allPossible as $a)
-						@if ($belongsToModel != "InfuseUser" && $a->id != 1)
+						@if (!($belongsToModel == "InfuseUser" && $a->id == 1) && !($belongsToModel == "InfuseRole" && $a->id == 1)  && !($belongsToModel == "InfusePermission" && $a->id == 1) )
 						<label class="checkbox inline">
 						  <input type="checkbox" {{((in_array($a->id, $ids))? "checked='checked'" : "" )}} name="{{$manyToManyTable}}[]" value="{{$a->id}}"> {{$a->{$columnName} }}
 						</label>

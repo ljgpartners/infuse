@@ -16,9 +16,11 @@ class InfuseRole extends VerifyRole {
   }
 
 
-	///////////////////////////////////////////////////////////
-  // InfuseEloquent declarations below
-  ///////////////////////////////////////////////////////////
+	/*
+  |--------------------------------------------------------------------------
+  | InfuseEloquent declarations below
+  |--------------------------------------------------------------------------
+  */
 
 	protected $rules = array();
 
@@ -84,5 +86,5 @@ class InfuseRole extends VerifyRole {
                   .get_class($this).DIRECTORY_SEPARATOR
                   .$column.DIRECTORY_SEPARATOR).$this->{$column};
   }
-
+  
 }

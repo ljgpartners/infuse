@@ -1,11 +1,4 @@
-<?php 
-use \DB;
 
-$entries = $data['enrties'];
-$columns = $data['columns'];
-$header  = $data['header'];
-$infuseLogin = $data['infuseLogin'];
-?>
 
 @if (isset($header['edit']) && count($header['associations']) > 0)
 <tr>
@@ -17,6 +10,8 @@ $infuseLogin = $data['infuseLogin'];
 			$childColumns = $association[2];
 			$childOrderColumn = (isset($association[3]) && is_array($association[3]) && isset($association[3]['order_column']) )? $association[3]['order_column'] : false;
 			$childOrderDirection = (isset($association[3]) && is_array($association[3]) && isset($association[3]['order_direction']) )? $association[3]['order_direction'] : false;
+			$importCSV = (isset($association[3]) && is_array($association[3]) && isset($association[3]['import_csv']) )? $association[3]['import_csv'] : false;
+			$header['deleteAction'] = (isset($association[3]) && is_array($association[3]) && isset($association[3]['delete_action']) )? $association[3]['delete_action'] : true;
 			$numColumns = count($childColumns)+1;
 	?>
 	<table class="table table-striped table-bordered">
@@ -36,28 +31,22 @@ $infuseLogin = $data['infuseLogin'];
 					<th>{{Util::cleanName($column)}}</th>
 				@endif
 			@endforeach 
-			<th><a href="{{Util::childActionLink($model, 'c')}}">Create</a></th>
+			<th>
+				<a href="{{Util::childActionLink($model, 'c')}}">Create</a>
+			</th>
 		</tr> 
 		
 		<?php 
-			if (array_key_exists('actualModel', $header)):
-				if ($childOrderColumn && $childOrderDirection ) {
-					$hasManyObject = $header['actualModel']->hasMany(Util::under2camel(ucfirst($model)))->orderBy(DB::raw("{$childOrderColumn} = 0"), "asc")->orderBy($childOrderColumn, $childOrderDirection)->get();
-				} else {
-					$hasManyObject = $header['actualModel']->hasMany(Util::under2camel(ucfirst($model)))->get();
-				}
-			else:
-				if ($childOrderColumn && $childOrderDirection ) {
-					$hasManyObject = $entries->hasMany(Util::under2camel(ucfirst($model)))->orderBy(DB::raw("{$childOrderColumn} = 0"), "asc")->orderBy($childOrderColumn, $childOrderDirection)->get();
-				} else {
-					$hasManyObject = $entries->hasMany(Util::under2camel(ucfirst($model)))->get();
-				}
-			endif;
+			if ($childOrderColumn && $childOrderDirection ) {
+				$hasManyObject = $entries->hasMany(Util::under2camel(ucfirst($model)))->orderBy($db::raw("{$childOrderColumn} = 0"), "asc")->orderBy($childOrderColumn, $childOrderDirection)->get();
+			} else {
+				$hasManyObject = $entries->hasMany(Util::under2camel(ucfirst($model)))->get();
+			}
 		?>
 		
-		<?php $previoustChildId = 0; ?>
+		
 		@foreach ($hasManyObject as $key => $child)
-		<tr> 
+		<tr data-class="{{$model}}" class="{{$model}}"> 
 			@foreach ($childColumns as $column)
 				@if (is_array($column)) 
 					@foreach (current($column) as $value)
@@ -77,9 +66,8 @@ $infuseLogin = $data['infuseLogin'];
 					@else
 						@if ($childOrderColumn && $childOrderDirection && ($childOrderColumn == $column))
 							<td class="childOrderColumn">
-								<a class="childUpOrder" data-previous-id="{{$previoustChildId}}" data-id="{{$child->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column}}" data-model="{{get_class($child)}}" href="">[up]</a> 
-								<a class="childDownOrder" href="">[down]</a>
-								<span>{{$child->{$column} }}</span>
+								<a class="childUpOrder" data-id="{{$child->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column}}" data-model="{{get_class($child)}}" href="">[up]</a> 
+								<a class="childDownOrder" data-id="{{$child->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column}}" data-model="{{get_class($child)}}" href="">[down]</a>
 							</td>
 						@else
 							<td>{{$child->{$column} }}</td>
@@ -93,11 +81,29 @@ $infuseLogin = $data['infuseLogin'];
 			<td>
 				<a href="{{Util::childActionLink($model, 's', $child->id)}}">show</a>
 				<a href="{{Util::childActionLink($model, 'e', $child->id)}}">edit</a>
-				<a href="{{Util::childActionLink($model, 'd', $child->id)}}" onclick="return confirm('Confirm delete?');">delete</a>
+				@if ($header['deleteAction'])
+					<a href="{{Util::childActionLink($model, 'd', $child->id)}}" onclick="return confirm('Confirm delete?');">delete</a>
+				@endif
 			</td>
 		</tr>
-		<?php $previoustChildId = $child->id; ?>	
 		@endforeach
+
+		@if ($importCSV)  
+		<tr>
+			<th colspan="{{$numColumns}}">
+				<form method="POST"  enctype="multipart/form-data">
+					Import CSV  (Excel Template: <a target="_BLANK" href="{{$importCSV}}">{{Util::camel2under($model)}}</a>)
+					<pre> <input type="file" name="csv_file">  </pre>
+					<input type="hidden" name="action" value="icsv">
+					<input type="hidden" name="child" value="{{$model}}">
+					<input type="hidden" name="back" value="{{$_SERVER['REQUEST_URI']}}">
+					<input type="hidden" name="parent_id" value="{{$entries->id}}"> 
+					<input type="submit" value="import" class="btn submitButton">
+				</form>
+			</th>
+		</tr>
+		@endif
+		
 
 
 	</table>

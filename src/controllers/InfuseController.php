@@ -1,22 +1,23 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| InfuseController 
+|--------------------------------------------------------------------------
+| Main logic for infuse combined together in this controller
+|
+*/
+
 class InfuseController extends BaseController {
 
 	public $layout = 'infuse::layouts.application';
 
-	public function __construct()
+	public function __construct(\InfuseUser $user)
 	{	
-		Config::set('auth.driver', 'verify');
-		Config::set('auth.model', 'InfuseUser');
-		$this->beforeFilter('InfuseAuth'); 
-
-		if (!Auth::guest()) {
-			$this->user = Auth::user();
-			View::share("user", $this->user);
-			View::share("superAdmin", $this->user->is('Super Admin'));
-		}
+		$this->user = $user;
+		View::share("user", $this->user);
+		View::share("superAdmin", $this->user->is('Super Admin'));
 		View::share('navigation', Config::get('infuse::navigation'));
-		
 	}
 
 
@@ -33,24 +34,21 @@ class InfuseController extends BaseController {
 		$this->layout->title = "Resource | Infuse"; 
 		View::share('manageActive', true);
 		$uri = Request::path();
-		
-		if (Request::ajax()) {
-			$response = WebService::newInstance(new DB);
-			return Response::json($response);
-		}
 
 		Util::stackReset();
 		Util::stackPush($resource, Input::get('id', null), $uri);
 		
-		$scaffold = Config::get("infuse::{$resource}.scaffold");
-		
-		$redirect = $scaffold->checkPermissions($this->user, Util::childBackLink());
+		$config = Config::get("infuse::{$resource}");
+
+		$scaffold = Scaffold::model($config['model'])
+									->boot()
+									->mapConfig($config);
+
+		$redirect = $scaffold->checkPermissions(Util::childBackLink());
 		if ($redirect)
 			return Redirect::to($redirect);
-		
-		$scaffold = $scaffold->loadUser($this->user)->config();
-		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $scaffold);
-		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold); 
+			
+		$this->layout->content = $scaffold->process(); 
 	}
 
 	public function child($resource)
@@ -60,26 +58,21 @@ class InfuseController extends BaseController {
 		$uri = Request::path();
 		$child = Input::get('stack');
 		
-		if (Request::ajax()) {
-			$response = WebService::newInstance(new DB);
-			return Response::json($response);
-		}
-
 		if (Input::has("pop"))
 			Util::stackPop(); 
 		Util::stackPush($child, Input::get('id', null), $uri); 
 		
-		$scaffold = Config::get("infuse::{$resource}.children.{$child}"); 
 		
-		$redirect = $scaffold->checkPermissions($this->user, Util::childBackLink());
+		$config = Config::get("infuse::{$resource}.children.{$child}");
+		$scaffold = Scaffold::model($config['model'])
+									->boot()
+									->mapConfig($config);
+
+		$redirect = $scaffold->checkPermissions(Util::childBackLink());
 		if ($redirect)
 			return Redirect::to($redirect);
-
-		$scaffold = $scaffold->loadUser($this->user)->config();
-		$scaffold = View::make(Scaffold::getBladeTemplate())->with('data', $scaffold);
-		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $scaffold);  
-		
-		
+			
+		$this->layout->content = $scaffold->process(); 
 	}
 
 	public function user()
@@ -88,14 +81,16 @@ class InfuseController extends BaseController {
 		View::share('userActive', true);
 		$uri = Request::path();
 		
-		$resource = Config::get('infuse::infuse_user.scaffold');
-		$redirect = $resource->checkPermissions($this->user, $uri);
+		$config = Config::get('infuse::infuse_user');
+		$scaffold = Scaffold::model($config['model'])
+									->boot()
+									->mapConfig($config);
+
+		$redirect = $scaffold->checkPermissions($uri);
 		if ($redirect)
 			return Redirect::to($redirect);
 			
-		$resource = $resource->loadUser($this->user)->config();
-		$resource = View::make(Scaffold::getBladeTemplate())->with('data', $resource);
-		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $resource); 
+		$this->layout->content = $scaffold->process();
 	}
 
 
@@ -109,21 +104,14 @@ class InfuseController extends BaseController {
 			);
 			return Redirect::route('dashboard');
 		}
-	
 		
 		$this->layout->title = "Permissions | Infuse";
-		$resource = Scaffold::newInstance(new InfusePermission, new DB)
-			->name("Infuse Permission")
-			->limit(100)
-			->order(array("order" => "desc", "column" => "created_at"))
-			->listColumns(array("name", "description"))
-			->manyToMany(array(
-				array("InfuseRole", "role_id", "InfusePermission", "permission_id", "permission_role", "name", "name")
-			))
-			->loadUser($this->user)->config();
-
-		$resource = View::make(Scaffold::getBladeTemplate())->with('data', $resource);
-		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $resource); 
+		$config = Config::get('infuse::permission');
+		$scaffold = Scaffold::model($config['model'])
+									->boot()
+									->mapConfig($config);
+			
+		$this->layout->content = $scaffold->process(); 
 	}
 
 	public function role()
@@ -138,19 +126,12 @@ class InfuseController extends BaseController {
 		}
 		
 		$this->layout->title = "Roles | Infuse";
-		$resource = Scaffold::newInstance(new InfuseRole, new DB)
-			->name("Infuse Role")
-			->limit(100)
-			->order(array("order" => "desc", "column" => "created_at"))
-			->listColumns(array("name", "description"))
-			->manyToMany(array(
-				array("InfusePermission", "permission_id", "InfuseRole", "role_id", "permission_role", "name", "name"),
-				array("InfuseUser", "user_id", "InfuseRole", "role_id", "role_user", "username", "name")
-			)) 
-			->loadUser($this->user)->config();
-
-		$resource = View::make(Scaffold::getBladeTemplate())->with('data', $resource);
-		$this->layout->content = View::make('infuse::infuse.resource')->with('scaffold', $resource); 
+		$config = Config::get('infuse::role');
+		$scaffold = Scaffold::model($config['model'])
+									->boot()
+									->mapConfig($config);
+			
+		$this->layout->content = $scaffold->process(); 
 	}
 
 }

@@ -11,9 +11,12 @@ class InfuseUser extends VerifyUser {
     return $this->belongsToMany('InfuseRole', 'role_user', 'user_id', 'role_id');
   }
 
-  ///////////////////////////////////////////////////////////
-  // InfuseEloquent declarations below
-  ///////////////////////////////////////////////////////////
+  /*
+  |--------------------------------------------------------------------------
+  | InfuseEloquent declarations below
+  |--------------------------------------------------------------------------
+  */
+
   protected $rules = array(
         'username' => "required|unique:users,username,[id]",
         'email'  => 'required|email|unique:users,email,[id]"'
@@ -27,7 +30,7 @@ class InfuseUser extends VerifyUser {
   {
       $replace = ($this->getKey() > 0) ? $this->getKey() : '';
       foreach ($this->rules as $key => $rule) {
-          $this->rules[$key] = str_replace('[id]', $replace, $rule);
+        $this->rules[$key] = str_replace('[id]', $replace, $rule);
       }
 
       // make a new validator object
@@ -35,9 +38,9 @@ class InfuseUser extends VerifyUser {
 
       // check for failure
       if ($v->fails()) {
-          // set errors and return false
-          $this->errors = $v->messages();
-          return false;
+        // set errors and return false
+        $this->errors = $v->messages();
+        return false;
       }
 
       // validation pass
@@ -49,8 +52,8 @@ class InfuseUser extends VerifyUser {
       $id = $this->getKey();
       array_walk($rules, function(&$item) use ($id)
       {
-          // Replace placeholders
-          $item = stripos($item, ':id:') !== false ? str_ireplace(':id:', $id, $item) : $item;
+        // Replace placeholders
+        $item = stripos($item, ':id:') !== false ? str_ireplace(':id:', $id, $item) : $item;
       });
 
       return $rules;
@@ -98,17 +101,15 @@ class InfuseUser extends VerifyUser {
 
   public function save(array $options = array())
   {
-    if (!$this->exists) {
+    if (!$this->exists) { 
       $saved = parent::save($options);
 
       $email = $this->email;
       $server = $_SERVER['SERVER_NAME'];
       $data = array("full_name" => $this->full_name, "username" => $this->username, "email" => $email, "create" => true);
 
-      Config::set('auth.driver', 'verify');
-      Config::set('auth.model', 'InfuseUser');
+      
       Config::set('auth.reminder.email', 'infuse::emails.reminder');
-      Config::set('auth.reminder.expire', Config::get('infuse::reminder_expire'));
 
       View::composer('infuse::emails.reminder', function($view) use ($data) {
         $view->with($data);
@@ -126,5 +127,5 @@ class InfuseUser extends VerifyUser {
     }
     
   }
-
+  
 }

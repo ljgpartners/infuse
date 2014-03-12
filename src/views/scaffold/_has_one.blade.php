@@ -1,9 +1,3 @@
-<?php 
-$entries = $data['enrties'];
-$columns = $data['columns'];
-$header  = $data['header'];
-?>
-
 @if (isset($header['edit']) && $header['hasOneAssociation'] != false)
 <tr>
 	@foreach ($header['hasOneAssociation'] as $association)
@@ -12,6 +6,7 @@ $header  = $data['header'];
 		$model = $association[0];
 		$childTitle = $association[1];
 		$childColumns = $association[2];
+		$header['deleteAction'] = (isset($association[3]) && is_array($association[3]) && isset($association[3]['delete_action']) )? $association[3]['delete_action'] : true;
 		$numColumns = count($childColumns)+1;
 	?>
 	<table class="table table-striped table-bordered">
@@ -67,7 +62,9 @@ $header  = $data['header'];
 			<td>
 				<a href="{{Util::childActionLink($model, 's', $child->id)}}">show</a>
 				<a href="{{Util::childActionLink($model, 'e', $child->id)}}">edit</a>
-				<a href="{{Util::childActionLink($model, 'd', $child->id)}}" onclick="return confirm('Confirm delete?');">delete</a>
+				@if ($header['deleteAction'])
+					<a href="{{Util::childActionLink($model, 'd', $child->id)}}" onclick="return confirm('Confirm delete?');">delete</a>
+				@endif
 			</td>
 		</tr>
 		@endforeach

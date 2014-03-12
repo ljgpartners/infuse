@@ -1,6 +1,12 @@
 <?php
 use Illuminate\Support\Facades\Password;
 
+/*
+|--------------------------------------------------------------------------
+| RemindersController 
+|--------------------------------------------------------------------------
+*/
+
 class RemindersController extends BaseController {
 
 	public $layout = 'infuse::layouts.application'; 

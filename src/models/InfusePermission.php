@@ -10,9 +10,11 @@ class InfusePermission extends VerifyPermission {
     return $this->belongsToMany('InfuseRole', 'permission_role', 'permission_id', 'role_id');
   }
 
-  ///////////////////////////////////////////////////////////
-  // InfuseEloquent declarations below
-  ///////////////////////////////////////////////////////////
+  /*
+  |--------------------------------------------------------------------------
+  | InfuseEloquent declarations below
+  |--------------------------------------------------------------------------
+  */
 
 	protected $rules = array();
 
@@ -78,5 +80,6 @@ class InfusePermission extends VerifyPermission {
                   .get_class($this).DIRECTORY_SEPARATOR
                   .$column.DIRECTORY_SEPARATOR).$this->{$column};
   }
+  
 
 }

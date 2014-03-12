@@ -1,9 +1,4 @@
 <?php 
-$entries = $data['enrties'];
-$columns = $data['columns'];
-$header  = $data['header'];
-$infuseLogin = $data['infuseLogin'];
-
 if (isset($header['filters'])):
 		$individualFilters = "";
 		for($x=1; $x <= count($header['filters']); $x++)
@@ -14,7 +9,7 @@ else:
 endif;
 ?>
 
-
+<div class="infuseInner">
 
 <div class="infuseScaffold">
 
@@ -206,7 +201,7 @@ endif;
 
 </div>
 
-
+</div>
 
 
 

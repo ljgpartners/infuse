@@ -69,8 +69,7 @@ class InfuseEloquent extends Eloquent {
                   .get_class($this).DIRECTORY_SEPARATOR
                   .$column.DIRECTORY_SEPARATOR).$this->{$column};
   }
-
-
+  
 }
 
 ?>

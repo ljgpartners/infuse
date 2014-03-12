@@ -27,6 +27,9 @@ Steps for installing
 > 
 > $ php artisan migrate --package="bpez/infuse"
 >
+> In app/config/auth.php set:
+> 'auth.driver' => 'verify'
+> 'auth.model' => 'InfuseUser'
 
 ### When working in workbench
 

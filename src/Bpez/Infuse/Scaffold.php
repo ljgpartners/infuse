@@ -4,12 +4,18 @@ use Exception;
 use Transit\Transit;
 use Transit\Validator\ImageValidator;
 use Illuminate\Support\Facades\Log;
-use \DB;
-use \App;
-use \Cache;
+
+/*
+|--------------------------------------------------------------------------
+| Scaffold 
+|--------------------------------------------------------------------------
+| Contains all the logic for scaffolding a laravel/Infuse model
+|
+*/
 
 class Scaffold {
 	
+	private $testing = false;
 	private $model;
 	private $columns;
 	private $action;
@@ -30,19 +36,29 @@ class Scaffold {
 	private $onlyOne = false;
 	private $manyToMany = array();
 	private $belongsToUser = false;
-	private $user = false;
 	private $onlyLoadSameChildren = false;
 	private $associateToSameParent = false;
+	private $deleteAction = true;
 
-	public function __construct($model)
+	protected $view;
+	protected $user = false;
+	protected static $db;
+
+	public function __construct(\Illuminate\View\Environment $view, \InfuseUser $user, \Illuminate\Support\Facades\DB $db)
 	{	
-		$this->action = Util::get("action");
-		$this->model = $model;
-		$this->name = get_class($model);
-		
-		$columns = Cache::rememberForever("infuse::columns.{$this->name}", function() use ($model) {
-			return DB::select("SHOW COLUMNS FROM ".$model->getTable());
-		});
+		$this->view = $view;
+		$this->user = $user;
+		self::$db = $db;
+	}
+
+
+	public function boot()
+  {	
+  	self::checkIfOverUploadLimit();
+  	$this->action = Util::get("action"); 
+		$this->name = get_class($this->model);
+		$db = self::$db;
+		$columns =  $db::select("SHOW COLUMNS FROM ".$this->model->getTable());
 		
 		foreach ($columns as $column) {
 			if ($column->Field != 'id' ) {
@@ -64,65 +80,29 @@ class Scaffold {
 					);
 			}
 		}
-
-	}
-
-
-	public static function newInstance($model)
-  {	
-  	return new self($model);
+  	
+  	return $this;
   }
 
-  public function checkPermissions($user, $redirectBack)
-  {	
-  	switch ($this->action) {
-			case 'l':
-			case 's':
-			case 'f':
-				$action = "view";
-				$redirect = "/admin/dashboard";
-				break;
-			case 'e':
-			case 'u':
-				$action = "update";
-				$redirect = $redirectBack;
-				break;
-			case 'd':
-				$action = "delete";
-				$redirect = $redirectBack;
-				break;
-			case 'c':
-			case 'cd':
-			case 'cu':
-				$action = "create";
-				$redirect = $redirectBack;
-				break;
-			default:
-				$action = "view";
-				$redirect = "/admin/dashboard";
-				break;
-		}
-
-		$resource = Util::camel2under(get_class($this->model)); 
-		
-		if ($user->can($resource."_".$action)) {
-			// User has permission let user continue action
-			return false;
-
-		} else {
-			$name = Util::cleanName($this->name);
+  public static function checkIfOverUploadLimit()
+  {
+  	if(empty($_FILES) && empty($_POST) && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) == 'post')	{ 
+      $postMax = ini_get('post_max_size'); 
 			Util::flash(array(
-				"message" => "{$user->username} is not authorized to {$action} {$name}.", 
-				"type" => "warning"
+				"message" => "Maximum upload size exceeded on server. Please note files or total combined size of files larger than {$postMax} will result in this error!", 
+				"type" => "error"
 				)
 			);
 
-			// User does not have permission don't let user continue action
-			return $redirect;
+			header("Location: http://".$_SERVER['HTTP_HOST']."/admin/dashboard");
+			exit();
 		}
+  }
 
-		
-  	
+  public function testing()
+  {
+  	$this->testing = true;
+  	return $this;
   }
 
 
@@ -156,12 +136,70 @@ class Scaffold {
 				break;
 			case 'rrpp':
 				$this->sendRequestResetPasswordPage();
+			case 'icsv':
+				$this->importCSV();
 
 			default:
 				$this->listAll();
 				break;
 		}
 	}
+
+
+	public function checkPermissions($redirectBack)
+  {	
+  	switch ($this->action) {
+			case 'l':
+			case 's':
+			case 'f':
+				$action = "view";
+				$redirect = "/admin/dashboard";
+				break;
+			case 'e':
+			case 'u':
+				$action = "update";
+				$redirect = $redirectBack;
+				break;
+			case 'd':
+				$action = "delete";
+				$redirect = $redirectBack;
+				break;
+			case 'c':
+			case 'cd':
+			case 'cu':
+			case 'icsv':
+				$action = "create";
+				$redirect = $redirectBack;
+				break;
+
+			default:
+				$action = "view";
+				$redirect = "/admin/dashboard";
+				break;
+		}
+
+		$resource = Util::camel2under(get_class($this->model)); 
+		
+		if ($this->user->can($resource."_".$action)) {
+			// User has permission let user continue action
+			return false;
+
+		} else {
+			$name = Util::cleanName($this->name);
+			Util::flash(array(
+				"message" => "{$this->user->username} is not authorized to {$action} {$name}.", 
+				"type" => "warning"
+				)
+			);
+
+			// User does not have permission don't let user continue action
+			return $redirect;
+		}
+
+		
+  	
+  }
+
 
 	private function listAll()
 	{	
@@ -242,11 +280,12 @@ class Scaffold {
 		$post = Util::flashArray("post");
 		if (!$post) {
 			$this->entries = $model::find(Util::get("id"));
-
 		} else {
-
-			$this->entries = Util::arrayToObject($post);
-			$this->header['actualModel'] = $model::find($post["id"]);
+			$this->entries = $model::find($post["id"]);
+			foreach ($this->columns as $column) {
+				if (isset($post[$column['field']]))
+					$this->entries->{$column['field']} = $post[$column['field']];
+			}
 		}
 		
 	}
@@ -288,12 +327,12 @@ class Scaffold {
 		
 	}
 
-	private function delete()
+	private function delete() 
 	{
 		$model = $this->model;
-		$user = $model::find(Util::get("id"));
+		$entry = $model::find(Util::get("id"));
 
-		if ($this->infuseLogin && $user->id == 1 && $user->username == 'super' ) {
+		if ($this->infuseLogin && $entry->id == 1 && $entry->username == 'super' ) {
 			Util::flash(array(
 				"message" => "Can't delete super.", 
 				"type" => "error"
@@ -301,7 +340,11 @@ class Scaffold {
 			);
 
 		} else {
-			$user->delete();
+			foreach ($this->columns as $column) {
+				if (array_key_exists("upload", $column) && !empty($entry->{$column['field']})) 
+					unlink($_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']));
+			}
+			$entry->delete();
 			Util::flash(array(
 				"message" => "Deleted {$this->name} with id of ".Util::get("id").".", 
 				"type" => "error"
@@ -315,9 +358,89 @@ class Scaffold {
 		} else {
 			$redirect_path = Util::redirectUrl();
 		}
-		header("Location: {$redirect_path}");
-		exit();
+		
+		if (!$this->testing) {
+			header("Location: {$redirect_path}");
+			exit();
+		}
 	}
+
+	private function importCSV()
+	{
+		$model = $this->model;
+		$entry = $model::find(Util::get("parent_id"));
+		$redirect_path = Util::get("back");
+		$error = false;
+		
+		if (\Input::hasFile('csv_file')) {
+			$rule = array('csv_file' => 'mimes:csv');
+      $validator = \Validator::make(array('csv_file' => \Input::get('csv_file')), $rule);
+      if($validator->fails()) {
+        $error = true;
+				$message = "File uploaded not valid.";
+      } else {
+
+	      $file            = \Input::file('csv_file');
+        $destinationPath = $_SERVER['DOCUMENT_ROOT'].'/uploads/tmp/';
+        $filename        = time().'_'.$file->getClientOriginalName();
+        $uploadSuccess   = $file->move($destinationPath, $filename);
+	      
+	      if (Util::get("child")) { 
+					$child = Util::get("child");
+					$childInstance = new $child;
+					$db = self::$db;
+					$columns = $db::select("SHOW COLUMNS FROM ".$childInstance->getTable());
+					unset($db);
+
+					$columns = array_map(function($n) {
+						return $n->Field;
+					}, $columns);
+
+					$header = Util::importCSV($destinationPath.$filename, true);
+
+					foreach ($header as $h) {
+						if (!in_array($h, $columns)) {
+							$error = true;
+							$message = "Fields not correct in csv file.";
+						}
+					}
+					unset($columns);
+
+					if (!$error) {
+						$data = Util::importCSV($destinationPath.$filename);
+						$foreignKey = Util::getForeignKeyString($entry);
+						foreach ($data as $row) {
+							$childInstance = new $child;
+							foreach($row as $key => $value)
+								$childInstance->{$key} = $value;
+							$childInstance->{$foreignKey} = $entry->id;
+							$entry->hasMany($child)->save($childInstance);
+						}
+
+						$message = "Succesfully imported csv data.";
+					}
+
+				}
+      }
+			
+		} else {
+			$error = true;
+			$message = "No file uploaded.";
+		}
+	
+		Util::flash(array(
+			"message" => $message, 
+			"type" => ($error)? "error" : "success"
+			)
+		);
+		
+		
+		if (!$this->testing) {
+			header("Location: {$redirect_path}");
+			exit();
+		}
+	}
+	
 
 	private function sendRequestResetPasswordPage()
 	{
@@ -333,8 +456,10 @@ class Scaffold {
 		
 		$redirect_path = Util::redirectUrl();
 		
-		header("Location: {$redirect_path}");
-		exit();
+		if (!$this->testing) {
+			header("Location: {$redirect_path}");
+			exit();
+		}
 	}
 
 
@@ -419,6 +544,9 @@ class Scaffold {
 					try { 
 						if ($_FILES["{$column['field']}"]['name'] != "" && $transit->upload()) {
 							$fileName = explode(DIRECTORY_SEPARATOR, $transit->getOriginalFile());
+
+							if (!empty($entry->{$column['field']}))
+								unlink($_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']));
 							$entry->{$column['field']} = end($fileName);
 						}
 					} catch (Exception $e) {
@@ -490,8 +618,9 @@ class Scaffold {
 						$secondForeignId = $association[1];
 					}
 
+					
 					$idsForSync = Util::get($manyToManyTable); 
-					if ($idsForSync) {
+					if ($idsForSync) { 
 						$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach();
 						if ($this->infuseLogin && $entry->id == 1 && $entry->username == 'super' )
 							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach(1);
@@ -503,6 +632,8 @@ class Scaffold {
 					}
 				}
 			}
+
+			
 			
 			$entry->save();
 			Util::flash($message);
@@ -530,7 +661,7 @@ class Scaffold {
 			Util::flashArray("post", Util::getAll());
 
 			if (Util::get("stack")) {
-				if (!property_exists($entry, "id")) {
+				if (!Util::get("id")) { 
 					$redirect_path = Util::redirectUrlChildSaveFailed();
 				}	else {
 					$redirect_path = Util::redirectUrlChildSaveFailed($entry->id);
@@ -542,9 +673,12 @@ class Scaffold {
 			
 			
 		}
-		
-		header("Location: {$redirect_path}");
-		exit();
+
+		if (!$this->testing) {
+			header("Location: {$redirect_path}");
+			exit();
+		}
+			
 	}
 
 
@@ -645,33 +779,40 @@ class Scaffold {
 	/******************************
 		Config methods
 	*******************************/
+	public function model($model)
+	{
+		$this->model = $model;
+		return $this;
+	}
 
-	public function name($name)
+	protected function name($name)
 	{
 		$this->name = $name;
 		return $this;
 	}
 
-	public function columnName($columnName, $newName)
+	protected function columnName($info) 
 	{
-		if (!is_string($columnName) || !is_string($newName)) 
-			throw new Exception('columnName("columnName", "newName"); First argument should name of column. Second argument should be replacement name.');
-		if (array_key_exists($columnName, $this->columns)) {
-			$this->columnNames["{$columnName}"] = $newName;
+		if (!is_array($info) && isset($info['column']) && isset($info['newName'])) 
+
+		if (!is_string($info['column']) || !is_string($info['newName'])) 
+			throw new Exception('columnName(array("column" => someColumn, "newName" => "someName")); First argument should name of column. Second argument should be replacement name.');
+		if (array_key_exists($info['column'], $this->columns)) {
+			$this->columnNames["{$info['column']}"] = $info['newName'];
 			return $this;
 		} else {
-			throw new Exception('columnName("columnName", "newName"); Column doesn\'t exist.');
+			throw new Exception('array("column" => someColumn, "newName" => "someName")); Column doesn\'t exist.');
 		}
 		return $this;
 	}
 
-	public function limit($limit)
+	protected function limit($limit)
 	{
 		$this->limit = (is_int($limit))? $limit : $this->limit;
 		return $this;
 	}
 
-	public function infuseLogin()
+	protected function infuseLogin()
 	{
 		$this->infuseLogin = true;
 		unset($this->columns['password']);
@@ -680,7 +821,7 @@ class Scaffold {
 	}
 
 
-	public function order($order)
+	protected function order($order)
 	{
 		if (is_array($order) && array_key_exists("order", $order) && array_key_exists("column", $order)) {
 			$this->order["order"] = $order["order"];
@@ -691,38 +832,42 @@ class Scaffold {
 		}
 	}
 
-	public function addSelect($column, $array, $insertBlank = false)
+	protected function addSelect($info) 
 	{	
-		if (!is_string($column)) 
-			throw new Exception('addSelect("name", array()); First argument should name of column. ');
-		if (!is_array($array)) 
-			throw new Exception('addSelect("name", array()); Second argument can only be an array. ');
-		if (array_key_exists($column, $this->columns)) {
-			$this->columns["{$column}"]["select"] = $array;
-			if ($insertBlank == true) {
-				$this->columns["{$column}"]["select_blank"] = true;
+		if (!is_array($info) && isset($info['column']) && isset($info['array'])) 
+			throw new Exception('addSelect(array("column" => $columnName, "array" => array(), "insertBlank" => false)); First argument must an array. column and array must be set. ');
+		if (!is_string($info['column'])) 
+			throw new Exception('addSelect(array("column" => $columnName, "array" => array(), "insertBlank" => false)); Column must be a string. ');
+		if (!is_array($info['array'])) 
+			throw new Exception('addSelect(array("column" => $columnName, "array" => array(), "insertBlank" => false)); Array index must be an array. ');
+		if (array_key_exists($info['column'], $this->columns)) {
+			$this->columns["{$info['column']}"]["select"] = $info['array'];
+			if (isset($info['insertBlank']) && $info['insertBlank'] == true) {
+				$this->columns["{$info['column']}"]["select_blank"] = true;
 			}
 			return $this;
 		} else {
-			throw new Exception('addSelect("name", array()); Column doesn\'t exist.');
+			throw new Exception('addSelect(array("column" => $columnName, "array" => array(), "insertBlank" => false)); Column doesn\'t exist.');
 		}
 	}
 
-	public function addMultiSelect($column, $array)
+	protected function addMultiSelect($info)
 	{	
-		if (!is_string($column)) 
-			throw new Exception('addMultiSelect("name", array()); First argument should name of column. ');
-		if (!is_array($array)) 
-			throw new Exception('addMultiSelect("name", array()); Second argument can only be an array. ');
-		if (array_key_exists($column, $this->columns)) {
-			$this->columns["{$column}"]["multi_select"] = $array;
+		if (!is_array($info) && isset($info['column']) && isset($info['array'])) 
+			throw new Exception('addMultiSelect(array("column" => $columnName, "array" => array())); First argument must an array. column and array must be set. ');
+		if (!is_string($info['column'])) 
+			throw new Exception('addMultiSelect(array("column" => $columnName, "array" => array())); First argument should name of column. ');
+		if (!is_array($info['array'])) 
+			throw new Exception('addMultiSelect(array("column" => $columnName, "array" => array())); Second argument can only be an array. ');
+		if (array_key_exists($info['column'], $this->columns)) {
+			$this->columns["{$column}"]["multi_select"] = $info['array'];
 			return $this;
 		} else {
-			throw new Exception('addMultiSelect("name", array()); Column doesn\'t exist.');
+			throw new Exception('addMultiSelect(array("column" => $columnName, "array" => array())); Column doesn\'t exist.');
 		}
 	}
 
-	public function addCkeditor($column)
+	protected function addCkeditor($column)
 	{
 		if (!is_string($column)) 
 			throw new Exception('addCkeditor("name"); First argument should name of column. ');
@@ -739,21 +884,34 @@ class Scaffold {
 	$imageCrop = array("image_crop" => true, "width" => 98, "height" => 98) 
 	Note if image crop is used then file validation will be applied
 	*/
-	public function fileUpload($column, $uploadFolder, $validations = array(), $imageCrop = false)
+	protected function fileUpload($uploads)
 	{
-		if (!is_string($column)) 
-			throw new Exception('fileUpload("name", "/path/to/files"); First argument should name of column. ');
-		if (!is_string($uploadFolder)) 
-			throw new Exception('fileUpload("name", "/path/to/files"); Second argument should be the path to the uploads folder. '); 
-		if (array_key_exists($column, $this->columns)) {
-			$this->columns["{$column}"]["upload"] = array("uploadFolder" => $uploadFolder, "validations" => $validations, "imageCrop" => $imageCrop);
-			return $this;
+		if (!is_array($uploads)) {
+			throw new Exception('fileUpload(array(array("column" => $columnName))); First argument must an array. column index must be set. ');
 		} else {
-			throw new Exception('fileUpload("name", "/path/to/files");  Column doesn\'t exist.');
+			
+			// go through all uploads 
+			foreach ($uploads as $key => $info) {
+				
+				if (!is_array($info) && !isset($info['column'])) 
+					throw new Exception('fileUpload(array(array("column" => $columnName))); First argument must an array. column index must be set. ');
+				if (!is_string($info['column'])) 
+					throw new Exception('fileUpload(array(array("column" => $columnName))); First argument should name of column. ');
+				if (array_key_exists($info['column'], $this->columns)) { 
+					$validations = (isset($info['validations']))? $info['validations'] : array();
+					$imageCrop = (isset($info['imageCrop']))? $info['imageCrop'] : false; 
+					$this->columns["{$info['column']}"]["upload"] = array("validations" => $validations, "imageCrop" => $imageCrop);
+				} else {
+					throw new Exception('fileUpload(array(array("column" => $columnName)));  Column doesn\'t exist.');
+				}
+			}
+			return $this;
 		}
+
+		
 	}
 
-	public function hasMany($models)
+	protected function hasMany($models)
 	{	
 		if (!is_array($models)) 
 			throw new Exception('hasMany( array(array("SomeModelName", "model_title", array("column_1", "column_2"))) ); First argument should be an array with all the info of the model. 
@@ -762,7 +920,7 @@ class Scaffold {
 		return $this;
 	}
 
-	public function hasOne($model)
+	protected function hasOne($model)
 	{	
 		if (!is_array($model)) 
 			throw new Exception('hasOne( array(array("SomeModelName", "model_title", array("column_1", "column_2"))) ); First argument should be an array of the model. 
@@ -771,7 +929,7 @@ class Scaffold {
 		return $this;
 	}
 
-	public function manyToMany($models)
+	protected function manyToMany($models)
 	{
 		if (!is_array($models)) 
 			throw new Exception('manyToMany(array(array("FirstModelName", "FirstForeignId", "SecondModelName", "SecondForeignId", "many_to_many_table", "FirstColumnName", "SecondColumnName"))); ');
@@ -779,27 +937,32 @@ class Scaffold {
 		return $this;
 	}
 
-	public function modelDescription($desc)
+	protected function modelDescription($desc)
 	{
 		$this->description = (is_string($desc))? $desc : "";
 		return $this;
 	}
 
 
-	public function describeColumn($column, $desc)
-	{
-		if (!is_string($column)) 
-			throw new Exception('describeColumn("columnName", "description here"); First argument should name of column. ');
-		if (array_key_exists($column, $this->columns)) { 
-			$this->columns["{$column}"]["description"] = (is_string($desc))? $desc : "";
-			return $this;
-		} else {
-			throw new Exception('describeColumn("columnName", "description here");  Column doesn\'t exist.');
+	protected function describeColumn($describes)
+	{	
+		if (!is_array($describes))
+			throw new Exception('describeColumn(array(array("column" => "columnName", "desc" => "description here"))); Must pass array in. ');
+
+		foreach ($describes as $d) {
+			if (!isset($d['column']) || !isset($d['desc'])) 
+				throw new Exception('describeColumn(array(array("column" => "columnName", "desc" => "description here"))); Both argument are required');
+			if (array_key_exists($d['column'], $this->columns)) { 
+				$this->columns["{$d['column']}"]["description"] = (is_string($d['desc']))? $d['desc'] : ""; 	
+			} else {
+				throw new Exception('describeColumn(array(array("column" => "columnName", "desc" => "description here")));  Column doesn\'t exist.');
+			}
 		}
+		
 		return $this;
 	}
 
-	public function displayOrder($column)
+	protected function displayOrder($column)
 	{
 		if (!is_string($column)) 
 			throw new Exception('displayOrder("name"); First argument should name of column. ');
@@ -813,7 +976,7 @@ class Scaffold {
 		}
 	}
 
-	public function listColumns($list)
+	protected function listColumns($list)
 	{
 		if (!is_array($list)) 
 			throw new Exception('list(array("name", "count", "active")); First argument should be an array of the names of the columns wanted listed on landing page.');
@@ -821,13 +984,19 @@ class Scaffold {
 		return $this;
 	}
 
-	public function onlyOne()
+	protected function onlyOne()
 	{
 		$this->onlyOne = true;
 		return $this;
 	}
 
-	public function displayOrderColumn($column)
+	protected function deleteAction($bool)
+	{	
+		$this->deleteAction = $bool;
+		return $this;
+	}
+
+	protected function displayOrderColumn($column)
 	{
 		if (!is_string($column)) 
 			throw new Exception('displayOrderColumn("name");  First argument should name of column.');
@@ -838,51 +1007,163 @@ class Scaffold {
 			throw new Exception('displayOrderColumn("name");  Column doesn\'t exist.');
 		}
 	}
-
+	/*
 	public function loadUser($user)
 	{
 		if ($user instanceof InfuseUser)
 			throw new Exception('loadUser($user);  User argument is required and should be an instance of InfuseUser.');
 		$this->user = $user;
 		return $this;
-	}
+	}*/
 
-	public function belongsToUser()
+	protected function belongsToUser()
 	{
 		$this->belongsToUser = true;
 		return $this;
 	}
 	
-	public function associateToSameParent($foreignKey)
+	protected function associateToSameParent($foreignKey)
 	{
 		$this->associateToSameParent = $foreignKey;
 		return $this;
 	}
 
-	public function onlyLoadSameChildren($foreignKey)
+	protected function onlyLoadSameChildren($foreignKey)
 	{
 		$this->onlyLoadSameChildren = $foreignKey;
 		return $this;
 	}
+	
+	public function mapConfig($config)
+	{
+		foreach ($config as $key => $f) {
+			
+			switch ($key) {
+				case 'model':
+					$this->model($f);
+					break;
+				case 'name':
+					$this->name($f);
+					break;
+				case 'columnName':
+					$this->columnName($f);
+					break;
+				case 'limit':
+					$this->limit($f);
+					break;
+				case 'infuseLogin':
+					$this->infuseLogin();
+					break;
+				case 'order':
+					$this->order($f);
+					break;
+				case 'hasMany':
+					$this->hasMany($f);
+					break;
+				case 'hasOne':
+					$this->hasOne($f);
+					break;
+				case 'manyToMany':
+					$this->manyToMany($f);
+					break;
+				case 'modelDescription':
+					$this->modelDescription($f);
+					break;
+				case 'displayOrder':
+					$this->displayOrder($f);
+					break;
+				case 'listColumns':
+					$this->listColumns($f);
+					break;
+				case 'onlyOne':
+					$this->onlyOne();
+					break;
+				case 'deleteAction':
+					$this->deleteAction($f);
+					break;
+				case 'displayOrderColumn':
+					$this->displayOrderColumn($f);
+					break;
+				case 'loadUser':
+					$this->loadUser($f);
+					break;
+				case 'belongsToUser':
+					$this->belongsToUser();
+					break;
+				case 'associateToSameParent':
+					$this->associateToSameParent($f);
+					break;
+				case 'onlyLoadSameChildren':
+					$this->onlyLoadSameChildren($f);
+					break;
+				case 'addCkeditor':
+					$this->addCkeditor($f);
+					break;
+				case 'addSelect':
+					$this->addSelect($f);
+					break;
+				case 'addMultiSelect':
+					$this->addMultiSelect($f['column'], $f['array']);
+					break;
+				case 'fileUpload':
+					$this->fileUpload($f);
+					break;
+				case 'describeColumn':
+					$this->describeColumn($f);
+					break;
+				case 'children':
+					break;
+				
+				default:
+					throw new Exception("Unknown {$key} index in config file.");
+					break;
+			}
+		}
+
+		return $this;
+	}
+	
 	
 
 
 	/******************************
 		Final build scaffold
 	*******************************/
-	public function config()
+	public function process()
 	{	
-
 		$this->route();
 		$this->header['description'] = $this->description;
+		$this->header['deleteAction'] = $this->deleteAction;
+
 		$data = array(
-				"action" => $this->action,
-				"enrties" => $this->entries,
-				"header" => $this->header,
-				"columns" => $this->columns,
-				"infuseLogin" => $this->infuseLogin,
-				"user" => $this->user
-			);
+			"action" => $this->action,
+			"entries" => $this->entries,
+			"header" => $this->header,
+			"columns" => $this->columns,
+			"infuseLogin" => $this->infuseLogin,
+			"user" => $this->user,
+			"db" => self::$db
+		);
+
+		return $this->view->make(self::getBladeTemplate(), $data);
+	}
+
+	// Used to test scaffold
+	public function processDataOnly()
+	{	
+		$this->route();
+		$this->header['description'] = $this->description;
+		$this->header['deleteAction'] = $this->deleteAction;
+
+		$data = array(
+			"action" => $this->action,
+			"entries" => $this->entries,
+			"header" => $this->header,
+			"columns" => $this->columns,
+			"infuseLogin" => $this->infuseLogin,
+			"user" => $this->user,
+			"db" => self::$db
+		);
 
 		return $data;
 	}

@@ -2,27 +2,26 @@
 
 use Exception;
 
+/*
+|--------------------------------------------------------------------------
+| WebService 
+|--------------------------------------------------------------------------
+| All infuse ajax functions hit this web service class to process
+|
+*/
+
 class WebService {
 
 	private $action = null;
 	private $db;
 
-	public function __construct($db)
+	public function __construct(\Illuminate\Support\Facades\DB $db)
 	{	
-		//header('Content-Type: application/json');
-		if (Util::get('action')) {
-		  $this->action = Util::get('action');
-		  $this->db = $db;
-		}
+	  $this->action = Util::get('action');
+	  $this->db = $db;
 	}
 
-	public static function newInstance($db)
-  {
-  	$instance = new self($db);
-  	return $instance->route();
-  }
-
-	public function route()
+	public function process()
 	{
 		switch ($this->action) {
 			case 'swap_order':
@@ -35,7 +34,7 @@ class WebService {
 		return $response;
 	}
 
-	public function swapOrder()
+	protected function swapOrder()
 	{
 		$column = Util::get('column');
 
@@ -63,7 +62,7 @@ class WebService {
 		return array( "success" => true, "swaps" => $swaps);
 	}
 
-	public function noAction()
+	protected function noAction()
 	{
 		return array("response" => "Action does not exist.");
 	}
