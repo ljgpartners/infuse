@@ -66,6 +66,9 @@ Steps for installing
 >
 > https://github.com/websoftwares/Throttle
 > http://laravel.com/docs/cache
+> https://github.com/frenzyapp/turbolinks
+> https://github.com/rails/turbolinks
+> https://github.com/kossnocorp/jquery.turbolinks
 
 
 ### artisan install 
