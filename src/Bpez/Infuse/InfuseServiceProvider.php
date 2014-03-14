@@ -52,13 +52,14 @@ class InfuseServiceProvider extends ServiceProvider {
         return new  Scaffold(
         	$app['view'],
         	$app->make("auth")->user(),
-        	$app->make("DB")
+        	$app->make("DB"),
+        	$app['request']
         );
     });
 
     $this->app['util'] = $this->app->share(function($app)
     {
-        return new Util;
+        return new Util($app['request']);
     });
 
     $this->app['web.service'] = $this->app->share(function($app)

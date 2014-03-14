@@ -41,7 +41,6 @@ class InfuseController extends BaseController {
 		$config = Config::get("infuse::{$resource}");
 
 		$scaffold = Scaffold::model($config['model'])
-									->boot()
 									->mapConfig($config);
 
 		$redirect = $scaffold->checkPermissions(Util::childBackLink());
@@ -65,7 +64,6 @@ class InfuseController extends BaseController {
 		
 		$config = Config::get("infuse::{$resource}.children.{$child}");
 		$scaffold = Scaffold::model($config['model'])
-									->boot()
 									->mapConfig($config);
 
 		$redirect = $scaffold->checkPermissions(Util::childBackLink());
@@ -83,7 +81,6 @@ class InfuseController extends BaseController {
 		
 		$config = Config::get('infuse::infuse_user');
 		$scaffold = Scaffold::model($config['model'])
-									->boot()
 									->mapConfig($config);
 
 		$redirect = $scaffold->checkPermissions($uri);
@@ -108,7 +105,6 @@ class InfuseController extends BaseController {
 		$this->layout->title = "Permissions | Infuse";
 		$config = Config::get('infuse::permission');
 		$scaffold = Scaffold::model($config['model'])
-									->boot()
 									->mapConfig($config);
 			
 		$this->layout->content = $scaffold->process(); 
@@ -128,7 +124,6 @@ class InfuseController extends BaseController {
 		$this->layout->title = "Roles | Infuse";
 		$config = Config::get('infuse::role');
 		$scaffold = Scaffold::model($config['model'])
-									->boot()
 									->mapConfig($config);
 			
 		$this->layout->content = $scaffold->process(); 

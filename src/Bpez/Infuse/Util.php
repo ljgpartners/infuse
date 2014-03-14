@@ -12,6 +12,12 @@ use Illuminate\Support\Facades\Log;
 
 class Util {
 
+	protected $request;
+
+	public function __construct(\Illuminate\Http\Request $request)
+	{	
+		$this->request = $request;
+	}
 
 	public static function get($name)
 	{
@@ -490,6 +496,11 @@ class Util {
 		}
 
 		return $data;
+  }
+
+  public static function readOnly($column)
+  {
+  	return (isset($column['readOnly']))? 'readonly="readonly"' : "";
   }
 
 

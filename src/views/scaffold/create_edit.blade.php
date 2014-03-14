@@ -186,29 +186,29 @@
 				
 					<?php switch ($column['type']):
 							case 'varchar': ?>
-							<input type="text" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}">
+							<input type="text" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}}>
 					<?php 	break;
 							case 'text': ?>
-							<textarea name="{{$column['field']}}">{{$entries->{$column['field']} }}</textarea>
+							<textarea name="{{$column['field']}}" {{Util::readOnly($column)}} >{{$entries->{$column['field']} }}</textarea>
 					<?php 	break;
 							case 'datetime':
 							case 'timestamp': ?>
-							<input type="text" class="selectedDateTime" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}">
+							<input type="text" class="selectedDateTime" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
 					<?php 	break; 
 							case 'date': ?>
-							<input type="text" class="selectedDate" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}">
+							<input type="text" class="selectedDate" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
 					<?php 	break;
 							case 'int': ?>
-							<input type="text" name="{{$column['field']}}" pattern="\d+" value="{{$entries->{$column['field']} }}"/>
+							<input type="text" name="{{$column['field']}}" pattern="\d+" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
 					<?php 	break;
 							case 'tinyint': ?> 
-							<select name="{{$column['field']}}">
+							<select name="{{$column['field']}}" {{Util::readOnly($column)}}>
 								<option value="0" {{($entries->{$column['field']} == 0)? 'selected="selected"' : ""}} >No</option>
 								<option value="1" {{($entries->{$column['field']} == 1)? 'selected="selected"' : ""}} >Yes</option>
 							</select>
 					<?php break;
 							default: ?>
-								<input type="text" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}">
+								<input type="text" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
 					<?php		
 						endswitch;
 					?>

@@ -1,62 +1,309 @@
-<?php namespace Bpez\Infuse;
+<?php 
+
+/*
+ * This file is part of the Infuse package.
+ *
+ * (c) Bryan Perez <perezjbryan@gmail.com>
+ *
+ */
+
+namespace Bpez\Infuse;
 
 use Exception;
 use Transit\Transit;
 use Transit\Validator\ImageValidator;
 use Illuminate\Support\Facades\Log;
+use Bpez\Infuse\Exceptions\ScaffoldConfigurationException;
+use Bpez\Infuse\Exceptions\ScaffoldModelNotRecognizedException;
+use Bpez\Infuse\Exceptions\ScaffoldUnknownConfigurationIndexException;
 
-/*
-|--------------------------------------------------------------------------
-| Scaffold 
-|--------------------------------------------------------------------------
-| Contains all the logic for scaffolding a laravel/Infuse model
-|
-*/
 
+/**
+ * Scaffold class contains all the logic for configuring and generating a scaffold on a model.
+ *
+ * This class does  processes and ORM model by giving you the ability to manage a model. Uses api config methods for 
+ * customizing the functionality of a scaffold. Also maps config files for api methods.
+ * 
+ * @category     	Infuse
+ * @package      	Scaffold
+ * @author       	Bryan Perez <perezjbryan@gmail.com>
+ * @copyright  		2014
+ * @version 		 	3.0.0
+ * @since  				1.0.0
+ * @api
+ * @todo Implement dependency on request instance
+ */
 class Scaffold {
 	
+	/**
+   * Allows unit testing to work.
+   *
+   * @access private
+   * @var bool
+   */
 	private $testing = false;
+
+	/**
+   * Contains the ORM model.
+   *
+   * @access private
+   * @var object
+   */
 	private $model;
-	private $columns;
+
+	/**
+   * Contains database table columns from the Model.
+   *
+   * @access private
+   * @var array|null
+   */
+	private $columns = null;
+
+	/**
+   * Contains flag to determine how to proccess data.
+   *
+   * @access private
+   * @var string
+   */
 	private $action;
+
+	/**
+   * Contains current instance of model that scaffold is working with or 
+   * a collection of models represented by the laravel Collection Class or
+   * can be model(s) representing in pure php array form.
+   *
+   * @access private
+   * @var object|array
+   */
 	private $entries = array();
+
+	/**
+   * An array containing various configuration information for the templates.
+   * (pagination, name, list, edit, onlyOne, columnNames, associations, manyToManyAssociations, 
+   * hasOneAssociation, onlyOne, filters, description, deleteAction)
+   *
+   * @access private 
+   * @var array
+   */ 
 	private $header = array();
+
+	/**
+   * Contains name of the model in string form.
+   *
+   * @access private
+   * @var string
+   */
 	private $name;
+
+	/**
+   * Array contains new column names to overide ones gathered from the model table.
+   *
+   * @access private
+   * @var array
+   */
 	private $columnNames = array();
+
+	/**
+   * Declares how instances of the model can be displayed on the listing page.
+   *
+   * @access private
+   * @var integer
+   */
 	private $limit = 10;
+
+	/**
+   * Contains the display ordering on the listing page.
+   *
+   * @access private
+   * @var array
+   */
 	private $order = array(
 		"order" => "desc",
 		"column" => "id"
 		);
+
+	/**
+   * Contains the has many relationship configuration(s) for the model.
+   *
+   * @access private
+   * @var array
+   */
 	private $hasMany = array();
+
+	/**
+   * Contains the has one relationship configuration(s) for the model.
+   *
+   * @access private
+   * @var array|boolean
+   */
 	private $hasOne = false;
-	private $description = "";
-	private $list = array();
-	private $infuseLogin = false;
-	private $onlyOne = false;
+
+	/**
+   * Contains the many to many relationship configuration(s) for the model.
+   *
+   * @access private
+   * @var array
+   */
 	private $manyToMany = array();
+
+	/**
+   * Contains the description for the model.
+   *
+   * @access private
+   * @var string
+   */
+	private $description = "";
+
+	/**
+   * Contains the list of columns to only display on listing page. If empty all shown.
+   *
+   * @access private
+   * @var array
+   */
+	private $list = array();
+
+	/**
+   * Boolean for setting special rules for processing InfuseUser model.
+   *
+   * @access private
+   * @var boolean
+   */
+	private $infuseLogin = false;
+
+	/**
+   * Flag for letting scaffold only allowing one instance of the model to be created.
+   *
+   * @access private
+   * @var boolean
+   */
+	private $onlyOne = false;
+
+	/**
+   * Associates model to current user when a new instance is created .
+   *
+   * @access private
+   * @var boolean
+   */
 	private $belongsToUser = false;
+
+	/**
+   * On the listing page only loads models instances that belong to the 
+   * same parent of the foriegn key provided.
+   *
+   * @access private
+   * @var boolean|string
+   */
 	private $onlyLoadSameChildren = false;
+
+	/**
+   * Associates model to the parent of the foreign key given. 
+   *
+   * @access private
+   * @var boolean|string
+   */
 	private $associateToSameParent = false;
+
+	/**
+   * Disables the action delete action on an instance of the model. 
+   *
+   * @access private
+   * @var boolean
+   */
 	private $deleteAction = true;
 
+	/**
+   * \Illuminate\View\Environment instance for proccessing blade templates
+   *
+   * @access protected
+   * @var object
+   */
 	protected $view;
+
+	/**
+   * \InfuseUser current instance of user logged into infuse
+   *
+   * @access protected
+   * @var object
+   */
 	protected $user = false;
+
+	/**
+   * \Illuminate\Support\Facades\DB instance of current request
+   *
+   * @access protected
+   * @var object
+   */
 	protected static $db;
 
-	public function __construct(\Illuminate\View\Environment $view, \InfuseUser $user, \Illuminate\Support\Facades\DB $db)
+	/**
+   * \Illuminate\Http\Request instance of current request
+   *
+   * @access protected
+   * @var object
+   */
+	protected $request;
+	
+
+	/**
+	 * Constructor
+	 *
+	 * @param \Illuminate\View\Environment $view An Environment instance
+	 * @param \InfuseUser $user A InfuseUser instance
+	 * @param \Illuminate\Support\Facades\DB $db An DB instance
+	 * @param \Illuminate\Http\Request $request A Request instance
+	 *
+	 * @api
+	 */
+	public function __construct(\Illuminate\View\Environment $view, \InfuseUser $user, \Illuminate\Support\Facades\DB $db, \Illuminate\Http\Request $request)
 	{	
 		$this->view = $view;
 		$this->user = $user;
+		$this->request = $request;
 		self::$db = $db;
 	}
 
+	/**
+	 * Loads model.
+	 *
+   * Loads in external model to be processed by the scaffold class.
+   *
+   * @api
+   *
+   * @uses $this->boot().
+   *
+   * @return void
+   */
+	public function model($model)
+	{
+		$this->model = $model;
+		if (is_subclass_of($this->model, 'InfuseEloquent') 
+				|| is_subclass_of($this->model, 'Toddish\Verify\Models\User') 
+				|| is_subclass_of($this->model, 'Toddish\Verify\Models\Role')  
+				|| is_subclass_of($this->model, 'Toddish\Verify\Models\Permission') ) {
 
-	public function boot()
+			$this->name = get_class($this->model);
+
+			$this->boot();
+
+			return $this;
+		} else {
+			throw new ScaffoldModelNotRecognizedException(get_parent_class($this->model)." is the wrong model to inherit from. Extend from InfuseEloquent.");
+		}
+	}
+
+
+	/**
+   * Boot sets up base configuration for model right after model is loaded into the instance.
+   *
+   * @uses self::checkIfOverUploadLimit().
+   *
+   * @return void
+   */
+	protected function boot()
   {	
   	self::checkIfOverUploadLimit();
-  	$this->action = Util::get("action"); 
-		$this->name = get_class($this->model);
+  	
+  	$this->action = Util::get("action");
 		$db = self::$db;
 		$columns =  $db::select("SHOW COLUMNS FROM ".$this->model->getTable());
 		
@@ -80,11 +327,14 @@ class Scaffold {
 					);
 			}
 		}
-  	
-  	return $this;
   }
 
-  public static function checkIfOverUploadLimit()
+  /**
+   * Checks if post request overflowed limit and so exits class and redirects. (post_max_size and/or upload_max_filesize)
+   *
+   * @return void
+   */
+  protected static function checkIfOverUploadLimit()
   {
   	if(empty($_FILES) && empty($_POST) && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) == 'post')	{ 
       $postMax = ini_get('post_max_size'); 
@@ -99,11 +349,471 @@ class Scaffold {
 		}
   }
 
+  /**
+   * Set testing flag.
+   *
+   * Set testing to true so that redirects stop within class so that unit testing can take place.
+   *
+   * @api
+   *
+   * @return $this
+   */
   public function testing()
   {
   	$this->testing = true;
   	return $this;
   }
+
+
+
+
+  /** ******** Public Configuration API methods below.  ********** */
+
+
+  /**
+   * Replaces default model string name.
+   *
+   * @api
+   *
+   * @param string $name
+   *
+   * @return $this Returns this so that it can be easily chanined.
+   */
+	public function name($name)
+	{
+		$this->name = $name;
+		return $this;
+	}
+
+	/**
+	 * Replaces column name.
+	 *
+   * Pass in an array with the following indexes 
+   * array("column" => "someColumn", "newName" => "someName"). Multiple 
+   * changes to different columns can be passed in at the same time just
+   * wrap all of them with in an array then pass into method.
+   *
+   * @api
+   *
+   * @example columnName($info) 
+   <pre>
+   	// Single
+		$scaffold->columnName(array("column" => "someColumn", "newName" => "someName"));</br></br>
+		// Multiple
+		$scaffold->columnName(array(
+		&nbsp;array("column" => "someColumn", "newName" => "someName"),
+		&nbsp;array("column" => "someColumn2", "newName" => "someName2")
+		));
+   </pre>
+   *
+   * @param array $info array("column" => "someColumn", "newName" => "someName")
+   *
+   * @return $this Returns this so that it can be easily chanined.
+   *
+   * @throws ScaffoldConfigurationException When parameter is not valid
+   */
+	public function columnName($info) 
+	{
+		$base = 'columnName(array(array("column" => someColumn, "newName" => "someName")));';
+
+		if (!is_array($info) ) 
+			throw new ScaffoldConfigurationException($base.' Must be an array.');
+
+		/** If only one. */
+		if ( isset($info['column']) && isset($info['newName']) ) {
+
+			if (!is_string($info['column']) || !is_string($info['newName'])) 
+				throw new ScaffoldConfigurationException($base.' First aand second argument should be strings');
+			if (array_key_exists($info['column'], $this->columns)) {
+				$this->columnNames["{$info['column']}"] = $info['newName'];
+			} else {
+				throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
+			}
+			
+
+		/** If more then one. */
+		} else {
+
+			foreach ($info as $i) {
+
+				if (!isset($i['column']) && !isset($i['column'])) 
+					throw new ScaffoldConfigurationException($base.' First argument should name of column. Second argument should be replacement name.');
+				if (!is_string($i['column']) || !is_string($i['newName'])) 
+					throw new ScaffoldConfigurationException($base.' First aand second argument should be strings');
+				if (array_key_exists($i['column'], $this->columns)) {
+					$this->columnNames["{$i['column']}"] = $i['newName'];
+				} else {
+					throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
+				}
+			}
+		}
+
+		return $this;
+	}
+
+	public function limit($limit)
+	{
+		$this->limit = (is_int($limit))? $limit : $this->limit;
+		return $this;
+	}
+
+	public function infuseLogin()
+	{
+		$this->infuseLogin = true;
+		unset($this->columns['password']);
+		unset($this->columns['salt']);
+		return $this;
+	}
+
+
+	public function order($order)
+	{
+		if (is_array($order) && array_key_exists("order", $order) && array_key_exists("column", $order)) {
+			$this->order["order"] = $order["order"];
+			$this->order["column"] = $order["column"];
+			return $this;
+		} else {
+			throw new ScaffoldConfigurationException('order(array("order" => "desc", "column" => "name")); Array required with order and column. ');
+		}
+	}
+
+
+	public function addSelect($info) 
+	{	
+		$base = 'addSelect(array(array("column" => $columnName, "array" => array(), "insertBlank" => false)));';
+
+		if (!is_array($info) ) 
+			throw new ScaffoldConfigurationException($base.' Must be an array.');
+
+		// If only one
+		if ( isset($info['column']) && isset($info['array']) ) {
+
+			if ( array_key_exists($info['column'], $this->columns) ) {
+				$this->columns["{$info['column']}"]["select"] = $info['array'];
+				if (isset($info['insertBlank']) && $info['insertBlank'] == true) {
+					$this->columns["{$info['column']}"]["select_blank"] = true;
+				}
+			} else {
+				throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
+			}
+
+		// If more then one
+		} else {
+			foreach ($info as $i) {
+				if (is_array($i) && (!isset($i['column']) || !isset($i['array']))) 
+					throw new ScaffoldConfigurationException($base.' First argument must an array. column and array must be set. ');
+				if (!is_string($i['column']) || !is_array($i['array'])) 
+					throw new ScaffoldConfigurationException($base.' Column must be a string. Array index must be an array.');
+				if (array_key_exists($i['column'], $this->columns)) {
+					$this->columns["{$i['column']}"]["select"] = $i['array'];
+					if (isset($i['insertBlank']) && $i['insertBlank'] == true) {
+						$this->columns["{$i['column']}"]["select_blank"] = true;
+					}
+				} else {
+					throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
+				}
+			}
+		}
+		
+		return $this;
+	}
+
+	public function addMultiSelect($info)
+	{	
+		if (!is_array($info) && isset($info['column']) && isset($info['array'])) 
+			throw new ScaffoldConfigurationException('addMultiSelect(array("column" => $columnName, "array" => array())); First argument must an array. column and array must be set. ');
+		if (!is_string($info['column'])) 
+			throw new ScaffoldConfigurationException('addMultiSelect(array("column" => $columnName, "array" => array())); First argument should name of column. ');
+		if (!is_array($info['array'])) 
+			throw new ScaffoldConfigurationException('addMultiSelect(array("column" => $columnName, "array" => array())); Second argument can only be an array. ');
+		if (array_key_exists($info['column'], $this->columns)) {
+			$this->columns["{$column}"]["multi_select"] = $info['array'];
+			return $this;
+		} else {
+			throw new ScaffoldConfigurationException('addMultiSelect(array("column" => $columnName, "array" => array())); Column doesn\'t exist.');
+		}
+	}
+
+	public function addCkeditor($info)
+	{
+		$base = 'addCkeditor(array("column1", "column2"));';
+
+		if (!is_array($info) ) 
+			throw new ScaffoldConfigurationException($base.' Must be an array.');
+
+		foreach ($info as $i) {
+			if (!is_string($i)) 
+				throw new ScaffoldConfigurationException($base.' Column must be a string. Array index must be an array.');
+			if (array_key_exists($i, $this->columns)) {
+				$this->columns["{$i}"]["ckeditor"] = $i;
+			} else {
+				throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
+			}
+		}
+		
+		return $this;
+	}
+
+	/* 
+	To activate Image croping pass in the following
+	$imageCrop = array("image_crop" => true, "width" => 98, "height" => 98) 
+	Note if image crop is used then file validation will be applied
+	*/
+	public function fileUpload($uploads) 
+	{
+		if (!is_array($uploads)) {
+			throw new ScaffoldConfigurationException('fileUpload(array(array("column" => $columnName))); First argument must an array. column index must be set. ');
+		} else {
+			
+			// go through all uploads 
+			foreach ($uploads as $key => $info) {
+				
+				if (!is_array($info) && !isset($info['column'])) 
+					throw new ScaffoldConfigurationException('fileUpload(array(array("column" => $columnName))); First argument must an array. column index must be set. ');
+				if (!is_string($info['column'])) 
+					throw new ScaffoldConfigurationException('fileUpload(array(array("column" => $columnName))); First argument should name of column. ');
+				if (array_key_exists($info['column'], $this->columns)) { 
+					$validations = (isset($info['validations']))? $info['validations'] : array();
+					$imageCrop = (isset($info['imageCrop']))? $info['imageCrop'] : false; 
+					$this->columns["{$info['column']}"]["upload"] = array("validations" => $validations, "imageCrop" => $imageCrop);
+				} else {
+					throw new ScaffoldConfigurationException('fileUpload(array(array("column" => $columnName)));  Column doesn\'t exist.');
+				}
+			}
+			return $this;
+		}
+
+		
+	}
+
+	public function hasMany($models)
+	{	
+		if (!is_array($models)) 
+			throw new ScaffoldConfigurationException('hasMany( array(array("SomeModelName", "model_title", array("column_1", "column_2"))) ); First argument should be an array with all the info of the model. 
+				First index in the array should be the model name, second should be the wanted model title and third should be the column names to list.');
+		$this->hasMany = $models;
+		return $this;
+	}
+
+	public function hasOne($model)
+	{	
+		if (!is_array($model)) 
+			throw new ScaffoldConfigurationException('hasOne( array(array("SomeModelName", "model_title", array("column_1", "column_2"))) ); First argument should be an array of the model. 
+				With name as the index and another array with the title as the first and the second array with columns to list.');
+		$this->hasOne = $model;
+		return $this;
+	}
+
+	public function manyToMany($models)
+	{
+		if (!is_array($models)) 
+			throw new ScaffoldConfigurationException('manyToMany(array(array("FirstModelName", "FirstForeignId", "SecondModelName", "SecondForeignId", "many_to_many_table", "FirstColumnName", "SecondColumnName"))); ');
+		$this->manyToMany = $models;
+		return $this;
+	}
+
+	public function modelDescription($desc)
+	{
+		$this->description = (is_string($desc))? $desc : "";
+		return $this;
+	}
+
+
+	public function describeColumn($describes) 
+	{	
+		if (!is_array($describes))
+			throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here"))); Must pass array in. ');
+
+		foreach ($describes as $d) {
+			if (!isset($d['column']) || !isset($d['desc'])) 
+				throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here"))); Both argument are required');
+			if (array_key_exists($d['column'], $this->columns)) { 
+				$this->columns["{$d['column']}"]["description"] = (is_string($d['desc']))? $d['desc'] : ""; 	
+			} else {
+				throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here")));  Column doesn\'t exist.');
+			}
+		}
+		
+		return $this;
+	}
+
+	public function displayOrder($column)
+	{
+		if (!is_string($column)) 
+			throw new ScaffoldConfigurationException('displayOrder("name"); First argument should name of column. ');
+		if (array_key_exists($column, $this->columns)) { 
+			if ($this->columns["{$column}"]["type"] != "int") 
+				throw new ScaffoldConfigurationException('displayOrder("name"); Column type should be an integer. ');
+			$this->columns["{$column}"]["display_order"] = true;
+			return $this;
+		} else {
+			throw new ScaffoldConfigurationException('displayOrder("name");  Column doesn\'t exist.');
+		}
+	}
+
+	public function listColumns($list)
+	{
+		if (!is_array($list)) 
+			throw new ScaffoldConfigurationException('list(array("name", "count", "active")); First argument should be an array of the names of the columns wanted listed on landing page.');
+		$this->list = $list;
+		return $this;
+	}
+
+	public function onlyOne()
+	{
+		$this->onlyOne = true;
+		return $this;
+	}
+
+	public function deleteAction($bool)
+	{	
+		$this->deleteAction = $bool;
+		return $this;
+	}
+
+	public function displayOrderColumn($column)
+	{
+		if (!is_string($column)) 
+			throw new ScaffoldConfigurationException('displayOrderColumn("name");  First argument should name of column.');
+		if (array_key_exists($column, $this->columns)) {
+			$this->columns["{$column}"]["displayOrder"] = true;
+			return $this;
+		} else {
+			throw new ScaffoldConfigurationException('displayOrderColumn("name");  Column doesn\'t exist.');
+		}
+	}
+
+	public function belongsToUser()
+	{
+		$this->belongsToUser = true;
+		return $this;
+	}
+
+	public function readOnly($info)
+	{
+		$base = 'readOnly(array("columnOne", "columnTwo", "columnThree"));';
+
+		if (!is_array($info) ) 
+			throw new ScaffoldConfigurationException($base.' Must be an array.');
+
+		foreach ($info as $i) {
+			if (array_key_exists($i, $this->columns)) {
+				$this->columns["{$i}"]["readOnly"] = true;
+			} else {
+				throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
+			}
+		}
+		return $this;
+	}
+	
+	public function associateToSameParent($foreignKey)
+	{
+		$this->associateToSameParent = $foreignKey;
+		return $this;
+	}
+
+	public function onlyLoadSameChildren($foreignKey)
+	{
+		$this->onlyLoadSameChildren = $foreignKey;
+		return $this;
+	}
+	
+	public function mapConfig($config)
+	{
+		if ($this->columns == null)
+			throw new ScaffoldConfigurationException("Model must be loaded before mapConfig method is called.");
+
+		foreach ($config as $key => $f) {
+			
+			switch ($key) {
+				case 'model':
+					$this->model($f);
+					break;
+				case 'name':
+					$this->name($f);
+					break;
+				case 'columnName':
+					$this->columnName($f);
+					break;
+				case 'limit':
+					$this->limit($f);
+					break;
+				case 'infuseLogin':
+					$this->infuseLogin();
+					break;
+				case 'order':
+					$this->order($f);
+					break;
+				case 'hasMany':
+					$this->hasMany($f);
+					break;
+				case 'hasOne':
+					$this->hasOne($f);
+					break;
+				case 'manyToMany':
+					$this->manyToMany($f);
+					break;
+				case 'modelDescription':
+					$this->modelDescription($f);
+					break;
+				case 'displayOrder':
+					$this->displayOrder($f);
+					break;
+				case 'listColumns':
+					$this->listColumns($f);
+					break;
+				case 'onlyOne':
+					$this->onlyOne();
+					break;
+				case 'deleteAction':
+					$this->deleteAction($f);
+					break;
+				case 'displayOrderColumn':
+					$this->displayOrderColumn($f);
+					break;
+				case 'loadUser':
+					$this->loadUser($f);
+					break;
+				case 'belongsToUser':
+					$this->belongsToUser();
+					break;
+				case 'associateToSameParent':
+					$this->associateToSameParent($f);
+					break;
+				case 'onlyLoadSameChildren':
+					$this->onlyLoadSameChildren($f);
+					break;
+				case 'addCkeditor':
+					$this->addCkeditor($f);
+					break;
+				case 'addSelect':
+					$this->addSelect($f);
+					break;
+				case 'addMultiSelect':
+					$this->addMultiSelect($f['column'], $f['array']);
+					break;
+				case 'readOnly':
+					$this->readOnly($f);
+					break;
+				case 'fileUpload':
+					$this->fileUpload($f);
+					break;
+				case 'describeColumn':
+					$this->describeColumn($f);
+					break;
+				case 'children':
+					break;
+				
+				default:
+					throw new ScaffoldUnknownConfigurationIndexException("Unknown {$key} index in config.");
+					break;
+			}
+		}
+
+		return $this;
+	}
+
+	/** ******** End of Public Configuration API methods ********** */
 
 
 	private function route()
@@ -244,7 +954,7 @@ class Scaffold {
 
 		$this->entries = $prepareModel->get();
 		
-		$this->header = array(
+		$this->header = array( 
 				"pagination" => $pagination,
 				"name" => $this->name,
 				"list" => $this->list,
@@ -268,7 +978,7 @@ class Scaffold {
 	{
 		$model = $this->model;
 		$this->header = array(
-				"edit" => true,
+				"edit" => true, 
 				"name" => $this->name,
 				"associations" => $this->hasMany,
 				"manyToManyAssociations" => $this->manyToMany,
@@ -581,8 +1291,7 @@ class Scaffold {
 		}
 
 		$data = Util::getAll();
-
-
+		
 
 		// Remove any FALSE values. This includes NULL values, EMPTY arrays, etc.
 		$data = array_filter($data);
@@ -776,352 +1485,7 @@ class Scaffold {
 
 	
 
-	/******************************
-		Config methods
-	*******************************/
-	public function model($model)
-	{
-		$this->model = $model;
-		return $this;
-	}
 
-	protected function name($name)
-	{
-		$this->name = $name;
-		return $this;
-	}
-
-	protected function columnName($info) 
-	{
-		if (!is_array($info) && isset($info['column']) && isset($info['newName'])) 
-
-		if (!is_string($info['column']) || !is_string($info['newName'])) 
-			throw new Exception('columnName(array("column" => someColumn, "newName" => "someName")); First argument should name of column. Second argument should be replacement name.');
-		if (array_key_exists($info['column'], $this->columns)) {
-			$this->columnNames["{$info['column']}"] = $info['newName'];
-			return $this;
-		} else {
-			throw new Exception('array("column" => someColumn, "newName" => "someName")); Column doesn\'t exist.');
-		}
-		return $this;
-	}
-
-	protected function limit($limit)
-	{
-		$this->limit = (is_int($limit))? $limit : $this->limit;
-		return $this;
-	}
-
-	protected function infuseLogin()
-	{
-		$this->infuseLogin = true;
-		unset($this->columns['password']);
-		unset($this->columns['salt']);
-		return $this;
-	}
-
-
-	protected function order($order)
-	{
-		if (is_array($order) && array_key_exists("order", $order) && array_key_exists("column", $order)) {
-			$this->order["order"] = $order["order"];
-			$this->order["column"] = $order["column"];
-			return $this;
-		} else {
-			throw new Exception('order(array("order" => "desc", "column" => "name")); Array required with order and column. ');
-		}
-	}
-
-	protected function addSelect($info) 
-	{	
-		if (!is_array($info) && isset($info['column']) && isset($info['array'])) 
-			throw new Exception('addSelect(array("column" => $columnName, "array" => array(), "insertBlank" => false)); First argument must an array. column and array must be set. ');
-		if (!is_string($info['column'])) 
-			throw new Exception('addSelect(array("column" => $columnName, "array" => array(), "insertBlank" => false)); Column must be a string. ');
-		if (!is_array($info['array'])) 
-			throw new Exception('addSelect(array("column" => $columnName, "array" => array(), "insertBlank" => false)); Array index must be an array. ');
-		if (array_key_exists($info['column'], $this->columns)) {
-			$this->columns["{$info['column']}"]["select"] = $info['array'];
-			if (isset($info['insertBlank']) && $info['insertBlank'] == true) {
-				$this->columns["{$info['column']}"]["select_blank"] = true;
-			}
-			return $this;
-		} else {
-			throw new Exception('addSelect(array("column" => $columnName, "array" => array(), "insertBlank" => false)); Column doesn\'t exist.');
-		}
-	}
-
-	protected function addMultiSelect($info)
-	{	
-		if (!is_array($info) && isset($info['column']) && isset($info['array'])) 
-			throw new Exception('addMultiSelect(array("column" => $columnName, "array" => array())); First argument must an array. column and array must be set. ');
-		if (!is_string($info['column'])) 
-			throw new Exception('addMultiSelect(array("column" => $columnName, "array" => array())); First argument should name of column. ');
-		if (!is_array($info['array'])) 
-			throw new Exception('addMultiSelect(array("column" => $columnName, "array" => array())); Second argument can only be an array. ');
-		if (array_key_exists($info['column'], $this->columns)) {
-			$this->columns["{$column}"]["multi_select"] = $info['array'];
-			return $this;
-		} else {
-			throw new Exception('addMultiSelect(array("column" => $columnName, "array" => array())); Column doesn\'t exist.');
-		}
-	}
-
-	protected function addCkeditor($column)
-	{
-		if (!is_string($column)) 
-			throw new Exception('addCkeditor("name"); First argument should name of column. ');
-		if (array_key_exists($column, $this->columns)) {
-			$this->columns["{$column}"]["ckeditor"] = $column;
-			return $this;
-		} else {
-			throw new Exception('addCkeditor("name"); Column doesn\'t exist.');
-		}
-	}
-
-	/* 
-	To activate Image croping pass in the following
-	$imageCrop = array("image_crop" => true, "width" => 98, "height" => 98) 
-	Note if image crop is used then file validation will be applied
-	*/
-	protected function fileUpload($uploads)
-	{
-		if (!is_array($uploads)) {
-			throw new Exception('fileUpload(array(array("column" => $columnName))); First argument must an array. column index must be set. ');
-		} else {
-			
-			// go through all uploads 
-			foreach ($uploads as $key => $info) {
-				
-				if (!is_array($info) && !isset($info['column'])) 
-					throw new Exception('fileUpload(array(array("column" => $columnName))); First argument must an array. column index must be set. ');
-				if (!is_string($info['column'])) 
-					throw new Exception('fileUpload(array(array("column" => $columnName))); First argument should name of column. ');
-				if (array_key_exists($info['column'], $this->columns)) { 
-					$validations = (isset($info['validations']))? $info['validations'] : array();
-					$imageCrop = (isset($info['imageCrop']))? $info['imageCrop'] : false; 
-					$this->columns["{$info['column']}"]["upload"] = array("validations" => $validations, "imageCrop" => $imageCrop);
-				} else {
-					throw new Exception('fileUpload(array(array("column" => $columnName)));  Column doesn\'t exist.');
-				}
-			}
-			return $this;
-		}
-
-		
-	}
-
-	protected function hasMany($models)
-	{	
-		if (!is_array($models)) 
-			throw new Exception('hasMany( array(array("SomeModelName", "model_title", array("column_1", "column_2"))) ); First argument should be an array with all the info of the model. 
-				First index in the array should be the model name, second should be the wanted model title and third should be the column names to list.');
-		$this->hasMany = $models;
-		return $this;
-	}
-
-	protected function hasOne($model)
-	{	
-		if (!is_array($model)) 
-			throw new Exception('hasOne( array(array("SomeModelName", "model_title", array("column_1", "column_2"))) ); First argument should be an array of the model. 
-				With name as the index and another array with the title as the first and the second array with columns to list.');
-		$this->hasOne = $model;
-		return $this;
-	}
-
-	protected function manyToMany($models)
-	{
-		if (!is_array($models)) 
-			throw new Exception('manyToMany(array(array("FirstModelName", "FirstForeignId", "SecondModelName", "SecondForeignId", "many_to_many_table", "FirstColumnName", "SecondColumnName"))); ');
-		$this->manyToMany = $models;
-		return $this;
-	}
-
-	protected function modelDescription($desc)
-	{
-		$this->description = (is_string($desc))? $desc : "";
-		return $this;
-	}
-
-
-	protected function describeColumn($describes)
-	{	
-		if (!is_array($describes))
-			throw new Exception('describeColumn(array(array("column" => "columnName", "desc" => "description here"))); Must pass array in. ');
-
-		foreach ($describes as $d) {
-			if (!isset($d['column']) || !isset($d['desc'])) 
-				throw new Exception('describeColumn(array(array("column" => "columnName", "desc" => "description here"))); Both argument are required');
-			if (array_key_exists($d['column'], $this->columns)) { 
-				$this->columns["{$d['column']}"]["description"] = (is_string($d['desc']))? $d['desc'] : ""; 	
-			} else {
-				throw new Exception('describeColumn(array(array("column" => "columnName", "desc" => "description here")));  Column doesn\'t exist.');
-			}
-		}
-		
-		return $this;
-	}
-
-	protected function displayOrder($column)
-	{
-		if (!is_string($column)) 
-			throw new Exception('displayOrder("name"); First argument should name of column. ');
-		if (array_key_exists($column, $this->columns)) { 
-			if ($this->columns["{$column}"]["type"] != "int") 
-				throw new Exception('displayOrder("name"); Column type should be an integer. ');
-			$this->columns["{$column}"]["display_order"] = true;
-			return $this;
-		} else {
-			throw new Exception('displayOrder("name");  Column doesn\'t exist.');
-		}
-	}
-
-	protected function listColumns($list)
-	{
-		if (!is_array($list)) 
-			throw new Exception('list(array("name", "count", "active")); First argument should be an array of the names of the columns wanted listed on landing page.');
-		$this->list = $list;
-		return $this;
-	}
-
-	protected function onlyOne()
-	{
-		$this->onlyOne = true;
-		return $this;
-	}
-
-	protected function deleteAction($bool)
-	{	
-		$this->deleteAction = $bool;
-		return $this;
-	}
-
-	protected function displayOrderColumn($column)
-	{
-		if (!is_string($column)) 
-			throw new Exception('displayOrderColumn("name");  First argument should name of column.');
-		if (array_key_exists($column, $this->columns)) {
-			$this->columns["{$column}"]["displayOrder"] = true;
-			return $this;
-		} else {
-			throw new Exception('displayOrderColumn("name");  Column doesn\'t exist.');
-		}
-	}
-	/*
-	public function loadUser($user)
-	{
-		if ($user instanceof InfuseUser)
-			throw new Exception('loadUser($user);  User argument is required and should be an instance of InfuseUser.');
-		$this->user = $user;
-		return $this;
-	}*/
-
-	protected function belongsToUser()
-	{
-		$this->belongsToUser = true;
-		return $this;
-	}
-	
-	protected function associateToSameParent($foreignKey)
-	{
-		$this->associateToSameParent = $foreignKey;
-		return $this;
-	}
-
-	protected function onlyLoadSameChildren($foreignKey)
-	{
-		$this->onlyLoadSameChildren = $foreignKey;
-		return $this;
-	}
-	
-	public function mapConfig($config)
-	{
-		foreach ($config as $key => $f) {
-			
-			switch ($key) {
-				case 'model':
-					$this->model($f);
-					break;
-				case 'name':
-					$this->name($f);
-					break;
-				case 'columnName':
-					$this->columnName($f);
-					break;
-				case 'limit':
-					$this->limit($f);
-					break;
-				case 'infuseLogin':
-					$this->infuseLogin();
-					break;
-				case 'order':
-					$this->order($f);
-					break;
-				case 'hasMany':
-					$this->hasMany($f);
-					break;
-				case 'hasOne':
-					$this->hasOne($f);
-					break;
-				case 'manyToMany':
-					$this->manyToMany($f);
-					break;
-				case 'modelDescription':
-					$this->modelDescription($f);
-					break;
-				case 'displayOrder':
-					$this->displayOrder($f);
-					break;
-				case 'listColumns':
-					$this->listColumns($f);
-					break;
-				case 'onlyOne':
-					$this->onlyOne();
-					break;
-				case 'deleteAction':
-					$this->deleteAction($f);
-					break;
-				case 'displayOrderColumn':
-					$this->displayOrderColumn($f);
-					break;
-				case 'loadUser':
-					$this->loadUser($f);
-					break;
-				case 'belongsToUser':
-					$this->belongsToUser();
-					break;
-				case 'associateToSameParent':
-					$this->associateToSameParent($f);
-					break;
-				case 'onlyLoadSameChildren':
-					$this->onlyLoadSameChildren($f);
-					break;
-				case 'addCkeditor':
-					$this->addCkeditor($f);
-					break;
-				case 'addSelect':
-					$this->addSelect($f);
-					break;
-				case 'addMultiSelect':
-					$this->addMultiSelect($f['column'], $f['array']);
-					break;
-				case 'fileUpload':
-					$this->fileUpload($f);
-					break;
-				case 'describeColumn':
-					$this->describeColumn($f);
-					break;
-				case 'children':
-					break;
-				
-				default:
-					throw new Exception("Unknown {$key} index in config file.");
-					break;
-			}
-		}
-
-		return $this;
-	}
 	
 	
 
