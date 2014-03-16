@@ -24,7 +24,8 @@
         "clouddueling/mysqldump-php": "1.0.*",
         "intervention/image": "1.5.*",
         "nesbot/Carbon": "1.8.*",
-        "codesleeve/asset-pipeline": "dev-master"
+        "barryvdh/laravel-debugbar": "1.*",
+        "codesleeve/asset-pipeline": "2.*"
     },
     "autoload": {
         "classmap": [

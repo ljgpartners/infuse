@@ -39,6 +39,12 @@ class InfuseServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+		$this->app->register('Toddish\Verify\VerifyServiceProvider');
+		$this->app->register('Intervention\Image\ImageServiceProvider');
+		$this->app->register('Codesleeve\AssetPipeline\AssetPipelineServiceProvider');
+		$this->app->register('Barryvdh\Debugbar\ServiceProvider');
+
+
 
 		$this->app->bind('InfuseController', function($app)
     {
@@ -87,6 +93,9 @@ class InfuseServiceProvider extends ServiceProvider {
         $loader->alias('Util', 'Bpez\Infuse\Facades\Util');
         $loader->alias('Scaffold', 'Bpez\Infuse\Facades\Scaffold');
         $loader->alias('WebService', 'Bpez\Infuse\Facades\WebService');
+        $loader->alias('Image', 'Intervention\Image\Facades\Image');
+        $loader->alias('Debugbar', 'Barryvdh\Debugbar\Facade');
+        $loader->alias('Carbon', 'Carbon\Carbon');
     });
 	}
 

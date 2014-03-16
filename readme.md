@@ -22,10 +22,6 @@ Steps for installing
 > $ php artisan asset:publish bpez/infuse
 >
 > $ php artisan config:publish bpez/infuse
->
-> Add the Verify Service Provider to your config in app/config/app.php:
->
-> 'Toddish\Verify\VerifyServiceProvider'
 > 
 > $ php artisan migrate --package="bpez/infuse"
 >
@@ -58,9 +54,6 @@ Steps for installing
 >	));
 >
 
-### After any additonal migrations added to the project clear the cache
-
-> php artisan cache:clear
 
 ### Future features 
 
