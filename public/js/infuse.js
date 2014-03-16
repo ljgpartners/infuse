@@ -121,49 +121,53 @@ $(document).ready(function() {
 		$(".appendFilters").empty(); 
 		$(".filtersForm").submit();
 	});
+	
 
+	$(".imageCrop").click(function() {
+		var self = $(this),
+				parent = self.parent();
+				id = self.data("id"),
+				path = self.data("path"),
+				width = self.data("width"),
+				height = self.data("height"),
+				loaderHtml = '<div class="loader bubblingG"><span id="bubblingG_1">' +
+				'</span><span id="bubblingG_2"></span><span id="bubblingG_3"></span></div> ',
+				imagePreviewCrop = self.next(".imagePreviewCrop");
 
+		imagePreviewCrop.fadeIn();
+		parent.find(".imagePreviewCropOn").prop('disabled', true).hide();
+		self.hide();
 
-	function setInfo(img, selection) {
-		var theImage 		 = new Image();
-		theImage.src 	   = $(img).attr("src");
+			
+
+		var croppicContainerModalOptions = {
+			uploadUrl: path,
+			uploadData: {"action":"upload_temp_image"},
+			cropUrl: path,
+			cropData: {"action":"crop_image_send_back_url"}, 
+			modal: true,
+			imgEyecandyOpacity:0.4,
+			loaderHtml: loaderHtml,
+			width: width, 
+			height: height,
+			onAfterImgCrop: function() { 
+				imagePreviewCrop.height(200);
+				$("#"+id+"CroppedImage").val($("#croppicimage1 .croppedImg").attr("src"));
+			},
+			afterCropControlRemoveCroppedImage: function() {
+				imagePreviewCrop.height(30);
+				imagePreviewCrop.hide();
+				self.show();
+				parent.find(".imagePreviewCropOn").prop('disabled', false).show();
+				$("#"+id+"CroppedImage").val("");
+			}
+		}
+		var cropContainerModal = new Croppic(id, croppicContainerModalOptions);
 		
-
-		var	originalImgWidth = theImage.width,
-				scaledImgWidth   = img.width,
-				scale  					 = (originalImgWidth >= scaledImgWidth)? (originalImgWidth/scaledImgWidth) : 1,
-				orignalUploadId  = $(img).data("id");
-
-		$('#'+orignalUploadId+'x').val(selection.x1*scale);
-		$('#'+orignalUploadId+'y').val(selection.y1*scale);
-		$('#'+orignalUploadId+'w').val(selection.width*scale);
-		$('#'+orignalUploadId+'h').val(selection.height*scale);
-	}
-
-	// prepare instant preview
-	$(".livePreviewCrop").change(function(){
-		var id = $(this).attr("id"),
-				p  = $("#"+id+"Preview").parent();
-
-		// fadeOut or hide preview
-		p.fadeOut();
-
-		// prepare HTML5 FileReader
-		var oFReader = new FileReader();
-		oFReader.readAsDataURL(document.getElementById(id).files[0]);
-
-		oFReader.onload = function (oFREvent) {
-	   		p.attr('src', oFREvent.target.result).fadeIn();
-		};
+		$("."+id+"_imgUploadForm").find('input[type="file"]').trigger('click');
 	});
 
-	// implement imgAreaSelect plug in (http://odyniec.net/projects/imgareaselect/)
-	$('img.imgAreaSelect').imgAreaSelect({
-		// set crop ratio (optional)
-		aspectRatio: '632:360',
-		onSelectEnd: setInfo,
-		handles: true
-	});
+	
 
 	$('.childOrderColumn').on('click', ".childUpOrder", function(event){
 		event.preventDefault();
@@ -297,6 +301,25 @@ $(document).ready(function() {
     var submitValidation = $(this).validate({errorClass: "errorInput"});
     return submitValidation.bool;
   });
+  /*
+  setInterval(function() {
+  	$.ajax({
+				type: 'POST',
+				url: window.location.href,
+				data: {
+					action: "clean_temp_folder",
+				},
+				success: function (data) { 
+				 if (data.status == "success") {
+					 	console.log(data.files);
+				 }
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+				  //console.log('AJAX call failed: ' + textStatus + ' ' + errorThrown);
+				}
+			}); // End of Ajax
+  }, 4000); */
+  
 	
 });
 })(jQuery);

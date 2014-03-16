@@ -1108,6 +1108,8 @@ class Scaffold {
 
 					$header = Util::importCSV($destinationPath.$filename, true);
 
+
+
 					foreach ($header as $h) {
 						if (!in_array($h, $columns)) {
 							$error = true;
@@ -1129,7 +1131,8 @@ class Scaffold {
 
 						$message = "Succesfully imported csv data.";
 					}
-
+					
+					unlink($destinationPath.$filename);
 				}
       }
 			

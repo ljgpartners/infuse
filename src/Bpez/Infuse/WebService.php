@@ -27,6 +27,16 @@ class WebService {
 			case 'swap_order':
 				$response = $this->swapOrder();
 				break;
+			case 'upload_temp_image':
+				$response = $this->uploadTempImage();
+				break;
+			case 'crop_image_send_back_url':
+				$response = $this->cropImageSendBackUrl();
+				break;
+			case 'clean_temp_folder':
+				$response = $this->cleanTempFolder();
+				break;
+
 			default:
 				$response = $this->noAction();
 				break;
@@ -61,6 +71,84 @@ class WebService {
 
 		return array( "success" => true, "swaps" => $swaps);
 	}
+
+
+
+	protected function uploadTempImage()
+	{
+		if (\Input::hasFile('img')){
+			$file = \Input::file('img');
+			$allowedExts = array("gif", "jpeg", "jpg", "png", "GIF", "JPEG", "JPG", "PNG");
+			$extension = $file->getClientOriginalExtension();
+
+			if (!in_array($extension, $allowedExts))
+				return array("status" => 'error', "message" => 'Must be jpeg, png or gif image.');
+
+      $destinationPath = $_SERVER['DOCUMENT_ROOT'].'/uploads/tmp/';
+      $filename        = time().'_'.$file->getClientOriginalName();
+      $size = $file->getSize();
+      $uploadSuccess   = $file->move($destinationPath, $filename);
+
+      $response = array(
+				"status" => 'success',
+				"url" => '/uploads/tmp/'.$filename,
+				"width" => $size,
+				"height" => $size
+		  );
+
+		} else {
+			$response = array("status" => 'error', "message" => 'Problem uploading file.');
+		}
+
+		return $response;
+	}
+
+
+
+	protected function cropImageSendBackUrl()
+	{
+		ini_set('memory_limit','64M');
+		$file = \Input::all();
+		$preserveRatio = true;  
+		$upsize = false;
+
+		$destinationPath = $_SERVER['DOCUMENT_ROOT'].'/uploads/tmp/';
+    $filename        = time().'_test.jpg';
+
+		$img = \Image::make($_SERVER['DOCUMENT_ROOT'].$file['imgUrl'])
+			->resize($file['imgW'], $file['imgH'], $preserveRatio, $upsize)
+			->crop($file['cropW'], $file['cropH'], $file['imgX1'], $file['imgY1'])
+			->save($destinationPath.$filename);
+
+
+		return array("status" => 'success', "url" => '/uploads/tmp/'.$filename);
+	}
+
+	protected function cleanTempFolder()
+	{
+		if (!\Cache::has('infuse::clean_temp_folder')) {
+			$expiresAt = Carbon::now()->addMinutes(2);
+			\Cache::put('infuse::clean_temp_folder', true, $expiresAt);
+
+			$now = new DateTime;
+			$tempFiles = \File::glob($_SERVER['DOCUMENT_ROOT'].'/uploads/tmp/*');
+			$fileTime = new DateTime;
+			foreach($tempFiles as $file) {
+				$fileTime->setTimestamp(\File::lastModified($file));
+				$interval = $now->diff($fileTime);
+				$elapsed = (integer) $interval->format('%i');
+				// If greater than 30 minutes delete file
+				if ($elapsed > 30)
+					unlink($file);
+			}
+			return array("status" => 'success', "message" => 'Files cleaned up.');
+		} else {
+			return array("status" => 'success', "message" => 'No files cleaned up.');
+		}
+		
+	}
+
+	
 
 	protected function noAction()
 	{

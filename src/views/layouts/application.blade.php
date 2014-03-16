@@ -16,7 +16,9 @@
 	<script src="/packages/bpez/infuse/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/ckeditor/ckeditor.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/magicsuggest-1.3.1.js" type="text/javascript"></script>
-	<script src="/packages/bpez/infuse/js/jquery.imgareaselect.pack.js" type="text/javascript"></script>
+	<!--
+	<script src="/packages/bpez/infuse/js/jquery.imgareaselect.pack.js" type="text/javascript"></script> -->
+	<script src="/packages/bpez/infuse/js/croppic.min.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/bpez.common.jquery.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/infuse.js" type="text/javascript"></script>
 

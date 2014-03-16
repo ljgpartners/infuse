@@ -8,12 +8,12 @@
 
 Route::any('login', array('as' => 'login', 'prefix' => "admin", 'uses' => 'AuthenticationController@login') );
 
-Route::group(array('prefix' => "admin", 'before' => array('InfuseAuth', 'WebService')), function()
+Route::group(array('prefix' => "admin", 'before' => array('InfuseAuth', 'WebServiceFilter')), function()
 {  
   Route::get('logout', array('as' => 'logout', 'uses' => 'AuthenticationController@logout') );
   Route::get('/', function(){ return Redirect::route('login'); });
   
-  Route::get('dashboard', array('as' => 'dashboard', 'uses' => 'InfuseController@dashboard') );
+  Route::any('dashboard', array('as' => 'dashboard', 'uses' => 'InfuseController@dashboard') );
   Route::any('user', array('as' => 'user', 'uses' => 'InfuseController@user') );
   Route::any('permission', array('as' => 'permission', 'uses' => 'InfuseController@permission') );
   Route::any('role', array('as' => 'role', 'uses' => 'InfuseController@role') );
@@ -38,7 +38,7 @@ Route::filter('InfuseAuth', function()
 });
 
 
-Route::filter('WebService', function()
+Route::filter('WebServiceFilter', function()
 {
   if (Request::ajax()) return Response::json(WebService::process());
 });

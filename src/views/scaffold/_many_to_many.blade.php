@@ -1,7 +1,7 @@
 @if (isset($header['edit']) && count($header['manyToManyAssociations']) > 0)
 <tr>
 <?php
-
+$entry = $entries;
 //$model = (array_key_exists('actualModel', $header))? get_class($header['actualModel']) : get_class($entry);
 $model = get_class($entry);
 ?>

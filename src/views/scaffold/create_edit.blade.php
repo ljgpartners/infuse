@@ -129,13 +129,16 @@
 				{{-- upload  --}}
 				@elseif (array_key_exists("upload", $column))
 
-					<input type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "livePreviewCrop": "" )}}" id="upload{{$column['field']}}" >
+					<div class="uploadArea">
+
+					<div>
+						<input type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "imagePreviewCropOn": "" )}}" id="upload{{$column['field']}}" >
+					</div>
 					
 					<?php //  $isEmptyFunc = Util::under2camel($column['field'])."IsEmpty";  !$entries->$isEmptyFunc() ?>
 					
 					@if ($entries->{$column['field']} != "" && $entries->{$column['field']} != null)
-
-						</br>
+						
 						@if ($entries->{$column['field']} != "" && preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $entries->{$column['field']} ))
 							<button type="button" class="btn btn-mini btn-link" data-toggle="modal" data-target="#{{"Modal".$column['field'].$entries->id}}">
 								preview current
@@ -155,6 +158,26 @@
 						
 					@endif
 
+					
+
+					@if ($column['upload']['imageCrop'])
+
+					<input type="hidden" name="{{$column['field']}}" id="{{"croppic".$column['field'].$entries->id}}CroppedImage" value="" >
+					
+					<button type="button" class="btn btn-mini btn-link imageCrop" data-id="{{"croppic".$column['field'].$entries->id}}" data-path="/{{\Request::path()}}" data-width="{{$column['upload']['imageCrop']['width']}}" data-height="{{$column['upload']['imageCrop']['height']}}"> 
+						crop upload
+					</button>
+					
+						
+					<div class="imagePreviewCrop" id="{{"croppic".$column['field'].$entries->id}}">
+						<!-- image preview area-->
+					</div>
+
+					
+
+					@endif
+
+					{{-- file errors  --}}
 					@foreach ($column['upload']['validations'] as $val)
 						@if ($fileErrors && array_key_exists($column['field'], $fileErrors) && $val[1] == $fileErrors["{$column['field']}"])
 							<?php unset($fileErrors["{$column['field']}"]); ?>
@@ -164,22 +187,7 @@
 						@endif
 					@endforeach
 
-					@if ($column['upload']['imageCrop'])
-					<div class="imagePreviewCrop">
-						<!-- image preview area-->
-						<img id="upload{{$column['field']}}Preview" class="imgAreaSelect" data-id="upload{{$column['field']}}" style="display:none;"/>
-					</div>
-
-					<!-- hidden inputs -->
-					<input type="hidden" id="upload{{$column['field']}}x" name="upload{{$column['field']}}x" />
-					<input type="hidden" id="upload{{$column['field']}}y" name="upload{{$column['field']}}y" />
-					<input type="hidden" id="upload{{$column['field']}}w" name="upload{{$column['field']}}w" />
-					<input type="hidden" id="upload{{$column['field']}}h" name="upload{{$column['field']}}h" />
-
-					<input type="hidden" id="upload{{$column['field']}}nw" name="upload{{$column['field']}}nw" />
-					<input type="hidden" id="upload{{$column['field']}}nh" name="upload{{$column['field']}}nh" />
-
-					@endif
+				</div> <!-- end of uploadArea -->
 
 				{{-- other inputs based on column type  --}}
 				@else
