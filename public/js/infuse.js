@@ -152,7 +152,7 @@ $(document).ready(function() {
 			height: height,
 			onAfterImgCrop: function() { 
 				imagePreviewCrop.height(200);
-				$("#"+id+"CroppedImage").val($("#croppicimage1 .croppedImg").attr("src"));
+				$("#"+id+"CroppedImage").val(parent.find("#"+id+" .croppedImg").attr("src"));
 			},
 			afterCropControlRemoveCroppedImage: function() {
 				imagePreviewCrop.height(30);
@@ -301,8 +301,10 @@ $(document).ready(function() {
     var submitValidation = $(this).validate({errorClass: "errorInput"});
     return submitValidation.bool;
   });
-  /*
-  setInterval(function() {
+  
+
+  // Infuse check if clean up of temp folder needed
+  setTimeout(function() {
   	$.ajax({
 				type: 'POST',
 				url: window.location.href,
@@ -311,15 +313,14 @@ $(document).ready(function() {
 				},
 				success: function (data) { 
 				 if (data.status == "success") {
-					 	console.log(data.files);
+					 	//console.log(data.message);
 				 }
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 				  //console.log('AJAX call failed: ' + textStatus + ' ' + errorThrown);
 				}
 			}); // End of Ajax
-  }, 4000); */
-  
+  }, 1000);
 	
 });
 })(jQuery);

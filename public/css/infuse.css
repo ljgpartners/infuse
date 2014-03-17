@@ -8241,9 +8241,17 @@ body.infuseWrapper input[type="password"] {
   font-weight: normal;
   margin: 2px 0px 0px 0px;
 }
-.infuseScaffold input[type="file"] {
+.infuseScaffold input[type="file"],
+.infuseScaffold input[type="checkbox"] {
   height: auto !important;
   line-height: 15px !important;
+}
+.infuseScaffold input[type="checkbox"] {
+  width: auto !important;
+  font-size: 12px;
+}
+.infuseScaffold label.checkbox {
+  font-size: 12px;
 }
 .introLanding,
 .infuseScaffold {

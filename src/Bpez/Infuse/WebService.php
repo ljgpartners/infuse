@@ -110,10 +110,11 @@ class WebService {
 		ini_set('memory_limit','64M');
 		$file = \Input::all();
 		$preserveRatio = true;  
-		$upsize = false;
+		$upsize = true;
 
 		$destinationPath = $_SERVER['DOCUMENT_ROOT'].'/uploads/tmp/';
-    $filename        = time().'_test.jpg';
+		$fileName = explode(DIRECTORY_SEPARATOR, $file['imgUrl']);
+    $filename = time().end($fileName);
 
 		$img = \Image::make($_SERVER['DOCUMENT_ROOT'].$file['imgUrl'])
 			->resize($file['imgW'], $file['imgH'], $preserveRatio, $upsize)
@@ -127,18 +128,19 @@ class WebService {
 	protected function cleanTempFolder()
 	{
 		if (!\Cache::has('infuse::clean_temp_folder')) {
-			$expiresAt = Carbon::now()->addMinutes(2);
+			// Only allow checking files every hour
+			$expiresAt = \Carbon::now()->addMinutes(59);
 			\Cache::put('infuse::clean_temp_folder', true, $expiresAt);
 
-			$now = new DateTime;
+			$now = new \DateTime;
 			$tempFiles = \File::glob($_SERVER['DOCUMENT_ROOT'].'/uploads/tmp/*');
-			$fileTime = new DateTime;
+			$fileTime = new \DateTime;
 			foreach($tempFiles as $file) {
 				$fileTime->setTimestamp(\File::lastModified($file));
 				$interval = $now->diff($fileTime);
 				$elapsed = (integer) $interval->format('%i');
-				// If greater than 30 minutes delete file
-				if ($elapsed > 30)
+				// If file older then 15 minutes delete
+				if ($elapsed > 15)
 					unlink($file);
 			}
 			return array("status" => 'success', "message" => 'Files cleaned up.');

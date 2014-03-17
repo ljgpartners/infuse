@@ -132,12 +132,18 @@
 					<div class="uploadArea">
 
 					<div>
+						@if (!empty($entries->{$column['field']}))
+						<label class="checkbox">
+				      <input type="checkbox" name="{{$column['field']}}_delete"> delete upload
+				    </label>
+				    @endif
 						<input type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "imagePreviewCropOn": "" )}}" id="upload{{$column['field']}}" >
 					</div>
 					
-					<?php //  $isEmptyFunc = Util::under2camel($column['field'])."IsEmpty";  !$entries->$isEmptyFunc() ?>
 					
-					@if ($entries->{$column['field']} != "" && $entries->{$column['field']} != null)
+					@if (!empty($entries->{$column['field']}))
+
+						
 						
 						@if ($entries->{$column['field']} != "" && preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $entries->{$column['field']} ))
 							<button type="button" class="btn btn-mini btn-link" data-toggle="modal" data-target="#{{"Modal".$column['field'].$entries->id}}">
@@ -162,18 +168,16 @@
 
 					@if ($column['upload']['imageCrop'])
 
-					<input type="hidden" name="{{$column['field']}}" id="{{"croppic".$column['field'].$entries->id}}CroppedImage" value="" >
-					
-					<button type="button" class="btn btn-mini btn-link imageCrop" data-id="{{"croppic".$column['field'].$entries->id}}" data-path="/{{\Request::path()}}" data-width="{{$column['upload']['imageCrop']['width']}}" data-height="{{$column['upload']['imageCrop']['height']}}"> 
-						crop upload
-					</button>
-					
+						<input type="hidden" name="{{$column['field']}}" id="{{"croppic".$column['field'].$entries->id}}CroppedImage" value="" >
 						
-					<div class="imagePreviewCrop" id="{{"croppic".$column['field'].$entries->id}}">
-						<!-- image preview area-->
-					</div>
-
-					
+						<button type="button" class="btn btn-mini btn-link imageCrop" data-id="{{"croppic".$column['field'].$entries->id}}" data-path="/{{\Request::path()}}" data-width="{{$column['upload']['imageCrop']['width']}}" data-height="{{$column['upload']['imageCrop']['height']}}">
+							crop upload
+						</button>
+						
+							
+						<div class="imagePreviewCrop" id="{{"croppic".$column['field'].$entries->id}}">
+							<!-- image preview area-->
+						</div>
 
 					@endif
 
@@ -187,7 +191,8 @@
 						@endif
 					@endforeach
 
-				</div> <!-- end of uploadArea -->
+					</div> <!-- end of uploadArea -->
+
 
 				{{-- other inputs based on column type  --}}
 				@else

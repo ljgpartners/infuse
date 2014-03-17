@@ -451,6 +451,29 @@ class Scaffold {
 		return $this;
 	}
 
+	/**
+	 * Set the limit for the listing page
+	 *
+   * Pass in an integer to set the limit for the page
+   *
+   * @api
+   *
+   * @example limit($limit) 
+   <pre>
+   	// Single
+		$scaffold->limit($limit);</br></br>
+		// Multiple
+		$scaffold->columnName(array(
+		&nbsp;array("column" => "someColumn", "newName" => "someName"),
+		&nbsp;array("column" => "someColumn2", "newName" => "someName2")
+		));
+   </pre>
+   *
+   * @param integer $limit 
+   *
+   * @return $this Returns this so that it can be easily chanined.
+   *
+   */
 	public function limit($limit)
 	{
 		$this->limit = (is_int($limit))? $limit : $this->limit;
@@ -1014,7 +1037,11 @@ class Scaffold {
 		if (!$post) {
 			$this->entries = $model;
 		} else {
-			$this->entries = Util::arrayToObject($post);
+			$this->entries = new $model;
+			foreach ($this->columns as $column) {
+				if (isset($post[$column['field']]))
+					$this->entries->{$column['field']} = $post[$column['field']];
+			}
 		}
 		
 	}
@@ -1195,51 +1222,19 @@ class Scaffold {
 		
 		foreach ($this->columns as $column) {
 
-			if (array_key_exists("upload", $column) && array_key_exists($column['field'], $_FILES) && $_FILES["{$column['field']}"] != "") {
-				
-				
+			if (array_key_exists("upload", $column)) {
+		
 
-				/**************************************
-				* Do uploading via image crop method
-				****************************************/
-				if (array_key_exists("imageCrop", $column['upload']) && $column['upload']['imageCrop']) {
+				// If column in files array or if uploaded already by cropping tool
+				$checkIfInFiles = (array_key_exists($column['field'], $_FILES) && !empty($_FILES["{$column['field']}"]['name']));
+				$checkIfAlreadyUploaded = Util::get($column['field']);
 
-					if ($_FILES["{$column['field']}"]['name'] != "") {
-						
-						$nw = $column['upload']['imageCrop']['width']; 
-						$nh = $column['upload']['imageCrop']['height'];
-						 
-						$valid_exts = array('jpeg', 'JPEG', 'jpg', 'JPG', 'png', 'PNG', 'gif', 'GIF');
-						$ext = strtolower(pathinfo($_FILES["{$column['field']}"]['name'], PATHINFO_EXTENSION));
-							if (in_array($ext, $valid_exts)) {
-									$filename = uniqid().'.'.$ext;
-									$path = $model->uploadPath($column['field']).$filename;
-									$size = getimagesize($_FILES["{$column['field']}"]['tmp_name']);
+				// Only process if file present
+				if ($checkIfInFiles || $checkIfAlreadyUploaded) {
+					
+					$passFileTotransit = ($checkIfAlreadyUploaded)? $_SERVER['DOCUMENT_ROOT'].$checkIfAlreadyUploaded : $_FILES["{$column['field']}"];
 
-									$x = (int) Util::get("upload{$column['field']}x");
-									$y = (int) Util::get("upload{$column['field']}y");
-									$w = (int) Util::get("upload{$column['field']}w") ? Util::get("upload{$column['field']}w") : $size[0];
-									$h = (int) Util::get("upload{$column['field']}h") ? Util::get("upload{$column['field']}h") : $size[1];
-
-									$data = file_get_contents($_FILES["{$column['field']}"]['tmp_name']);
-									$vImg = imagecreatefromstring($data);
-									$dstImg = imagecreatetruecolor($nw, $nh);
-									imagecopyresampled($dstImg, $vImg, 0, 0, $x, $y, $nw, $nh, $w, $h);
-									imagejpeg($dstImg, $path);
-									imagedestroy($dstImg);
-									$entry->{$column['field']} = $filename;
-									
-							} else {
-								$fileErrors["{$column['field']}"] = "Extension not allowed.";
-							}
-					}
-						
-
-				} else {
-					/**************************************
-					* Not croped image do regualr uploading 
-					***************************************/
-					$transit = new Transit($_FILES["{$column['field']}"]);
+					$transit = new Transit($passFileTotransit);
 
 					$validations = $column['upload']['validations'];
 					if (count($validations) > 0) {
@@ -1253,24 +1248,35 @@ class Scaffold {
 					} else {
 						$transit->setDirectory($model->uploadPath($column['field']));
 					}
-
+					
 					try { 
-						if ($_FILES["{$column['field']}"]['name'] != "" && $transit->upload()) {
-							$fileName = explode(DIRECTORY_SEPARATOR, $transit->getOriginalFile());
 
+						if ($checkIfAlreadyUploaded) {
+							$overwrite = false;
+							$delete = true;
+							$success = $transit->importFromLocal($overwrite, $delete);
+						} else {
+							$success = $transit->upload();
+						}
+						
+						if ($success) {
+							$fileName = explode(DIRECTORY_SEPARATOR, $transit->getOriginalFile());
+							
 							if (!empty($entry->{$column['field']}))
 								unlink($_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']));
 							$entry->{$column['field']} = end($fileName);
-						}
+
+						} 
 					} catch (Exception $e) {
 						$fileErrors["{$column['field']}"] = $e->getMessage();
 					}
 				}
 				
-				
-				
-
-				
+				if (Util::get($column['field']."_delete")) {
+					unlink($_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']));
+					$entry->{$column['field']} = "";
+				}
+					
 
 			} else {
 				if ($column['field'] != "created_at" && $column['field'] != "updated_at" && Util::checkInfuseLoginFields($this->infuseLogin, $column) ) {
@@ -1288,7 +1294,8 @@ class Scaffold {
 					} 
 					
 					$entry->{$column['field']} = $inputsTemp;
-					
+					if ($column['field'] == "image")
+						die("else");
 				}
 			}
 		}
