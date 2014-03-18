@@ -187,21 +187,21 @@ class Scaffold {
 	private $belongsToUser = false;
 
 	/**
-   * On the listing page only loads models instances that belong to the 
-   * same parent of the foriegn key provided.
+   * On the listing page only loads model instances that are siblings of the user
+   * of the foriegn key provided.
    *
    * @access private
    * @var boolean|string
    */
-	private $onlyLoadSameChildren = false;
+	private $onlyLoadSiblingsOfUserRelatedBy = false;
 
 	/**
-   * Associates model to the parent of the foreign key given. 
+   * Associates model to the same parent of the user by the foreign key given. 
    *
    * @access private
    * @var boolean|string
    */
-	private $associateToSameParent = false;
+	private $associateToSameParentOfUserRelatedBy = false;
 
 	/**
    * Disables the action delete action on an instance of the model. 
@@ -729,15 +729,15 @@ class Scaffold {
 		return $this;
 	}
 	
-	public function associateToSameParent($foreignKey)
+	public function associateToSameParentOfUserRelatedBy($foreignKey)
 	{
-		$this->associateToSameParent = $foreignKey;
+		$this->associateToSameParentOfUserRelatedBy = $foreignKey;
 		return $this;
 	}
 
-	public function onlyLoadSameChildren($foreignKey)
+	public function onlyLoadSiblingsOfUserRelatedBy($foreignKey) 
 	{
-		$this->onlyLoadSameChildren = $foreignKey;
+		$this->onlyLoadSiblingsOfUserRelatedBy = $foreignKey;
 		return $this;
 	}
 	
@@ -800,11 +800,11 @@ class Scaffold {
 				case 'belongsToUser':
 					$this->belongsToUser();
 					break;
-				case 'associateToSameParent':
-					$this->associateToSameParent($f);
+				case 'associateToSameParentOfUserRelatedBy':
+					$this->associateToSameParentOfUserRelatedBy($f);
 					break;
-				case 'onlyLoadSameChildren':
-					$this->onlyLoadSameChildren($f);
+				case 'onlyLoadSiblingsOfUserRelatedBy':
+					$this->onlyLoadSiblingsOfUserRelatedBy($f);
 					break;
 				case 'addCkeditor':
 					$this->addCkeditor($f);
@@ -968,8 +968,8 @@ class Scaffold {
 		if ($this->belongsToUser && !$this->user->is('Super Admin'))
 			$prepareModel->where("infuse_user_id", "=", $this->user->id);
 
-		if ($this->onlyLoadSameChildren)
-			$prepareModel->where($this->onlyLoadSameChildren, "=", $this->user->{$this->onlyLoadSameChildren});
+		if ($this->onlyLoadSiblingsOfUserRelatedBy)
+			$prepareModel->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
 		
 
 		if (Util::get("toCSV"))
@@ -1091,7 +1091,7 @@ class Scaffold {
 		 
 
 		if (Util::get("stack")) {
-			$redirect_path = Util::childBackLink(true);
+			$redirect_path = Util::childBackLink();
 		} else {
 			$redirect_path = Util::redirectUrl();
 		}
@@ -1313,8 +1313,8 @@ class Scaffold {
 			if ($this->infuseLogin && !Util::get("id")) { 
 				$entry->verified = 1;
 				$entry->deleted_at = null;
-				if ($this->associateToSameParent)
-					$entry->{$this->associateToSameParent} = $this->user->{$this->associateToSameParent};
+				if ($this->associateToSameParentOfUserRelatedBy)
+					$entry->{$this->associateToSameParentOfUserRelatedBy} = $this->user->{$this->associateToSameParentOfUserRelatedBy};
 			}
 
 			
@@ -1364,7 +1364,7 @@ class Scaffold {
 			}
 
 			if (Util::get("stack")) {
-				$redirect_path = Util::childBackLink(true);
+				$redirect_path = Util::childBackLink();
 			} else {
 				$redirect_path = Util::redirectUrl();
 			}

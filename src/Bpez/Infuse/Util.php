@@ -65,7 +65,7 @@ class Util {
 	{
 		ob_start();
 		echo "<pre>";
-		var_dump($var);//print_r($var);
+		print_r($var);// var_dump($var);
 		echo "</pre>";
 
 		if ($laravelLogger) {
@@ -221,30 +221,19 @@ class Util {
 		 
 	}
 	
-	public static function childBackLink($popValues = false)
+	public static function childBackLink()
 	{
 		if (self::stackSize() == 2) { 
-			if ($popValues) { 
-				self::stackPop();
-				$parent = self::stackPop(); 
-			} else {
-				$parent = self::stackParent();
-			}
+			$parent = self::stackParent();
 			$id = $parent[1];
 			$baseUri = $parent[2];
-		 	return "/{$baseUri}?action=e&id={$id}&pop=1";
+		 	return "/{$baseUri}?action=e&id={$id}";
 		} else { 
-			if ($popValues) {
-				self::stackPop(); 
-				$parent = self::stackPop(); 
-				self::stackPush($parent[0], $parent[1], $parent[2]); 
-			} else {
-				$parent = self::stackParent();
-			}
+			$parent = self::stackParent();
 			$model = $parent[0];
 			$id = $parent[1];
 			$baseUri = $parent[2];
-			return "/{$baseUri}?stack={$model}&action=e&id={$id}&pop=1";
+			return "/{$baseUri}?stack={$model}&action=e&id={$id}";
 		}
 			
 	}
@@ -258,6 +247,11 @@ class Util {
 			return "/{$baseUri}?stack={$model}&action=e&id={$id}";
 		else
 			return "/{$baseUri}?stack={$model}&action=c";
+	}
+
+	public static function stackFixBrowserBack($child)
+	{
+		return ($child == self::stackParentName());
 	}
 
 	//////////////////////////////////////////

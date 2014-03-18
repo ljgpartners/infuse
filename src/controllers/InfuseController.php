@@ -57,7 +57,7 @@ class InfuseController extends BaseController {
 		$uri = Request::path();
 		$child = Input::get('stack');
 		
-		if (Input::has("pop"))
+		if (Util::stackFixBrowserBack($child))
 			Util::stackPop(); 
 		Util::stackPush($child, Input::get('id', null), $uri); 
 		
@@ -70,7 +70,7 @@ class InfuseController extends BaseController {
 		if ($redirect)
 			return Redirect::to($redirect);
 			
-		$this->layout->content = $scaffold->process(); 
+		$this->layout->content = $scaffold->process();
 	}
 
 	public function user()

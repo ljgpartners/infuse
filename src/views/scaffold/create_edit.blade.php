@@ -283,11 +283,31 @@
 					
 				</td>
 				<td> 
-					<input type="submit" value="submit" class="btn submitButton">
+					<input type="submit" value="save" class="btn submitButton">
 				</td>
 			</tr>
 
-			
+			<div class="actionFixedNav">
+					@if (Util::get("stack"))
+				    <a class="" href="{{Util::childBackLink()}}">Back</a>
+				  	@if (isset($header['edit']))
+				  		<a class="" href="{{Util::childActionLink(Util::get("stack"), 's', $entries->id)}}">Show</a>
+					  	@if(!$header['onlyOne'] && $header['deleteAction'])
+							<a class="" href="{{Util::childActionLink(Util::get("stack"), 'd', $entries->id)}}" onclick="return confirm('Confirm delete?');">Delete</a>
+							@endif
+						@endif
+					@else
+				    <a class="" href="?action=l">List</a>
+				  	@if (isset($header['edit']))
+					  	<a class="" href="?action=s&id={{$entries->id}}">Show</a>
+					  	@if(!$header['onlyOne'] && $header['deleteAction'])
+							<a class="" href="?action=d&id={{$entries->id}}" onclick="return confirm('Confirm delete?');">Delete</a>
+							@endif
+						@endif
+					@endif
+
+					<input type="submit" value="save" class="">
+			</div>
 
 			{{-- Relationship subviews --}}
 

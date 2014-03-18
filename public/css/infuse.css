@@ -8190,11 +8190,6 @@ body .ui-tooltip {
   }
 }
 /* some reset stlyes */
-/*
-@import url("imgareaselect/imgareaselect-animated.less");
-@import url("imgareaselect/imgareaselect-default.less");
-@import url("imgareaselect/imgareaselect-deprecated.less");
-*/
 body {
   font-family: 'Open Sans', sans-serif;
   background-color: black;
@@ -8212,6 +8207,40 @@ body.infuseWrapper {
 body.infuseWrapper input[type="text"],
 body.infuseWrapper input[type="password"] {
   -webkit-appearance: none;
+}
+.infuseScaffold .actionFixedNav {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: 39px;
+  background-color: #E4E4E4;
+  font-size: 0px;
+}
+.infuseScaffold .actionFixedNav input[type="submit"] {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  height: 39px;
+  padding: 0px 40px;
+  color: white;
+  font-size: 12px;
+  border: 0px;
+  background-color: #A01A27;
+}
+.infuseScaffold .actionFixedNav a {
+  display: inline-block;
+  vertical-align: middle;
+  height: 30px;
+  padding: 9px 40px 0px 40px;
+  color: black;
+  font-size: 12px;
+  background-color: #CBCBCB;
+  margin-right: 1px;
+  text-decoration: none;
+}
+.infuseScaffold .actionFixedNav a:hover {
+  background-color: #C0C0C0;
 }
 .container {
   margin-bottom: 100px;

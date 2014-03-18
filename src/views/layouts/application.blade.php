@@ -38,6 +38,7 @@
 	.infuseTopButtonGroup .btn.mainColor, .infuseWrapper .hero-unit .btn.mainColor{ background-color: {{Config::get('infuse::colors.button_color')}} !important; }
 	.infuseTopButtonGroup .btn.altColor{ background-color: {{Config::get('infuse::colors.button_alt_color')}} !important; }
 	.infuseWrapper .submitButton{  background-color: {{Config::get('infuse::colors.button_color')}} !important; }
+	.infuseScaffold .actionFixedNav input[type="submit"]{ background-color: {{Config::get('infuse::colors.button_color')}}; }
 
 	.infuseLogin .infuseSiteTitle, .infuseLogin .infuseTextLogo, .infuseLogin .infuseTextLogoAbove{ color: {{Config::get('infuse::colors.login_text')}}; }
 	.infuseLogin .infuseU, .infuseLogin .infuseP{ color: {{Config::get('infuse::colors.login_input_text')}}; }
