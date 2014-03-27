@@ -10,9 +10,9 @@ body.infuseWrapper{ background-color: #FFFFFF; background-image: none !important
 body.infuseWrapper input[type="text"], body.infuseWrapper input[type="password"],{ -webkit-appearance: none; }
 
 .infuseScaffold .actionFixedNav{ position: fixed; bottom: 0px; left: 0px; width: 100%; height: 39px; background-color: #E4E4E4; font-size: 0px; }
-.infuseScaffold .actionFixedNav input[type="submit"]{ position: absolute; bottom: 0px; right: 0px; height: 39px; padding: 0px 40px; color: white; font-size: 12px;
-	border: 0px; background-color: #A01A27;  }
-.infuseScaffold .actionFixedNav a{ display: inline-block; vertical-align: middle; height: 30px; padding: 9px 40px 0px 40px; color: black; font-size: 12px; 
+.infuseScaffold .actionFixedNav input[type="submit"]{ text-transform: uppercase; position: absolute; bottom: 0px; right: 0px; height: 39px; padding: 0px 40px; color: white; font-size: 12px;
+	border: 0px; background-color: #A01A27; font-family: 'Open Sans', sans-serif; }
+.infuseScaffold .actionFixedNav a{ text-transform: uppercase; display: inline-block; vertical-align: middle; height: 30px; padding: 9px 40px 0px 40px; color: black; font-size: 12px; 
 	background-color: #CBCBCB;  margin-right: 1px;  text-decoration: none; }
 .infuseScaffold .actionFixedNav a:hover{ background-color: #C0C0C0;}
 
@@ -21,7 +21,7 @@ body.infuseWrapper input[type="text"], body.infuseWrapper input[type="password"]
 
 .infuseScaffold .table{ background-color: white; }
 .infuseScaffold input, .infuseScaffold textarea{ width: 60%; }
-.infuseScaffold input[type="submit"]{ width: auto; }
+.infuseScaffold input[type="submit"]{ width: auto; font-family: 'Open Sans', sans-serif; }
 .infuseScaffold{ font-size: 12px; }
 .infuseScaffold textarea{ min-height: 80px; }
 
@@ -32,12 +32,11 @@ body.infuseWrapper input[type="text"], body.infuseWrapper input[type="password"]
 .introLanding, .infuseScaffold { margin-top: 50px; }
 
 .infuseBlue{ color: #0088cc !important; }
-
+.infuseWrapper .modal-body{ max-height: none; }
 
 .infuseWrapper h1{ font-size: 25px; font-weight: 300; position: relative; letter-spacing: 2px; }
 .infuseWrapper small{ font-size: 16px; position: absolute; top: 10px; letter-spacing: 2px; right: 0px;  color: #999999; font-weight: 300;  }
 
-.infuseWrapper .modal-body{ max-height: none; }
 
 /* Login and password reset pages */
 
@@ -113,6 +112,26 @@ input.infuseLoginSubmit{ background-color: #A01A27; margin: 0px auto; display: b
 .manyToManyAssociations .checkbox{ white-space: nowrap;  text-align: left; vertical-align: middle; }
 .manyToManyAssociations .checkbox input[type="checkbox"]{  float: none; margin-left: 0px;  width: auto !important; vertical-align: middle;  }
 .manyToManyAssociations  .checkbox.inline+.checkbox.inline{ margin-left: 0px; }
+
+/* import modal */
+.importedUpdatedFlag{ width: 100%; height: 100%; }
+.importModal{ width: 80%; margin-left: -40%; }
+.importModal .loading{ display: none; margin: 15px auto; width: 32px; height: 32px; }
+.importModal .loading img{ width: 100%; }
+.importModalAccordion{ display: none; }
+.addedRow{ cursor: pointer;  }
+.addedRow .iconImportAccordion{ margin-right: 10px; }
+.importModal{ height: 80%; max-height: 80%; }
+.infuseWrapper .importModal .modal-body{ overflow-y: auto; }
+.infuseWrapper .importModal .modal-footer{ position: relative; }
+.infuseWrapper .importModal .modal-footer .loadMoreResults{ display: none; position: absolute; top: 50%; right:50%; margin-top: -8px;  margin-right: -61px; }
+.infuseWrapper .importModal .modal-footer .pagination{ margin: 0px;}
+.importModal .distance{ width: 20px !important; }
+
+.importModal .searchInput{ padding: 10px 10px; vertical-align: top; display: inline-block; width: 380px; margin-bottom: 0px; margin-right: 10px; } 
+.importModal .searchBox{ display: inline-block; }
+.importModal .searchBox{ font-size: 0px; background-color: #DDDDDD; padding: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; /* future proofing */ -khtml-border-radius: 10px; /* for old Konqueror browsers */ }
+.importModal .searchBox form{ margin: 0px; }
 
 /* croppic */
 .imagePreviewCrop{ display: none; max-width:500px;  max-height:200px; width:500px; height:30px; position:relative; margin: 20px 0px; }
