@@ -49,19 +49,41 @@
 					<div class="btn-group"> 
 					    <a class="btn btn-small" href="{{Util::childBackLink()}}">Back</a>
 					    <a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 'e', $entries->id)}}">Edit</a>
+					    @if(!$header['onlyOne'] && $header['deleteAction'])
 							<a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 'd', $entries->id)}}" onclick="return confirm('Confirm delete?');">Delete</a>
+							@endif
 					</div>
 					@else
 					<div class="btn-group">
 					    <a class="btn btn-small" href="?action=l">List</a>
 					    <a class="btn btn-small" href="?action=e&id={{$entries->id}}">Edit</a>
+					    @if(!$header['onlyOne'] && $header['deleteAction'])
 							<a class="btn btn-small" href="?action=d&id={{$entries->id}}" onclick="return confirm('Confirm delete?');">Delete</a>
+							@endif
 					</div>
 					@endif
 				</td>
 			</tr>
 
 	</table>
+
+	<div class="actionFixedNav">
+			@if (Util::get("stack"))
+		    <a class="" href="{{Util::childBackLink()}}">Back</a>
+	  		<a class="" href="{{Util::childActionLink(Util::get("stack"), 'e', $entries->id)}}">Edit</a>
+		  	@if(!$header['onlyOne'] && $header['deleteAction'])
+				<a class="" href="{{Util::childActionLink(Util::get("stack"), 'd', $entries->id)}}" onclick="return confirm('Confirm delete?');">Delete</a>
+				@endif
+
+			@else
+		    <a class="" href="?action=l">List</a>
+		  	<a class="" href="?action=e&id={{$entries->id}}">Edit</a>
+		  	@if(!$header['onlyOne'] && $header['deleteAction'])
+				<a class="" href="?action=d&id={{$entries->id}}" onclick="return confirm('Confirm delete?');">Delete</a>
+				@endif
+			@endif
+	</div>
+
 </div>
 
 </div>

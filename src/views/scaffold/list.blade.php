@@ -129,6 +129,13 @@ endif;
 						@if($infuseLogin)
 						<li><a href="?action=rrpp&id={{$entry->id}}">Send Reset</a></li>
 						@endif
+
+						@if(count($header['callFunctions']) > 0)
+							@foreach ($header['callFunctions'] as $function)
+								<li><a href="?action=cf&id={{$entry->id}}&cf={{$function["function"]}}" onclick="return confirm('Confirm {{$function["display_name"]}}?');">{{$function["display_name"]}}</a></li>
+							@endforeach
+						@endif
+						
 						
 				  </ul>
 				</div>

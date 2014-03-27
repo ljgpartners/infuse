@@ -9,9 +9,12 @@
 	<?php $errors = Util::flashArray("errors"); ?>
 	<?php $fileErrors = Util::flashArray("file_errors"); ?>
 
-	{{Util::fuseAlerts(Util::flash())}}
+	{{Util::fuseAlerts(Util::flash())}} 
 
-	<table class="table table-striped table-bordered">
+	@include('infuse::scaffold._import_from_models')
+
+
+	<table class="table table-striped table-bordered editCreateForm"> 
 			<form method="post" action="?" enctype="multipart/form-data">
 
 			{{-- Added infuse action and id to the form --}}
@@ -136,8 +139,8 @@
 						<label class="checkbox">
 				      <input type="checkbox" name="{{$column['field']}}_delete"> delete upload
 				    </label>
-				    @endif
-						<input type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "imagePreviewCropOn": "" )}}" id="upload{{$column['field']}}" >
+				    @endif 
+						<input type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "imagePreviewCropOn": "" )}}  importReplace{{$column['field']}}" id="upload{{$column['field']}}" >
 					</div>
 					
 					
@@ -156,6 +159,9 @@
 							  </div>
 							  <div class="modal-body">
 							    <img src="{{$entries->url($column['field'])}}">
+							  </div>
+							  <div class="modal-footer">
+							  	<button class="btn altColor btn-info" data-dismiss="modal" aria-hidden="true">Close</button>
 							  </div>
 							</div>
 						@else
@@ -199,10 +205,10 @@
 				
 					<?php switch ($column['type']):
 							case 'varchar': ?>
-							<input type="text" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}}>
+							<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}}>
 					<?php 	break;
 							case 'text': ?>
-							<textarea name="{{$column['field']}}" {{Util::readOnly($column)}} >{{$entries->{$column['field']} }}</textarea>
+							<textarea name="{{$column['field']}}" class="importReplace{{$column['field']}}" {{Util::readOnly($column)}} >{{$entries->{$column['field']} }}</textarea>
 					<?php 	break;
 							case 'datetime':
 							case 'timestamp': ?>
@@ -212,7 +218,7 @@
 							<input type="text" class="selectedDate" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
 					<?php 	break;
 							case 'int': ?>
-							<input type="text" name="{{$column['field']}}" pattern="\d+" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
+							<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" pattern="\d+" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
 					<?php 	break;
 							case 'tinyint': ?> 
 							<select name="{{$column['field']}}" {{Util::readOnly($column)}}>
@@ -221,7 +227,7 @@
 							</select>
 					<?php break;
 							default: ?>
-								<input type="text" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
+								<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
 					<?php		
 						endswitch;
 					?>

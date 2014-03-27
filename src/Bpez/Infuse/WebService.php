@@ -1,6 +1,7 @@
 <?php namespace Bpez\Infuse;
 
 use Exception;
+use Bpez\Infuse\Facades\Scaffold;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,9 @@ class WebService {
 				break;
 			case 'clean_temp_folder':
 				$response = $this->cleanTempFolder();
+				break;
+			case 'fetch_import_batch':
+				$response = $this->fetchImportBatch();
 				break;
 
 			default:
@@ -148,6 +152,80 @@ class WebService {
 			return array("status" => 'success', "message" => 'No files cleaned up.');
 		}
 		
+	}
+
+	protected function fetchImportBatch()
+	{
+		$child = Util::camel2under(Util::get('child'));
+		$resource = Util::camel2under(Util::get('resource'));
+		
+		$search =  Util::get('search');
+		$search = (empty($search))? false : $search;
+
+		$columns = Util::get('list');
+		$columns = (empty($columns))? array() : $columns;
+
+		$map = Util::get('map');
+		$map = (empty($map))? array() : Util::get('map');
+
+		$id = Util::get('id');
+		$modelImportingTo = Util::get('modelImportingTo');
+		$modelImportingToId = Util::get('modelImportingToId');
+
+		$distance = Util::get('distance');
+		$distance = (empty($distance))? 25 : $distance;
+
+		$latitude = Util::get('latitude');
+		$longitude = Util::get('longitude');
+
+
+		$config = \Config::get("infuse::{$resource}.children.{$child}");
+		$scaffold = Scaffold::model($config['model'])
+									->mapConfig($config);
+
+		$redirect = $scaffold->checkPermissions(Util::childBackLink());
+		if ($redirect)
+			return array("status" => 'error', "flash" => Util::flash());
+
+		if (!empty($latitude) && !empty($longitude)) {
+			$scaffold->closestLocationsWithinRadius($search, $columns, $latitude, $longitude, $distance); 
+		} else if ($search){
+			$scaffold->search($search, $columns);
+		} else {
+			$scaffold->route();
+		}
+			
+
+		$data = $scaffold->processDataOnly();
+
+		if ($modelImportingToId) { 
+			$modelImportingTo = "\\$modelImportingTo";
+			$updatedAt = new $modelImportingTo();
+			$updatedAt = $updatedAt::findOrFail($modelImportingToId)->updated_at;
+		} else {
+			$updatedAt = false;
+		}
+		
+
+		$entriesHtml = \View::make("infuse::web_service.fetch_import_batch", array(
+			"entries" => $data['entries'],
+			"columns" => $columns, 
+			"map" => $map,
+			"id" => $id,
+			"updatedAt" => $updatedAt
+		))->__toString();
+
+		$response = array(
+			"status" => 'success',
+			"entries" => $data['entries']->toArray(),
+			"pagination" => $data['header']['pagination'],
+			"entries_html" => $entriesHtml
+		);
+
+		if ($search)
+			$response['search'] = true;
+
+		return $response;
 	}
 
 	

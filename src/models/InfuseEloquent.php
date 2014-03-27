@@ -64,10 +64,15 @@ class InfuseEloquent extends Eloquent {
   }
 
   public function url($column)
-  {
-      return strtolower($this->uploadFolder.DIRECTORY_SEPARATOR
+  { 
+    if (filter_var($this->{$column}, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
+      return $this->{$column};
+    } else { 
+    return strtolower($this->uploadFolder.DIRECTORY_SEPARATOR
                   .get_class($this).DIRECTORY_SEPARATOR
                   .$column.DIRECTORY_SEPARATOR).$this->{$column};
+    }
+      
   }
   
 }

@@ -8218,6 +8218,7 @@ body.infuseWrapper input[type="password"] {
   font-size: 0px;
 }
 .infuseScaffold .actionFixedNav input[type="submit"] {
+  text-transform: uppercase;
   position: absolute;
   bottom: 0px;
   right: 0px;
@@ -8227,8 +8228,10 @@ body.infuseWrapper input[type="password"] {
   font-size: 12px;
   border: 0px;
   background-color: #A01A27;
+  font-family: 'Open Sans', sans-serif;
 }
 .infuseScaffold .actionFixedNav a {
+  text-transform: uppercase;
   display: inline-block;
   vertical-align: middle;
   height: 30px;
@@ -8258,6 +8261,7 @@ body.infuseWrapper input[type="password"] {
 }
 .infuseScaffold input[type="submit"] {
   width: auto;
+  font-family: 'Open Sans', sans-serif;
 }
 .infuseScaffold {
   font-size: 12px;

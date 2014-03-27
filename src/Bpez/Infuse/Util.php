@@ -54,6 +54,11 @@ class Util {
 	{
 		return strtolower($modelString)."_id";
 	}
+
+	public static function createForeignKeyString($modelString) 
+	{
+		return self::camel2under(strtolower($modelString))."_id";
+	}
 	
 	public static function isForeignKey($columnString)
 	{
@@ -448,6 +453,8 @@ class Util {
 		}
 		
 	}
+
+	
 
 
 	public static function outputCSV($data) 
