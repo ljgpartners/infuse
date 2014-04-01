@@ -109,21 +109,25 @@ class InfuseUser extends VerifyUser {
     if (!$this->exists) { 
       $saved = parent::save($options);
 
-      $email = $this->email;
-      $server = $_SERVER['SERVER_NAME'];
-      $data = array("full_name" => $this->full_name, "username" => $this->username, "email" => $email, "create" => true);
+      // Check if infuse super skip if inital create
+      if ($saved->id != 1) {
+        $email = $this->email;
+        $server = $_SERVER['SERVER_NAME'];
+        $data = array("full_name" => $this->full_name, "username" => $this->username, "email" => $email, "create" => true);
 
+        
+        Config::set('auth.reminder.email', 'infuse::emails.reminder');
+
+        View::composer('infuse::emails.reminder', function($view) use ($data) {
+          $view->with($data);
+        });
+
+        Password::remind(array("email" => $email), function($message)  use ($server)  {
+          $message->subject('[Infuse] User Account Created');
+          $message->from("no-reply@{$server}");
+        });
+      }
       
-      Config::set('auth.reminder.email', 'infuse::emails.reminder');
-
-      View::composer('infuse::emails.reminder', function($view) use ($data) {
-        $view->with($data);
-      });
-
-      Password::remind(array("email" => $email), function($message)  use ($server)  {
-        $message->subject('[Infuse] User Account Created');
-        $message->from("no-reply@{$server}");
-      });
 
       return $saved;
 
