@@ -647,30 +647,44 @@ class Scaffold {
 	*/
 	public function fileUpload($uploads) 
 	{
-		if (!is_array($uploads)) {
-			throw new ScaffoldConfigurationException('fileUpload(array(array("column" => $columnName))); First argument must an array. column index must be set. ');
-		} else {
+		$base = 'fileUpload(array(array("column" => $columnName)));';
+
+		if (!is_array($uploads)) 
+			throw new ScaffoldConfigurationException($base.' First argument must an array. column index must be set. ');
+		
 			
-			// go through all uploads 
+		// If only one
+		if ( is_array($uploads) && isset($uploads['column']) && is_string($uploads['column'])) {
+
+			if (array_key_exists($uploads['column'], $this->columns)) { 
+				$validations = (isset($uploads['validations']))? $uploads['validations'] : array();
+				$imageCrop = (isset($uploads['imageCrop']))? $uploads['imageCrop'] : false; 
+				$this->columns["{$uploads['column']}"]["upload"] = array("validations" => $validations, "imageCrop" => $imageCrop);
+			} else {
+				throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
+			}
+
+		// If more then one
+		} else {
+
 			foreach ($uploads as $key => $info) {
 				
 				if (!is_array($info) && !isset($info['column'])) 
-					throw new ScaffoldConfigurationException('fileUpload(array(array("column" => $columnName))); First argument must an array. column index must be set. ');
+					throw new ScaffoldConfigurationException($base.'  First argument must an array. column index must be set. ');
 				if (!is_string($info['column'])) 
-					throw new ScaffoldConfigurationException('fileUpload(array(array("column" => $columnName))); First argument should name of column. ');
+					throw new ScaffoldConfigurationException($base.' First argument should name of column. ');
 				if (array_key_exists($info['column'], $this->columns)) { 
 					$validations = (isset($info['validations']))? $info['validations'] : array();
 					$imageCrop = (isset($info['imageCrop']))? $info['imageCrop'] : false; 
 					$this->columns["{$info['column']}"]["upload"] = array("validations" => $validations, "imageCrop" => $imageCrop);
 				} else {
-					throw new ScaffoldConfigurationException('fileUpload(array(array("column" => $columnName)));  Column doesn\'t exist.');
+					throw new ScaffoldConfigurationException($base.'  Column doesn\'t exist.');
 				}
 			}
-			return $this;
 		}
 
-		
-	}
+		return $this;
+	} 
 
 	public function hasMany($models)
 	{	
@@ -1036,6 +1050,10 @@ class Scaffold {
 			return false;
 
 		} else {
+
+			if ($this->user->is('Super Admin'))
+				return false;
+
 			$name = Util::cleanName($this->name);
 			Util::flash(array(
 				"message" => "{$this->user->username} is not authorized to {$action} {$name}.", 
@@ -1173,7 +1191,27 @@ class Scaffold {
 	}
 
 	private function edit()
-	{
+	{	
+		if ($this->infuseLogin && Util::get("id") == 1 && !$this->user->is('Super Admin')) {
+			if (Util::get("stack")) {
+				$redirect_path = Util::childBackLink();
+			} else {
+				$redirect_path = Util::redirectUrl();
+			}
+
+			Util::flash(array(
+				"message" => "Can not edit this entry.", 
+				"type" => "error"
+				)
+			);
+
+			if (!$this->testing) {
+				header("Location: {$redirect_path}");
+				exit();
+			}
+		}
+
+
 		$model = $this->model;
 		$this->header = array(
 				"edit" => true, 
@@ -1455,6 +1493,26 @@ class Scaffold {
 			$entry = $model::find(Util::get("id"));
 
 			$message = array("message" => "Updated {$this->name} user with id of ".Util::get("id").".", "type" => "success");
+
+			if ($this->infuseLogin && $entry->id == 1 && !$this->user->is('Super Admin')) {
+				if (Util::get("stack")) {
+					$redirect_path = Util::childBackLink();
+				} else {
+					$redirect_path = Util::redirectUrl();
+				}
+
+				Util::flash(array(
+					"message" => "Can not update this entry.", 
+					"type" => "error"
+					)
+				);
+
+				if (!$this->testing) {
+					header("Location: {$redirect_path}");
+					exit();
+				}
+			}
+
 		} elseif (Util::get("stack")) {
 			$entry = $model;
 			$message = array("message" => "Added {$this->name}.", "type" => "success");
@@ -1577,6 +1635,9 @@ class Scaffold {
 			}
 
 			
+				
+
+			
 			
 			// Do many to many relationship saving
 			if (Util::get("id") && count($this->manyToMany) > 0) {
@@ -1600,13 +1661,17 @@ class Scaffold {
 					$idsForSync = Util::get($manyToManyTable); 
 					if ($idsForSync) { 
 						$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach();
-						if ($this->infuseLogin && $entry->id == 1 && $entry->username == 'super' )
+						if ($this->infuseLogin && $entry->id == 1 && $this->user->is('Super Admin'))
 							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach(1);
 						foreach($idsForSync as $id) { 
 							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach($id);
 						}
 					} else {
-						$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach();
+						if ($this->infuseLogin && $entry->id == 1 && $this->user->is('Super Admin')) {
+						} else {
+							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach();
+						}
+							
 					}
 				}
 			}
