@@ -117,7 +117,7 @@ class InfuseUser extends VerifyUser {
       $saved = parent::save($options);
 
       // Check if infuse super skip if inital create
-      if ($saved->id != 1) {
+      if ($this->id != 1) {
         $email = $this->email;
         $server = $_SERVER['SERVER_NAME'];
         $data = array("full_name" => $this->full_name, "username" => $this->username, "email" => $email, "create" => true);
