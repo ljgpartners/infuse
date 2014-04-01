@@ -12,6 +12,11 @@ return array(
 	*/
 
 	/*
+	| Toggles role/permission authentication. 
+	*/
+	'role_permission' => false,
+
+	/*
 	| Link to main site
 	*/
 	'admin_site_link' => url('/'),

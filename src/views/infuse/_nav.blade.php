@@ -19,8 +19,8 @@
 			@endif
 		</div>
 		
-		<div class="navElement">
-			@if ($user->can('infuse_user_view'))
+		<div class="navElement"> 
+			@if (!$rolePermission || ($rolePermission && $user->can('infuse_user_view')) )
 			<a class="{{(isset($userActive))? "active" : ""}}" href="/admin/user">
 				<span>Users</span>
 			</a>

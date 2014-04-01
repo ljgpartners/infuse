@@ -18,6 +18,8 @@ class InfuseController extends BaseController {
 		View::share("user", $this->user);
 		View::share("superAdmin", $this->user->is('Super Admin'));
 		View::share('navigation', Config::get('infuse::navigation'));
+		$rolePermission = (\Config::get("infuse::role_permission"))? true : false;
+		View::share('rolePermission', $rolePermission);
 	}
 
 

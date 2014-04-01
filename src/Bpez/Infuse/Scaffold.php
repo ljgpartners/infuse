@@ -35,6 +35,14 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * @todo Implement dependency on request instance
  */
 class Scaffold {
+
+	/**
+   * Toggles role/permission authentication.
+   *
+   * @access private
+   * @var bool
+   */
+	private $rolePermission = false; 
 	
 	/**
    * Allows unit testing to work.
@@ -296,6 +304,7 @@ class Scaffold {
 		$this->user = $user;
 		$this->request = $request;
 		self::$db = $db;
+		$this->rolePermission = (\Config::get("infuse::role_permission"))? true : false;
 	}
 
 	/**
@@ -1012,6 +1021,10 @@ class Scaffold {
 
 	public function checkPermissions($redirectBack)
   {	
+  	// Check if role/permission authentication is on otherwise return false and check no permissions.
+  	if (!$this->rolePermission)
+  		return false;
+
   	switch ($this->action) {
 			case 'l':
 			case 's':

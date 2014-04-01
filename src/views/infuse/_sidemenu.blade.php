@@ -13,7 +13,7 @@
 	      <div class="accordion-inner">
 	        <ul class="nav nav-list ">
 				    @foreach ($n as $title => $link )
-				    	@if ($user->can("{$link}_view"))
+				    	@if (!$rolePermission || ($rolePermission && $user->can("{$link}_view")) )
 					    <li><a href="/admin/resource/{{$link}}">{{$title}}</a></li>
 					    <li class="divider"></li>
 					    @endif
