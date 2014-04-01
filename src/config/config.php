@@ -17,6 +17,13 @@ return array(
 	'role_permission' => false,
 
 	/*
+	| Base url for uploaded assets only on local environment. 
+	| On production assets are served locally.  Leave blank to 
+	| serve locally on local environemnt.
+	*/
+	'base_url_uploaded_assets_local' => "",
+
+	/*
 	| Link to main site
 	*/
 	'admin_site_link' => url('/'),

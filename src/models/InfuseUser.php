@@ -83,11 +83,18 @@ class InfuseUser extends VerifyUser {
     if (filter_var($this->{$column}, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
       return $this->{$column};
     } else { 
-    return strtolower($this->uploadFolder.DIRECTORY_SEPARATOR
+      $baseUrlUploadedAssetsLocal = \Config::get("infuse::base_url_uploaded_assets_local");
+
+      if (\App::environment() == "local") { 
+        return $baseUrlUploadedAssetsLocal.strtolower($this->uploadFolder.DIRECTORY_SEPARATOR
                   .get_class($this).DIRECTORY_SEPARATOR
                   .$column.DIRECTORY_SEPARATOR).$this->{$column};
+      } else {
+        return strtolower($this->uploadFolder.DIRECTORY_SEPARATOR
+                  .get_class($this).DIRECTORY_SEPARATOR
+                  .$column.DIRECTORY_SEPARATOR).$this->{$column};
+      }
     }
-      
   }
 
 
