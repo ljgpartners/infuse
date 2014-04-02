@@ -18,8 +18,6 @@ return array(
 		array(
 			array("InfuseRole", "role_id", "InfuseUser", "user_id", "role_user", "name", "username")
 		),
-	'associateToSameParentOfUserRelatedBy' => 'region_id',
-	'onlyLoadSiblingsOfUserRelatedBy' => 'region_id'
 
 );
 
