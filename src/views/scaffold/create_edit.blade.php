@@ -284,6 +284,9 @@
 							<a class="btn btn-small" href="?action=d&id={{$entries->id}}" onclick="return confirm('Confirm delete?');">Delete</a>
 							@endif
 						@endif
+						@if($infuseLogin)
+						<a class="btn btn-small" href="?action=rrpp&id={{$entries->id}}">Send Reset</a>
+						@endif
 				  </div>
 					@endif
 					
@@ -309,6 +312,9 @@
 					  	@if(!$header['onlyOne'] && $header['deleteAction'])
 							<a class="" href="?action=d&id={{$entries->id}}" onclick="return confirm('Confirm delete?');">Delete</a>
 							@endif
+						@endif
+						@if($infuseLogin)
+						<a class="" href="?action=rrpp&id={{$entries->id}}">Send Reset</a>
 						@endif
 					@endif
 

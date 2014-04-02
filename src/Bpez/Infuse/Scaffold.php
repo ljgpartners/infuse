@@ -615,18 +615,37 @@ class Scaffold {
 
 	public function addMultiSelect($info)
 	{	
-		if (!is_array($info) && isset($info['column']) && isset($info['array'])) 
-			throw new ScaffoldConfigurationException('addMultiSelect(array("column" => $columnName, "array" => array())); First argument must an array. column and array must be set. ');
-		if (!is_string($info['column'])) 
-			throw new ScaffoldConfigurationException('addMultiSelect(array("column" => $columnName, "array" => array())); First argument should name of column. ');
-		if (!is_array($info['array'])) 
-			throw new ScaffoldConfigurationException('addMultiSelect(array("column" => $columnName, "array" => array())); Second argument can only be an array. ');
-		if (array_key_exists($info['column'], $this->columns)) {
-			$this->columns["{$column}"]["multi_select"] = $info['array'];
-			return $this;
+		$base = 'addMultiSelect(array("column" => $columnName, "array" => array()));';
+
+		if (!is_array($info) ) 
+			throw new ScaffoldConfigurationException($base.' Must be an array.');
+
+		// If only one
+		if ( isset($info['column']) && isset($info['array'])) {
+
+			if (is_string($info['column']) && is_array($info['array'])) {
+				if (array_key_exists($info['column'], $this->columns))
+					$this->columns["{$info['column']}"]["multi_select"] = $info['array'];
+				else
+					throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
+			} else {
+				throw new ScaffoldConfigurationException($base.' column index must be a string and array index must be an array.');
+			}
+
+		// If more then one
 		} else {
-			throw new ScaffoldConfigurationException('addMultiSelect(array("column" => $columnName, "array" => array())); Column doesn\'t exist.');
+			foreach ($info as $i) {
+				if (!is_array($i) && isset($i['column']) && isset($i['array'])) 
+					throw new ScaffoldConfigurationException($base.' First argument must an array. column and array must be set. ');
+				if (!is_string($i['column']) || !is_array($i['array']))
+					throw new ScaffoldConfigurationException($base.' column index must be a string and array index must be an array.');
+				if (array_key_exists($i['column'], $this->columns))
+					$this->columns["{$i['column']}"]["multi_select"] = $i['array'];
+				else
+					throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
+			}
 		}
+		return $this;
 	}
 
 	public function addCkeditor($info)
@@ -942,7 +961,7 @@ class Scaffold {
 					$this->addSelect($f);
 					break;
 				case 'addMultiSelect':
-					$this->addMultiSelect($f['column'], $f['array']);
+					$this->addMultiSelect($f);
 					break;
 				case 'readOnly':
 					$this->readOnly($f);

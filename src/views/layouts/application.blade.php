@@ -55,7 +55,7 @@
 	<?php if (isset($navigation)): ?>
 		@include('infuse::infuse._nav')
 		@include('infuse::infuse._sidemenu')
-		<?php if ($superAdmin): ?>
+		<?php if ($superAdmin && $rolePermission): ?>
 			@include('infuse::infuse._super_admin')
 		<?php endif; ?>
 	<?php endif; ?>

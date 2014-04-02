@@ -105,7 +105,7 @@ endif;
 							<img src="{{$entry->url($column['field'])}}" alt=""> 
 						</div>
 
-					@elseif (array_key_exists("display_order", $column)): ?>
+					@elseif (array_key_exists("display_order", $column))
 										<span>{{$entry->{$column['field']} }}</span> <span class="icon-arrow-up"></span> <span class="icon-arrow-down"></span>
 					@else 
 									{{(($column['type'] == "text"))? Util::truncateText($entry->{$column['field']}, "25") : $entry->{$column['field']} }}
