@@ -20,7 +20,7 @@
         "php": ">=5.4.0",
         "illuminate/support": "4.1.*",
         "mjohnson/transit": "1.5.*",
-        "toddish/verify": "2.3.*",
+        "toddish/verify": "2.*",
         "clouddueling/mysqldump-php": "1.0.*",
         "intervention/image": "1.5.*",
         "nesbot/Carbon": "1.8.*",
