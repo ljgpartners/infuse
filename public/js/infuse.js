@@ -692,9 +692,17 @@ $(document).ready(function() {
 		div.append(buton).append(h4);
   	$(".page-header").append(div);
   }); 
- 	
+ 
 
-  
+	$(".oneRolePerUser").change(function(){
+		var self = $(this);
+	  if(this.checked){ 
+	      //unchecked to checked
+	      $(".oneRolePerUser").not(self).prop('checked', false);
+	  }	else	{
+	  	//checked to unchecked
+	  }
+  });
 	
 });
 

@@ -7,6 +7,8 @@ if (isset($header['filters'])):
 else:
 	$filters = "";
 endif;
+
+$modelInstanceForPermissionCheck = $entries->first();
 ?>
 
 <div class="infuseInner">
@@ -21,9 +23,11 @@ endif;
 
 	@if(!$header['onlyOne'])
 	<div class="infuseTopButtonGroup"> 
+		@if (Util::checkPermission($user, $modelInstanceForPermissionCheck, "create"))
 		<div class="btn-group">
 			<a class="btn mainColor" href="?action=c">Create {{$header['name']}}</a>
 		</div>
+		@endif
     <div class="btn-group">
       <button class="btn altColor btn-info  dropdown-toggle" data-toggle="dropdown">Add Filter <span class="caret"></span></button>
       <ul class="dropdown-menu filtersDropDown">
@@ -121,19 +125,25 @@ endif;
 				  </a>
 				  <ul class="dropdown-menu">
 				    <li><a href="?action=s&id={{$entry->id}}">Show</a></li>
+				    @if (Util::checkPermission($user, $modelInstanceForPermissionCheck, "update"))
 						<li><a href="?action=e&id={{$entry->id}}">Edit</a></li>
+						@endif
 						@if(!$header['onlyOne'])
-						<li><a href="?action=d&id={{$entry->id}}" onclick="return confirm('Confirm delete?');">Delete</a></li>
+							@if (Util::checkPermission($user, $modelInstanceForPermissionCheck, "delete"))
+							<li><a href="?action=d&id={{$entry->id}}" onclick="return confirm('Confirm delete?');">Delete</a></li>
+							@endif
 						<!--<li><a href="?action=cd&id={{$entry->id}}">Duplicate</a></li>-->
 						@endif
 						@if($infuseLogin)
 						<li><a href="?action=rrpp&id={{$entry->id}}">Send Reset</a></li>
 						@endif
 
-						@if(count($header['callFunctions']) > 0)
-							@foreach ($header['callFunctions'] as $function)
-								<li><a href="?action=cf&id={{$entry->id}}&cf={{$function["function"]}}" onclick="return confirm('Confirm {{$function["display_name"]}}?');">{{$function["display_name"]}}</a></li>
-							@endforeach
+						@if (Util::checkPermission($user, $modelInstanceForPermissionCheck, "update"))
+							@if(count($header['callFunctions']) > 0)
+								@foreach ($header['callFunctions'] as $function)
+									<li><a href="?action=cf&id={{$entry->id}}&cf={{$function["function"]}}" onclick="return confirm('Confirm {{$function["display_name"]}}?');">{{$function["display_name"]}}</a></li>
+								@endforeach
+							@endif
 						@endif
 						
 						

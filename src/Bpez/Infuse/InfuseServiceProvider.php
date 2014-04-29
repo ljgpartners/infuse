@@ -26,10 +26,8 @@ class InfuseServiceProvider extends ServiceProvider {
 		\Config::addNamespace('infuse', app_path().'/config/packages/bpez/infuse');
 		\Config::addNamespace('infuse_deploy', app_path().'/config/packages/bpez/infuse/deploy');
 
-		
-
 		include __DIR__.'/../../routes.php';
-		
+		require __DIR__.'/../../events.php';
 	}
 
 	/**
@@ -59,7 +57,8 @@ class InfuseServiceProvider extends ServiceProvider {
         	$app['view'],
         	$app->make("auth")->user(),
         	$app->make("DB"),
-        	$app['request']
+        	$app['request'],
+        	new \Event
         );
     });
 
@@ -83,7 +82,13 @@ class InfuseServiceProvider extends ServiceProvider {
         return new Commands\InfuseDeploy();
     });
 
-    $this->commands(array('command.infuse.deploy', 'command.infuse.dump'));
+		$this->app['command.infuse.publish'] = $this->app->share(function($app)
+    {
+        return new Commands\InfusePublish();
+    });
+
+
+    $this->commands(array('command.infuse.deploy', 'command.infuse.dump', 'command.infuse.publish'));
 
 
     // Shortcut so developers don't need to add an Alias in app/config/app.php
@@ -96,7 +101,13 @@ class InfuseServiceProvider extends ServiceProvider {
         $loader->alias('Image', 'Intervention\Image\Facades\Image');
         $loader->alias('Debugbar', 'Barryvdh\Debugbar\Facade');
         $loader->alias('Carbon', 'Carbon\Carbon');
+
+        $loader->alias('InfuseEloquent', 'Bpez\Infuse\InfuseEloquent');
+        $loader->alias('InfuseEloquentLibrary', 'Bpez\Infuse\InfuseEloquentLibrary');
+        $loader->alias('InfuseUserLibrary', 'Bpez\Infuse\InfuseUserLibrary');
     });
+
+   
 	}
 
 	/**
@@ -106,7 +117,7 @@ class InfuseServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('scaffold', 'util', 'web.service');
+		return array('scaffold', 'util', 'web.service', 'infuse.eloquent', 'infuse.eloquent.library', 'infuse.user.library');// 
 	}
 
 }

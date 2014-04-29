@@ -1,15 +1,6 @@
-<?php
+<?php namespace Bpez\Infuse;
 
-// Provides validation rules for all models
- // Also adds functionailty for files
-
-class InfuseEloquent extends Eloquent {
-
-  protected $rules = array();
-
-  protected $errors;
-
-  public $timestamps = true;
+trait InfuseEloquentLibrary {
 
   public function validate($data)
   {
@@ -19,7 +10,7 @@ class InfuseEloquent extends Eloquent {
       }
 
       // make a new validator object
-      $v = Validator::make($data, $this->rules);
+      $v = \Validator::make($data, $this->rules);
 
       // check for failure
       if ($v->fails()) {
@@ -49,12 +40,7 @@ class InfuseEloquent extends Eloquent {
   {
       return $this->errors;
   }
-
-
-
-
-  // Added functionailty for files
-  protected $uploadFolder = "/uploads";
+  
 
   public function uploadPath($column)
   {
@@ -81,7 +67,7 @@ class InfuseEloquent extends Eloquent {
       }
     }
   }
-  
-}
 
-?>
+  
+
+}

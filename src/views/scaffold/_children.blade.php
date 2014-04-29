@@ -12,6 +12,11 @@
 			$childOrderDirection = (isset($association[3]) && is_array($association[3]) && isset($association[3]['order_direction']) )? $association[3]['order_direction'] : false;
 			$importCSV = (isset($association[3]) && is_array($association[3]) && isset($association[3]['import_csv']) )? $association[3]['import_csv'] : false;
 			$header['deleteAction'] = (isset($association[3]) && is_array($association[3]) && isset($association[3]['delete_action']) )? $association[3]['delete_action'] : true;
+
+			$importCSVFunction = (isset($association[3]) && is_array($association[3]) && isset($association[3]['import_csv_function']) )? $association[3]['import_csv_function'] : false;
+			$importCSVFunctionUrl = (isset($association[3]) && is_array($association[3]) && isset($association[3]['import_csv_function_url']) )? $association[3]['import_csv_function_url'] : false; 
+			$importCSVFunctionText = (isset($association[3]) && is_array($association[3]) && isset($association[3]['import_csv_function_text']) )? $association[3]['import_csv_function_text'] : false;
+
 			$numColumns = count($childColumns)+1;
 	?>
 	<table class="table table-striped table-bordered">
@@ -103,6 +108,27 @@
 			</th>
 		</tr>
 		@endif
+
+		@if ($importCSVFunction)  
+		<tr>
+			<th colspan="{{$numColumns}}">
+				<form method="POST"  enctype="multipart/form-data">
+					{{(($importCSVFunctionText)? $importCSVFunctionText : "Import CSV  (Excel Template: " )}}
+					@if ($importCSVFunctionUrl)
+						<a target="_BLANK" href="{{$importCSVFunctionUrl}}">example template</a>)
+					@endif
+					<pre> <input type="file" name="csv_file">  </pre>
+					<input type="hidden" name="action" value="icsvc">
+					<input type="hidden" name="function" value="{{$importCSVFunction}}">
+					<input type="hidden" name="back" value="{{$_SERVER['REQUEST_URI']}}">
+					<input type="hidden" name="parent_id" value="{{$entries->id}}"> 
+					<input type="submit" value="import" class="btn submitButton">
+				</form>
+			</th>
+		</tr>
+		@endif
+
+
 		
 
 

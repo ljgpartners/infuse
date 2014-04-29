@@ -34,49 +34,48 @@
 
 			
 			{{-- 	Added foreign keys to the form for children --}}
-			{{-- 	If foreign key is select do not hide 	--}}
-
+			
 			@if (Util::get("stack"))
-				<?php $column = $columns[Util::foreignKeyString(Util::stackParentName())]; ?>
-				@if (array_key_exists("select", $column))
-					<div class="form-horizontal pull-right">
-					<div class="control-group">
-				    <label class="control-label">{{Util::cleanName(Util::stackParentName())}} </label>
-				    <div class="controls">
-				      <select name="{{$column['field']}}">
-								@if (array_key_exists("select_blank", $column))
-									<option value=""></option>
-								@endif
-								@foreach ($column['select'] as $value)
-										<?php $columnName = end($value); ?>
-										@if ($entries->{$column['field']} == $value["id"])
-											<option value="{{$value["id"]}}" selected="selected">{{$columnName}}</option>
-										@else
-											<option value="{{$value["id"]}}">{{$columnName}}</option>
-										@endif
-								@endforeach
-							</select>
-				    </div>
-  				</div>
-  				</div>
-				@else
-					<input type="hidden" name="{{Util::foreignKeyString(Util::stackParentName())}}" value="{{Util::stackParentId()}}">
-				@endif
-
+				<input type="hidden" name="{{Util::foreignKeyString(Util::stackParentName())}}" value="{{Util::stackParentId()}}">
 				@if (Util::get("oneToOne"))
 					<input type="hidden" name="oneToOne" value="{{Util::stackParentName()}}">
 				@endif
 			@endif
 
 
-
 			{{-- Iterate through all columns and display correlating form input  --}}
-
+			
 			@foreach ($columns as $column)
+
+			{{-- 	If foreign key is select reveal on top	--}}
+
+			@if (Util::isForeignKey($column['field']) && array_key_exists("select", $column))
+				<div class="form-horizontal pull-right">
+				<div class="control-group">
+			    <label class="control-label">{{Util::foreignKeyStringToCleanName($column['field'])}} </label>
+			    <div class="controls">
+			      <select name="{{$column['field']}}">
+							@if (array_key_exists("select_blank", $column))
+								<option value=""></option>
+							@endif
+							@foreach ($column['select'] as $value)
+									<?php $columnName = end($value); ?>
+									@if ($entries->{$column['field']} == $value["id"])
+										<option value="{{$value["id"]}}" selected="selected">{{$columnName}}</option>
+									@else
+										<option value="{{$value["id"]}}">{{$columnName}}</option>
+									@endif
+							@endforeach
+						</select>
+			    </div>
+				</div>
+				</div>
+			@endif
+			
 
 			{{-- 	Added foreign keys to the form for top level parent --}}
 
-			@if (!Util::get("stack") && Util::isForeignKey($column['field']))
+			@if (!Util::get("stack") && Util::isForeignKey($column['field']) && !array_key_exists("select", $column))
 				<input type="hidden" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}">
 			@endif
 

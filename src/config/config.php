@@ -17,6 +17,11 @@ return array(
 	'role_permission' => false,
 
 	/*
+	| Toggles to have only one role per user otherwise if false many can be assigned to user. 
+	*/
+	'one_role_per_user' => false,
+
+	/*
 	| Base url for uploaded assets only on local environment. 
 	| On production assets are served locally. Leave blank to 
 	| serve locally on local environemnt.

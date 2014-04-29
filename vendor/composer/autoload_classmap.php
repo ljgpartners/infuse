@@ -11,7 +11,6 @@ return array(
     'CreateUserSoftDelete' => $baseDir . '/src/migrations/2013_06_03_173913_create_user_soft_delete.php',
     'CreateVerifyInit' => $baseDir . '/src/migrations/2013_06_02_173913_create_verify_init.php',
     'InfuseController' => $baseDir . '/src/controllers/InfuseController.php',
-    'InfuseEloquent' => $baseDir . '/src/models/InfuseEloquent.php',
     'InfusePermission' => $baseDir . '/src/models/InfusePermission.php',
     'InfuseRole' => $baseDir . '/src/models/InfuseRole.php',
     'InfuseUser' => $baseDir . '/src/models/InfuseUser.php',

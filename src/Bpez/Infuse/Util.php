@@ -55,11 +55,16 @@ class Util {
 		return strtolower($modelString)."_id";
 	}
 
+	public static function foreignKeyStringToCleanName($modelString) 
+	{	
+		return self::cleanName(str_replace('_id', '', $modelString));
+	}
+
 	public static function createForeignKeyString($modelString) 
 	{
 		return self::camel2under(strtolower($modelString))."_id";
 	}
-	
+
 	public static function isForeignKey($columnString)
 	{
     $matches = null;
@@ -279,7 +284,7 @@ class Util {
 		return $path;
 	}
 
-	public static function classToString($instance)
+	public static function classToString($instance) 
 	{
 		return strtolower(self::camel2under(get_class($instance)));
 	}
@@ -518,8 +523,11 @@ class Util {
 
       return true;
   }
-
-	
+  
+	public static function checkPermission($user, $model, $action)
+	{	
+		return (\Config::get("infuse::role_permission"))? $user->can(self::classToString($model)."_".$action) : true;
+	}
 
 
 }

@@ -196,12 +196,20 @@ class Scaffold {
 	private $onlyOne = false;
 
 	/**
-   * Associates model to current user when a new instance is created .
+   * Associates model to current user when a new instance is created and only load ones that belong to user.
    *
    * @access private
    * @var boolean
    */
 	private $belongsToUser = false;
+
+	/**
+   * Associates model to current user when a new instance is created and only load ones that belong to user with the many to many relationship.
+   *
+   * @access private
+   * @var boolean
+   */
+	private $belongsToUserManyToMany = false;
 
 	/**
    * On the listing page only loads model instances that are siblings of the user
@@ -286,6 +294,14 @@ class Scaffold {
    * @var object
    */
 	protected $request;
+
+	/**
+   * \Illuminate\Events\Dispatchet instance of current event
+   *
+   * @access protected
+   * @var object
+   */
+	protected $event;
 	
 
 	/**
@@ -298,11 +314,12 @@ class Scaffold {
 	 *
 	 * @api
 	 */
-	public function __construct(\Illuminate\View\Environment $view, \InfuseUser $user, \Illuminate\Support\Facades\DB $db, \Illuminate\Http\Request $request)
+	public function __construct(\Illuminate\View\Environment $view, \InfuseUser $user, \Illuminate\Support\Facades\DB $db, \Illuminate\Http\Request $request, \Event $event)
 	{	
 		$this->view = $view;
 		$this->user = $user;
 		$this->request = $request;
+		$this->event = $event;
 		self::$db = $db;
 		$this->rolePermission = (\Config::get("infuse::role_permission"))? true : false;
 	}
@@ -321,7 +338,7 @@ class Scaffold {
 	public function model($model)
 	{
 		$this->model = $model;
-		if (is_subclass_of($this->model, 'InfuseEloquent') 
+		if (is_subclass_of($this->model, 'Bpez\Infuse\InfuseEloquent') 
 				|| is_subclass_of($this->model, 'Toddish\Verify\Models\User') 
 				|| is_subclass_of($this->model, 'Toddish\Verify\Models\Role')  
 				|| is_subclass_of($this->model, 'Toddish\Verify\Models\Permission') ) {
@@ -552,7 +569,7 @@ class Scaffold {
 
 	public function addSelect($info) 
 	{	
-		$base = 'addSelect(array(array("column" => $columnName, "array" => array(), "insertBlank" => false)));';
+		$base = 'addSelect(array(array("column" => $columnName, "array" => array(), "insertBlank" => false, "topSelect" => false)));';
 
 		if (!is_array($info) ) 
 			throw new ScaffoldConfigurationException($base.' Must be an array.');
@@ -562,14 +579,16 @@ class Scaffold {
 
 			if ( array_key_exists($info['column'], $this->columns) ) {
 				$this->columns["{$info['column']}"]["select"] = $info['array'];
-				if (isset($info['insertBlank']) && $info['insertBlank'] == true) {
+				if (isset($info['insertBlank']) && $info['insertBlank'] == true)
 					$this->columns["{$info['column']}"]["select_blank"] = true;
-				}
+				if (isset($info['topSelect']) && $info['topSelect'] == true)
+					$this->columns["{$info['column']}"]["top_select"] = true;
+				
 			} else {
 				throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
 			}
 
-		// If more then one
+		// If more then one roles
 		} else {
 			foreach ($info as $i) {
 				if (is_array($i) && (!isset($i['column']) || !isset($i['array']))) 
@@ -578,9 +597,10 @@ class Scaffold {
 					throw new ScaffoldConfigurationException($base.' Column must be a string. Array index must be an array.');
 				if (array_key_exists($i['column'], $this->columns)) {
 					$this->columns["{$i['column']}"]["select"] = $i['array'];
-					if (isset($i['insertBlank']) && $i['insertBlank'] == true) {
+					if (isset($i['insertBlank']) && $i['insertBlank'] == true)
 						$this->columns["{$i['column']}"]["select_blank"] = true;
-					}
+					if (isset($i['topSelect']) && $i['topSelect'] == true)
+						$this->columns["{$i['column']}"]["top_select"] = true;
 				} else {
 					throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
 				}
@@ -887,6 +907,21 @@ class Scaffold {
 		
 		return $this;
 	}
+
+	public function belongsToUserManyToMany($info)
+	{
+		$base = 'belongsToUserManyToMany(array("Model", "pivot_table", "user_id", "model_foreign_key_id"));';
+		
+		if (!is_array($info) ) 
+			throw new ScaffoldConfigurationException($base.' Must be an array.');
+		
+		if (count($info) != 4 ) 
+			throw new ScaffoldConfigurationException($base.' Should have the laravel belongsToMany four parameters.'. count($info));
+
+		$this->belongsToUserManyToMany = $info;
+		
+		return $this;
+	}
 	
 	
 	public function mapConfig($config)
@@ -980,6 +1015,10 @@ class Scaffold {
 					break;
 				case 'callFunction':
 					$this->callFunction($f);
+					break;
+				case 'belongsToUserManyToMany':
+					$this->belongsToUserManyToMany($f);
+					break;
 					
 				case 'children':
 					break;
@@ -1026,15 +1065,21 @@ class Scaffold {
 				break;
 			case 'rrpp':
 				$this->sendRequestResetPasswordPage();
+				break;
 			case 'icsv':
 				$this->importCSV();
+				break;
+			case 'icsvc':
+				$this->importCSVCustom();
+				break;
 			case 'cf':
 				$this->callActionFunction();
+				break;
 
 			default:
 				$this->listAll();
 				break;
-		}
+		} 
 	}
 
 
@@ -1101,68 +1146,92 @@ class Scaffold {
   	
   }
 
+  private function filterQueryForListings($count = false, &$pagination)
+  {
+  	$model = $this->model;
+  	$modelInstance = null;
 
-	private function listAll()
-	{	
-		$model = $this->model;
-		$pagination = array(
-			"limit" => $this->limit,
-			"active_page" => 1,
-			"count" => 0
-		);
-
-		if ($this->siblingOfUserParentOnly) { 
-			$foreign_id = $this->user 
-											->belongsTo($this->siblingOfUserParentOnly['parent_model'], Util::createForeignKeyString($this->siblingOfUserParentOnly['parent_model']))
-											->firstOrFail()
-											->{$this->siblingOfUserParentOnly['parent_foriegn_id']};
-		}
-		
-		
-
-		$prepareModelForCount = $model->orderBy($this->primaryKey, "desc");
-
-		if ($this->infuseLogin && !$this->user->is('Super Admin'))
-			$prepareModelForCount->where("id", "!=", 1)->where("username", "!=", 'super');
-
-		if ($this->belongsToUser && !$this->user->is('Super Admin'))
-			$prepareModelForCount->where("infuse_user_id", "=", $this->user->id);
-
-		if ($this->onlyLoadSiblingsOfUserRelatedBy)
-			$prepareModelForCount->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
-
-		if ($this->siblingOfUserParentOnly)
-			$prepareModelForCount->where($this->siblingOfUserParentOnly['foreign_id'], "=", $foreign_id);
-		
-		$pagination['count'] = $prepareModelForCount->count();
-
-
-		$offset = 0;
+  	$offset = 0;
 		$page = Util::get("pg");
 		if ($page && $page != 1 && $page != 'a') {
 			$offset =  ($page-1) * $pagination['limit'];
 			$pagination['active_page'] = $page;
 		}
 
-		if ($page == "a") {
-			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"]);
-		} else {
-			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"])->take($pagination['limit'])->skip($offset);
+  	if ($this->siblingOfUserParentOnly) { 
+			$foreign_id = $this->user 
+											->belongsTo($this->siblingOfUserParentOnly['parent_model'], Util::createForeignKeyString($this->siblingOfUserParentOnly['parent_model']))
+											->firstOrFail()
+											->{$this->siblingOfUserParentOnly['parent_foriegn_id']};
 		}
 
-		if ($this->infuseLogin)
-			$prepareModel->where("id", "!=", 1)->where("username", "!=", 'super');
-
-		if ($this->belongsToUser && !$this->user->is('Super Admin'))
-			$prepareModel->where("infuse_user_id", "=", $this->user->id);
-
-		if ($this->onlyLoadSiblingsOfUserRelatedBy)
-			$prepareModel->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
-
-		if ($this->siblingOfUserParentOnly) { 
-			$prepareModel->where($this->siblingOfUserParentOnly['foreign_id'], "=", $foreign_id);
+		if ($this->belongsToUserManyToMany && !$this->user->is('Super Admin')) {
+			$modelInstance = $this->user->belongsToMany($this->belongsToUserManyToMany[0], $this->belongsToUserManyToMany[1], $this->belongsToUserManyToMany[2], $this->belongsToUserManyToMany[3]);
+		} else {
+			$modelInstance = new $model;
 		}
 		
+		if (!$count) { 
+			if ($page == "a") { 
+				$modelInstance = $modelInstance->orderBy($this->order["column"], $this->order["order"]);
+			} else { 
+				$modelInstance = $modelInstance->orderBy($this->order["column"], $this->order["order"])->take($pagination['limit'])->skip($offset);
+			}
+		}
+		
+  	if ($this->infuseLogin && !$this->user->is('Super Admin'))
+			$modelInstance = $modelInstance->where("id", "!=", 1)->where("username", "!=", 'super');
+
+		if ($this->belongsToUser && !$this->user->is('Super Admin'))
+			$modelInstance = $modelInstance->where("infuse_user_id", "=", $this->user->id);
+
+		if ($this->onlyLoadSiblingsOfUserRelatedBy)
+			$modelInstance = $modelInstance->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
+
+		if ($this->siblingOfUserParentOnly)
+			$modelInstance = $modelInstance->where($this->siblingOfUserParentOnly['foreign_id'], "=", $foreign_id);
+
+		if ($this->rolePermission && $model instanceof \InfuseUser && !$this->user->is('Super Admin')) { 
+			$user = $this->user;
+
+			if ($user->can("infuse_user_load_level_comparison_or_equal_zero")) { 
+   			$db = self::$db;
+	   		$originalIds = $db::table('users')->lists("id");
+	   		$newIds = $db::table('role_user')->distinct("user_id")->lists("user_id");
+				$usersWithNoRole = array_diff($originalIds, $newIds);
+				if (!empty($usersWithNoRole))
+					$modelInstance = $modelInstance->orWhereIn('id', $usersWithNoRole);
+   		}
+
+			$role = $this->user->roles()->orderBy("level", "asc")->limit(1)->first();
+			$level = (count($role) == 1)? $role->level : 0;
+			
+			$modelInstance = $modelInstance->with('roles')->whereHas('roles', function($q) use ($level, $user) {
+     		if ($user->can("infuse_user_load_level_comparison_greater_or_equal")) {
+     			$q->where('level', '>=', $level);
+     		} else {
+     			$q->where('level', '>', $level);
+     		}	
+			}); 
+
+		}
+
+  	return $modelInstance;
+  }
+
+
+	private function listAll()
+	{	
+		$pagination = array(
+			"limit" => $this->limit,
+			"active_page" => 1,
+			"count" => 0
+		);
+
+		
+		$pagination['count'] = $this->filterQueryForListings(true, $pagination)->count();
+
+		$prepareModel = $this->filterQueryForListings(false, $pagination);
 
 		if (Util::get("toCSV"))
 			$this->toCSV($prepareModel);
@@ -1177,6 +1246,183 @@ class Scaffold {
 				"columnNames" => $this->columnNames
 			);
 	}
+
+	private function listAllFilter()
+	{
+		$pagination = array(
+			"limit" => $this->limit,
+			"active_page" => 1,
+			"count" => 0
+		);
+		
+
+		$filterCount = Util::get("filter_count");
+		$filters = array();
+
+		for ($x=1; $x <= $filterCount; $x++)	{
+			$filter = json_decode(Util::get("filter_".$x));
+
+			if (count($filter) == 3) {
+				if (!isset($filter[0]) && !in_array($filter[0], $columnNames))
+					continue;
+				if (!isset($filter[1]) && !array_key_exists($filter[1], $comparisons))
+					continue;
+				if (!isset($filter[2]))
+					continue;
+				array_push($filters, $filter);
+			}
+	  } 
+
+		$prepareModel = $this->filterQueryForListings(false, $pagination);
+
+		$columnNames = array_keys($this->columns);
+		$comparisons = array("equals" => "=", "less than" => "<", "greater than" => ">", "not equal to" => "!=");
+
+		foreach($filters as $filter) {
+				$prepareModel = $prepareModel->where($filter[0], $comparisons[$filter[1]], $filter[2]);
+		}
+
+
+		if (Util::get("toCSV"))	{
+			$this->toCSV($prepareModel);
+		}
+
+		$this->entries = $prepareModel->get();
+
+		$prepareModelForCount = $this->filterQueryForListings(true, $pagination);
+
+		foreach($filters as $filter) {
+			$prepareModelForCount = $prepareModelForCount->where($filter[0], $comparisons[$filter[1]], $filter[2]);
+		}
+
+		$pagination['count'] = $prepareModelForCount->count();
+		
+		$this->header = array(
+				"pagination" => $pagination,
+				"name" => $this->name,
+				"list" => $this->list,
+				"filters" => $filters,
+				"onlyOne" => $this->onlyOne,
+				"columnNames" => $this->columnNames
+			);
+	}
+
+	
+
+	public function search($search = null, $columns)
+	{
+		$pagination = array(
+			"limit" => $this->limit,
+			"active_page" => 1,
+			"count" => 0
+		);
+		
+		$prepareModel = $this->filterQueryForListings(false, $pagination);
+		
+		foreach ($columns as $column) {
+			if ($columns[0] == $column) 
+				$prepareModel->where($column, "LIKE", "%".$search."%");
+			else
+				$prepareModel->orWhere($column, "LIKE", "%".$search."%");
+		}
+
+
+		if (Util::get("toCSV"))	{
+			$this->toCSV($prepareModel);
+		}
+
+		$this->entries = $prepareModel->get();
+
+		$prepareModelForCount = $this->filterQueryForListings(true, $pagination);
+
+		foreach ($columns as $column) {
+			if ($columns[0] == $column) 
+				$prepareModelForCount->where($column, "LIKE", "%".$search."%");
+			else
+				$prepareModelForCount->orWhere($column, "LIKE", "%".$search."%");
+		}
+
+		$pagination['count'] = $prepareModelForCount->count();
+		
+		$this->header = array(
+				"pagination" => $pagination,
+				"name" => $this->name,
+				"list" => $this->list,
+				"onlyOne" => $this->onlyOne,
+				"columnNames" => $this->columnNames
+			);
+	}
+
+
+	public function closestLocationsWithinRadius($search, $columns, $latitude, $longitude, $distance)
+	{
+		$pagination = array(
+			"limit" => $this->limit,
+			"active_page" => 1,
+			"count" => 0
+		);
+		
+
+		$prepareModel = $this->filterQueryForListings(false, $pagination);
+
+		if (!empty($search)) {
+			foreach ($columns as $column) {
+				if ($columns[0] == $column) 
+					$prepareModel->where($column, "LIKE", "%".$search."%");
+				else
+					$prepareModel->orWhere($column, "LIKE", "%".$search."%");
+			}
+		}
+		
+		
+		/*
+			Implemented Haversine formula
+			------------------------------
+			Will find the closest locations that are within a radius of X miles to the latitude, longitude coordinate.
+			reference: https://developers.google.com/maps/articles/phpsqlsearch_v3?csw=1
+		*/
+
+		$db = self::$db;
+		$prepareModel
+			->select($db::raw("*, ( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) ) AS distance "))
+			->having('distance', '<', $distance);
+
+
+		if (Util::get("toCSV"))	{
+			$this->toCSV($prepareModel);
+		}
+
+		
+
+		$this->entries = $prepareModel->get();
+
+		$prepareModelForCount = $this->filterQueryForListings(true, $pagination);
+		
+		if (!empty($search)) { 
+			foreach ($columns as $column) {
+				if ($columns[0] == $column) 
+					$prepareModelForCount->where($column, "LIKE", "%".$search."%");
+				else
+					$prepareModelForCount->orWhere($column, "LIKE", "%".$search."%");
+			}
+		}
+
+		$prepareModelForCount
+			->select($db::raw("( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) ) AS distance "))
+			->having('distance', '<', $distance);
+
+
+		$pagination['count'] = count($prepareModelForCount->get()->toArray());
+
+		$this->header = array(
+				"pagination" => $pagination,
+				"name" => $this->name,
+				"list" => $this->list,
+				"onlyOne" => $this->onlyOne,
+				"columnNames" => $this->columnNames
+			);
+	}
+
 
 	private function show()
 	{	
@@ -1216,6 +1462,31 @@ class Scaffold {
 			}
 			
 			
+		} else if ($this->belongsToUserManyToMany) {
+				try {
+					$this->entries = $this->user
+						->belongsToMany($this->belongsToUserManyToMany[0], $this->belongsToUserManyToMany[1], $this->belongsToUserManyToMany[2], $this->belongsToUserManyToMany[3])
+						->findOrFail(Util::get("id"));
+				} catch (ModelNotFoundException $e) {
+
+					if (Util::get("stack")) {
+						$redirect_path = Util::childBackLink();
+					} else {
+						$redirect_path = Util::redirectUrl();
+					}
+
+					Util::flash(array(
+						"message" => "Can not see this entry.", 
+						"type" => "error"
+						)
+					);
+					
+					if (!$this->testing) {
+						header("Location: {$redirect_path}");
+						exit();
+					}
+				}
+				
 		} else {
 			$this->entries = $model::find(Util::get("id"));
 		}
@@ -1261,11 +1532,9 @@ class Scaffold {
 			
 			if ($this->belongsToUser) {
 				try {
-
 					$this->entries = $model->where("infuse_user_id", "=", $this->user->id)
-					->where("id", "=", Util::get("id"))
-					->firstOrFail();
-
+						->where("id", "=", Util::get("id"))
+						->firstOrFail();
 				} catch (ModelNotFoundException $e) {
 
 					if (Util::get("stack")) {
@@ -1286,6 +1555,31 @@ class Scaffold {
 					}
 				}
 				
+				
+			} else if ($this->belongsToUserManyToMany) {
+				try {
+					$this->entries = $this->user
+						->belongsToMany($this->belongsToUserManyToMany[0], $this->belongsToUserManyToMany[1], $this->belongsToUserManyToMany[2], $this->belongsToUserManyToMany[3])
+						->findOrFail(Util::get("id"));
+				} catch (ModelNotFoundException $e) {
+
+					if (Util::get("stack")) {
+						$redirect_path = Util::childBackLink();
+					} else {
+						$redirect_path = Util::redirectUrl();
+					}
+
+					Util::flash(array(
+						"message" => "Can not edit this entry.", 
+						"type" => "error"
+						)
+					);
+					
+					if (!$this->testing) {
+						header("Location: {$redirect_path}");
+						exit();
+					}
+				}
 				
 			} else {
 				$this->entries = $model::find(Util::get("id"));
@@ -1389,19 +1683,34 @@ class Scaffold {
 			);
 
 		} else {
-			foreach ($this->columns as $column) {
-				if (array_key_exists("upload", $column) && !empty($entry->{$column['field']})) {
-					unlink($_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']));
-					$entry->{$column['field']} = ""; // Set to blank so nested unlinks can work in model
+
+			$entryBackUp = clone $entry;
+
+			if ($entry->delete()) {
+				foreach ($this->columns as $column) {
+					if (array_key_exists("upload", $column) && !empty($entryBackUp->{$column['field']})) {
+						unlink($_SERVER['DOCUMENT_ROOT']."/".$entryBackUp->url($column['field']));
+						$entryBackUp->{$column['field']} = ""; // Set to blank so nested unlinks can work in model
+					}
 				}
-					
+
+				Util::flash(array(
+					"message" => "Deleted {$this->name}.", 
+					"type" => "success"
+					)
+				);
+
+			} else {
+				Util::flash(array(
+					"message" => "Failed to delete {$this->name}.", 
+					"type" => "error"
+					)
+				);
 			}
-			$entry->delete();
-			Util::flash(array(
-				"message" => "Deleted {$this->name} with id of ".Util::get("id").".", 
-				"type" => "error"
-				)
-			);
+
+			
+			
+			
 		}
 		 
 
@@ -1495,6 +1804,21 @@ class Scaffold {
 			exit();
 		}
 	}
+
+	private function importCSVCustom()
+	{
+		$model = $this->model;
+		$entry = $model::find(Util::get("parent_id"));
+		$redirect_path = Util::get("back");
+		$function = Util::get("function");
+
+		$entry->{$function}();
+		
+		if (!$this->testing) {
+			header("Location: {$redirect_path}");
+			exit();
+		}
+	}
 	
 
 	private function sendRequestResetPasswordPage()
@@ -1524,7 +1848,7 @@ class Scaffold {
 		if (Util::get("id")) { 
 			$entry = $model::find(Util::get("id"));
 
-			$message = array("message" => "Updated {$this->name} user with id of ".Util::get("id").".", "type" => "success");
+			$message = array("message" => "Updated {$this->name}.", "type" => "success");
 
 			if ($this->infuseLogin && $entry->id == 1 && !$this->user->is('Super Admin')) {
 				if (Util::get("stack")) {
@@ -1648,7 +1972,7 @@ class Scaffold {
 
 		$data = Util::getAll();
 		
-
+		
 		// Remove any FALSE values. This includes NULL values, EMPTY arrays, etc.
 		$data = array_filter($data);
 		
@@ -1661,16 +1985,14 @@ class Scaffold {
 				$entry->deleted_at = null;
 			}
 
-			if(!Util::get("id")) {
-				if ($this->associateToSameParentOfUserRelatedBy)
+			if(!Util::get("id")) { 
+				if ($this->associateToSameParentOfUserRelatedBy){
 					$entry->{$this->associateToSameParentOfUserRelatedBy} = $this->user->{$this->associateToSameParentOfUserRelatedBy};
+				}
+					
 			}
 
-			
-				
-
-			
-			
+						
 			// Do many to many relationship saving
 			if (Util::get("id") && count($this->manyToMany) > 0) {
 				foreach ($this->manyToMany as $association) {
@@ -1689,20 +2011,34 @@ class Scaffold {
 						$secondForeignId = $association[1];
 					}
 
-					
-					$idsForSync = Util::get($manyToManyTable); 
-					if ($idsForSync) { 
-						$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach();
-						if ($this->infuseLogin && $entry->id == 1 && $this->user->is('Super Admin'))
-							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach(1);
-						foreach($idsForSync as $id) { 
+					$event = $this->event;
+					$newIds = Util::get($manyToManyTable); 
+					if ($newIds) { 
+						$originalIds = $entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->lists('id');
+
+						$added = array_diff($newIds, $originalIds);
+						$removed = array_diff($originalIds, $newIds);
+
+						foreach($added as $id) { 
 							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach($id);
+							$event::fire('infuse.attach.'.Util::camel2under($model).'.'.Util::camel2under($belongsToModel), array($entry, $id));
 						}
+						
+						foreach($removed as $id) {
+							$event::fire('infuse.detach.'.Util::camel2under($model).'.'.Util::camel2under($belongsToModel), array($entry, $id));
+							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach($id);
+						}
+
+						
+						//if ($this->infuseLogin && $entry->id == 1 && $this->user->is('Super Admin'))
+							//$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach(1);
+
 					} else {
-						if ($this->infuseLogin && $entry->id == 1 && $this->user->is('Super Admin')) {
-						} else {
+						//if ($this->infuseLogin && $entry->id == 1 && $this->user->is('Super Admin')) {
+						//} else {
+							$event::fire('infuse.detach.'.Util::camel2under($model).'.'.Util::camel2under($belongsToModel), array($entry, 0));
 							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach();
-						}
+						//}
 							
 					}
 				}
@@ -1712,6 +2048,12 @@ class Scaffold {
 			
 			$entry->save();
 			Util::flash($message);
+
+			if (!Util::get("id") && $this->belongsToUserManyToMany) {
+				$this->user
+					->belongsToMany($this->belongsToUserManyToMany[0], $this->belongsToUserManyToMany[1], $this->belongsToUserManyToMany[2], $this->belongsToUserManyToMany[3])
+					->attach($entry->id);
+			}
 
 
 			
@@ -1771,325 +2113,6 @@ class Scaffold {
 		exit();
 	}
 
-
-	private function listAllFilter()
-	{
-		$model = $this->model;
-		$pagination = array(
-			"limit" => $this->limit,
-			"active_page" => 1,
-			"count" => 0
-		);
-		
-
-		$filterCount = Util::get("filter_count");
-		$filters = array();
-
-		for ($x=1; $x <= $filterCount; $x++)	{
-			$filter = json_decode(Util::get("filter_".$x));
-
-			if (count($filter) == 3) {
-				if (!isset($filter[0]) && !in_array($filter[0], $columnNames))
-					continue;
-				if (!isset($filter[1]) && !array_key_exists($filter[1], $comparisons))
-					continue;
-				if (!isset($filter[2]))
-					continue;
-				array_push($filters, $filter);
-			}
-	  } 
-
-		
-		$offset = 0;
-		$page = Util::get("pg");
-		if ($page && $page != 1 && $page != 'a') {
-			$offset =  ($page-1) * $pagination['limit'];
-			$pagination['active_page'] = $page;
-		}
-
-		if ($this->siblingOfUserParentOnly) { 
-			$foreign_id = $this->user 
-											->belongsTo($this->siblingOfUserParentOnly['parent_model'], Util::createForeignKeyString($this->siblingOfUserParentOnly['parent_model']))
-											->firstOrFail()
-											->{$this->siblingOfUserParentOnly['parent_foriegn_id']};
-		}
-
-
-		if ($page == "a") { 
-			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"]);
-		} else {
-			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"])->take($pagination['limit'])->skip($offset);
-		}
-
-		if ($this->infuseLogin)
-			$prepareModel->where("id", "!=", 1)->where("username", "!=", 'super');
-
-		if ($this->belongsToUser && !$this->user->is('Super Admin'))
-			$prepareModel->where("infuse_user_id", "=", $this->user->id);
-
-		if ($this->onlyLoadSiblingsOfUserRelatedBy)
-			$prepareModel->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
-
-		if ($this->siblingOfUserParentOnly)
-			$prepareModel->where($this->siblingOfUserParentOnly['foreign_id'], "=", $foreign_id);
-		
-
-
-		$columnNames = array_keys($this->columns);
-		$comparisons = array("equals" => "=", "less than" => "<", "greater than" => ">", "not equal to" => "!=");
-
-		foreach($filters as $filter) {
-				$prepareModel = $prepareModel->where($filter[0], $comparisons[$filter[1]], $filter[2]);
-		}
-
-
-		if (Util::get("toCSV"))	{
-			$this->toCSV($prepareModel);
-		}
-
-		$this->entries = $prepareModel->get();
-
-
-		$prepareModelForCount = $model->orderBy($this->primaryKey, "desc");
-
-		if ($this->infuseLogin)
-			$prepareModelForCount->where("id", "!=", 1)->where("username", "!=", 'super');
-
-		if ($this->belongsToUser && !$this->user->is('Super Admin'))
-			$prepareModelForCount->where("infuse_user_id", "=", $this->user->id);
-
-		if ($this->onlyLoadSiblingsOfUserRelatedBy)
-			$prepareModelForCount->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
-
-		if ($this->siblingOfUserParentOnly)
-			$prepareModelForCount->where($this->siblingOfUserParentOnly['foreign_id'], "=", $foreign_id);
-
-
-		foreach($filters as $filter) {
-			$prepareModelForCount = $prepareModelForCount->where($filter[0], $comparisons[$filter[1]], $filter[2]);
-		}
-
-		$pagination['count'] = $prepareModelForCount->count();
-		
-		$this->header = array(
-				"pagination" => $pagination,
-				"name" => $this->name,
-				"list" => $this->list,
-				"filters" => $filters,
-				"onlyOne" => $this->onlyOne,
-				"columnNames" => $this->columnNames
-			);
-	}
-
-	
-
-	public function search($search = null, $columns)
-	{
-		$model = $this->model;
-		$pagination = array(
-			"limit" => $this->limit,
-			"active_page" => 1,
-			"count" => 0
-		);
-		
-		
-		$offset = 0;
-		$page = Util::get("pg");
-		if ($page && $page != 1 && $page != 'a') {
-			$offset =  ($page-1) * $pagination['limit'];
-			$pagination['active_page'] = $page;
-		}
-
-		if ($this->siblingOfUserParentOnly) { 
-			$foreign_id = $this->user 
-											->belongsTo($this->siblingOfUserParentOnly['parent_model'], Util::createForeignKeyString($this->siblingOfUserParentOnly['parent_model']))
-											->firstOrFail()
-											->{$this->siblingOfUserParentOnly['parent_foriegn_id']};
-		}
-
-
-		if ($page == "a") { 
-			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"]);
-		} else {
-			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"])->take($pagination['limit'])->skip($offset);
-		}
-
-		if ($this->infuseLogin)
-			$prepareModel->where("id", "!=", 1)->where("username", "!=", 'super');
-
-		if ($this->belongsToUser && !$this->user->is('Super Admin'))
-			$prepareModel->where("infuse_user_id", "=", $this->user->id);
-
-		if ($this->onlyLoadSiblingsOfUserRelatedBy)
-			$prepareModel->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
-
-		if ($this->siblingOfUserParentOnly)
-			$prepareModel->where($this->siblingOfUserParentOnly['foreign_id'], "=", $foreign_id);
-
-		
-		foreach ($columns as $column) {
-			if ($columns[0] == $column) 
-				$prepareModel->where($column, "LIKE", "%".$search."%");
-			else
-				$prepareModel->orWhere($column, "LIKE", "%".$search."%");
-		}
-
-
-		if (Util::get("toCSV"))	{
-			$this->toCSV($prepareModel);
-		}
-
-		$this->entries = $prepareModel->get();
-
-
-		$prepareModelForCount = $model->orderBy($this->primaryKey, "desc");
-
-		if ($this->infuseLogin)
-			$prepareModelForCount->where("id", "!=", 1)->where("username", "!=", 'super');
-
-		if ($this->belongsToUser && !$this->user->is('Super Admin'))
-			$prepareModelForCount->where("infuse_user_id", "=", $this->user->id);
-
-		if ($this->onlyLoadSiblingsOfUserRelatedBy)
-			$prepareModelForCount->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
-
-		if ($this->siblingOfUserParentOnly)
-			$prepareModelForCount->where($this->siblingOfUserParentOnly['foreign_id'], "=", $foreign_id);
-
-		foreach ($columns as $column) {
-			if ($columns[0] == $column) 
-				$prepareModelForCount->where($column, "LIKE", "%".$search."%");
-			else
-				$prepareModelForCount->orWhere($column, "LIKE", "%".$search."%");
-		}
-
-		$pagination['count'] = $prepareModelForCount->count();
-		
-		$this->header = array(
-				"pagination" => $pagination,
-				"name" => $this->name,
-				"list" => $this->list,
-				"onlyOne" => $this->onlyOne,
-				"columnNames" => $this->columnNames
-			);
-	}
-
-
-	public function closestLocationsWithinRadius($search, $columns, $latitude, $longitude, $distance)
-	{
-		$model = $this->model;
-		$pagination = array(
-			"limit" => $this->limit,
-			"active_page" => 1,
-			"count" => 0
-		);
-		
-		
-		$offset = 0;
-		$page = Util::get("pg");
-		if ($page && $page != 1 && $page != 'a') {
-			$offset =  ($page-1) * $pagination['limit'];
-			$pagination['active_page'] = $page;
-		}
-
-		if ($this->siblingOfUserParentOnly) { 
-			$foreign_id = $this->user 
-											->belongsTo($this->siblingOfUserParentOnly['parent_model'], Util::createForeignKeyString($this->siblingOfUserParentOnly['parent_model']))
-											->firstOrFail()
-											->{$this->siblingOfUserParentOnly['parent_foriegn_id']};
-		}
-
-
-		if ($page == "a") { 
-			$prepareModel = $model::orderBy($this->order["column"], $this->order["order"]);
-		} else {
-			$prepareModel = $model::orderBy("distance")->take($pagination['limit'])->skip($offset);
-		}
-
-
-		if ($this->infuseLogin)
-			$prepareModel->where("id", "!=", 1)->where("username", "!=", 'super');
-
-		if ($this->belongsToUser && !$this->user->is('Super Admin'))
-			$prepareModel->where("infuse_user_id", "=", $this->user->id);
-
-		if ($this->onlyLoadSiblingsOfUserRelatedBy)
-			$prepareModel->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
-
-		if ($this->siblingOfUserParentOnly)
-			$prepareModel->where($this->siblingOfUserParentOnly['foreign_id'], "=", $foreign_id);
-
-		if (!empty($search)) {
-			foreach ($columns as $column) {
-				if ($columns[0] == $column) 
-					$prepareModel->where($column, "LIKE", "%".$search."%");
-				else
-					$prepareModel->orWhere($column, "LIKE", "%".$search."%");
-			}
-		}
-		
-		
-		/*
-			Implemented Haversine formula
-			------------------------------
-			Will find the closest locations that are within a radius of X miles to the latitude, longitude coordinate.
-			reference: https://developers.google.com/maps/articles/phpsqlsearch_v3?csw=1
-		*/
-
-		$db = self::$db;
-		$prepareModel
-			->select($db::raw("*, ( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) ) AS distance "))
-			->having('distance', '<', $distance);
-
-
-		if (Util::get("toCSV"))	{
-			$this->toCSV($prepareModel);
-		}
-
-		
-
-		$this->entries = $prepareModel->get();
-
-
-		$prepareModelForCount = $model->orderBy($this->primaryKey, "desc");
-
-		if ($this->infuseLogin)
-			$prepareModelForCount->where("id", "!=", 1)->where("username", "!=", 'super');
-
-		if ($this->belongsToUser && !$this->user->is('Super Admin'))
-			$prepareModelForCount->where("infuse_user_id", "=", $this->user->id);
-
-		if ($this->onlyLoadSiblingsOfUserRelatedBy)
-			$prepareModelForCount->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
-
-		if ($this->siblingOfUserParentOnly)
-			$prepareModelForCount->where($this->siblingOfUserParentOnly['foreign_id'], "=", $foreign_id);
-
-		
-		if (!empty($search)) { 
-			foreach ($columns as $column) {
-				if ($columns[0] == $column) 
-					$prepareModelForCount->where($column, "LIKE", "%".$search."%");
-				else
-					$prepareModelForCount->orWhere($column, "LIKE", "%".$search."%");
-			}
-		}
-
-		$prepareModelForCount
-			->select($db::raw("( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) ) AS distance "))
-			->having('distance', '<', $distance);
-
-
-		$pagination['count'] = count($prepareModelForCount->get()->toArray());
-
-		$this->header = array(
-				"pagination" => $pagination,
-				"name" => $this->name,
-				"list" => $this->list,
-				"onlyOne" => $this->onlyOne,
-				"columnNames" => $this->columnNames
-			);
-	}
 
 	
 	private function callActionFunction() 

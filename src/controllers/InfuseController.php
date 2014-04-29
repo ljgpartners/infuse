@@ -45,7 +45,7 @@ class InfuseController extends BaseController {
 		$scaffold = Scaffold::model($config['model'])
 									->mapConfig($config);
 
-		$redirect = $scaffold->checkPermissions(Util::childBackLink());
+		$redirect = $scaffold->checkPermissions($uri);
 		if ($redirect)
 			return Redirect::to($redirect);
 			
