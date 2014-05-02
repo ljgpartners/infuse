@@ -703,6 +703,13 @@ $(document).ready(function() {
 	  	//checked to unchecked
 	  }
   });
+
+
+  $('.editCreateForm form').submit(function(event){
+		var self = $(".saveSubmitButton");
+		self.val("SAVING..");
+		self.attr("disabled", true);
+	});
 	
 });
 

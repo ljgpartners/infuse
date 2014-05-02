@@ -60,6 +60,7 @@ class CreateVerifyInit extends Migration {
             $table->string('username', 30)->index();
             $table->string('password', 60)->index();
             $table->string('salt', 32);
+            $table->string('remember_token', 100)->nullable()->index();
             $table->string('email', 255)->index();
             $table->boolean('verified')->default(0);
             $table->boolean('disabled')->default(0);

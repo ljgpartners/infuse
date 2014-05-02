@@ -41,7 +41,11 @@ $modelInstanceForPermissionCheck = $entries->first();
     <div class="btn-group">
       <button class="btn altColor btn-info  dropdown-toggle" data-toggle="dropdown">Other Actions <span class="caret"></span></button>
       <ul class="dropdown-menu">
-        <li><a target="_BLANK" class="downloadCSVLink" href='?action=l&pg=a&toCSV=1' data-filter-download='?action=f&pg=a&toCSV=1{{$filters}}'>Download CSV</a></li> 
+        <li><a target="_BLANK" class="downloadCSVLink" href='?action=l&pg=a&toCSV=1' data-filter-download='?action=f&pg=a&toCSV=1{{$filters}}'>Download CSV</a></li>
+
+        @foreach ($header['addOtherActions'] as $action)
+        	<li><a {{((isset($action['target']))? 'target="'.$action['target'] .'"' : "" )}} href='?action=oa&cf={{$action['function']}}'>{{$action['display_name']}}</a></li>
+        @endforeach
       </ul>
     </div>
 	</div>

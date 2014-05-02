@@ -291,7 +291,7 @@
 					
 				</td>
 				<td> 
-					<input type="submit" value="save" class="btn submitButton">
+					<input type="submit" value="save" class="btn submitButton saveSubmitButton">
 				</td>
 			</tr>
 
@@ -317,7 +317,7 @@
 						@endif
 					@endif
 
-					<input type="submit" value="save" class="">
+					<input type="submit" value="save" class="saveSubmitButton">
 			</div>
 
 			{{-- Relationship subviews --}}

@@ -520,6 +520,8 @@ class Util {
       	return false;
       if ($infuseLogin && $column['field'] == 'deleted_at')
       	return false;
+      if ($infuseLogin && $column['field'] == 'remember_token')
+      	return false;
 
       return true;
   }

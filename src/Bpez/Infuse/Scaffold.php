@@ -252,6 +252,15 @@ class Scaffold {
    * @var array
    */
 	private $callFunctions = array();
+
+	/**
+   * Adds other function calls to the model in the Other Action dropdown on the listing page. static function call to the model.
+   *
+   * @access private
+   * @var array
+   */
+	private $addOtherActions = array();
+
 	
 
 	/**
@@ -908,6 +917,32 @@ class Scaffold {
 		return $this;
 	}
 
+	public function addOtherAction($info) 
+	{	
+		$base = 'addOtherAction(array("function" => "generateReport", "display_name" => "Generate Report"));';
+		
+		if (!is_array($info) ) 
+			throw new ScaffoldConfigurationException($base.' Must be an array.');
+
+		// If only one
+		if ( isset($info['function']) && isset($info['display_name']) ) {
+
+			array_push($this->addOtherActions, $info);
+
+		// If more then one
+		} else {
+			foreach ($info as $i) {
+				if (is_array($i) && (!isset($i['function']) || !isset($i['display_name']))) 
+					throw new ScaffoldConfigurationException($base.' First argument must an array. column and array must be set. ');
+				array_push($this->addOtherActions, $i);
+			}
+		}
+		
+		return $this;
+	}
+
+
+
 	public function belongsToUserManyToMany($info)
 	{
 		$base = 'belongsToUserManyToMany(array("Model", "pivot_table", "user_id", "model_foreign_key_id"));';
@@ -1019,7 +1054,11 @@ class Scaffold {
 				case 'belongsToUserManyToMany':
 					$this->belongsToUserManyToMany($f);
 					break;
-					
+				case 'addOtherAction':
+					$this->addOtherAction($f);
+					break;
+				
+				
 				case 'children':
 					break;
 				
@@ -1075,6 +1114,9 @@ class Scaffold {
 			case 'cf':
 				$this->callActionFunction();
 				break;
+			case 'oa':
+				$this->callOtherAction();
+				break;
 
 			default:
 				$this->listAll();
@@ -1099,6 +1141,7 @@ class Scaffold {
 			case 'e':
 			case 'u':
 			case 'cf':
+			case 'oa':
 				$action = "update";
 				$redirect = $redirectBack;
 				break;
@@ -1243,8 +1286,9 @@ class Scaffold {
 				"name" => $this->name,
 				"list" => $this->list,
 				"onlyOne" => $this->onlyOne,
+				"addOtherActions" => $this->addOtherActions,
 				"columnNames" => $this->columnNames
-			);
+		);
 	}
 
 	private function listAllFilter()
@@ -1303,6 +1347,7 @@ class Scaffold {
 				"list" => $this->list,
 				"filters" => $filters,
 				"onlyOne" => $this->onlyOne,
+				"addOtherActions" => $this->addOtherActions,
 				"columnNames" => $this->columnNames
 			);
 	}
@@ -1349,6 +1394,7 @@ class Scaffold {
 				"name" => $this->name,
 				"list" => $this->list,
 				"onlyOne" => $this->onlyOne,
+				"addOtherActions" => $this->addOtherActions,
 				"columnNames" => $this->columnNames
 			);
 	}
@@ -1419,6 +1465,7 @@ class Scaffold {
 				"name" => $this->name,
 				"list" => $this->list,
 				"onlyOne" => $this->onlyOne,
+				"addOtherActions" => $this->addOtherActions,
 				"columnNames" => $this->columnNames
 			);
 	}
@@ -2149,6 +2196,42 @@ class Scaffold {
 			exit();
 		}
 	}
+
+	private function callOtherAction() 
+	{
+		$model = $this->model;
+		$entry = $model::find(Util::get("id"));
+		$callFunction = Util::get("cf");
+
+		$success = $model::$callFunction($this->user);
+
+		if ($success) {
+			Util::flash(array(
+				"message" => "Succesfully called {$callFunction} action.", 
+				"type" => "success"
+				)
+			);
+		} else {
+			Util::flash(array(
+				"message" => "Failed to call {$callFunction} action.", 
+				"type" => "error"
+				)
+			);
+		}
+		 
+
+		if (Util::get("stack")) {
+			$redirect_path = Util::childBackLink();
+		} else {
+			$redirect_path = Util::redirectUrl();
+		}
+		
+		if (!$this->testing) {
+			header("Location: {$redirect_path}");
+			exit();
+		}
+	}
+	
 
 	
 
