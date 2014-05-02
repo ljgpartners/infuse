@@ -39,7 +39,7 @@ class InfuseServiceProvider extends ServiceProvider {
 	{
 		$this->app->register('Toddish\Verify\VerifyServiceProvider');
 		$this->app->register('Intervention\Image\ImageServiceProvider');
-		$this->app->register('Codesleeve\AssetPipeline\AssetPipelineServiceProvider');
+		$this->app->register('Way\Generators\GeneratorsServiceProvider');
 		$this->app->register('Barryvdh\Debugbar\ServiceProvider');
 
 
