@@ -37,5 +37,67 @@ class InfuseUser extends VerifyUser {
 
 		});
   }
+
+
+
+  /**
+   * Is the User a certain Level
+   *
+   * @param  integer $level
+   * @param  string $modifier [description]
+   * @return boolean
+   */ /*
+  public function level($level, $modifier = '>=')
+  {
+      $to_check = $this->getToCheck();
+
+      $max = -1;
+      $min = 100;
+      $levels = array();
+
+      foreach ($to_check->roles as $role)
+      {
+          $max = $role->level > $max
+              ? $role->level
+              : $max;
+
+          $min = $role->level < $min
+              ? $role->level
+              : $min;
+
+          $levels[] = $role->level;
+      }
+      
+      switch ($modifier)
+      {
+          case '=':
+              return in_array($level, $levels);
+              break;
+
+          case '>=':
+              return $max >= $level;
+              break;
+
+          case '>':
+              return $max > $level;
+              break;
+
+          case '<=':
+              return $min <= $level;
+              break;
+
+          case '<':
+              return $min < $level;
+              break;
+
+          case '!=':
+              return !in_array($level, $levels);
+              break;
+
+          default:
+              return false;
+              break;
+      }
+  } */
   
 }

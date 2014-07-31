@@ -7,6 +7,7 @@
 	<meta name="robots" content="noindex" />
 	<meta name="viewport" content="width=device-width">
 
+
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,300,700,800' rel='stylesheet' type='text/css'>
 	<link href='/packages/bpez/infuse/css/infuse.css' rel='stylesheet' type='text/css'>
 	
@@ -15,11 +16,18 @@
 	<script src="/packages/bpez/infuse/js/jquery-ui.min.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/ckeditor/ckeditor.js" type="text/javascript"></script>
+	<script src="/packages/bpez/infuse/ckeditor/adapters/jquery.js"></script>
 	<script src="/packages/bpez/infuse/js/magicsuggest-1.3.1.js" type="text/javascript"></script>
+	<script src="/packages/bpez/infuse/js/jquery.chained.min.js" type="text/javascript"></script>
+	<script src="/packages/bpez/infuse/js/jquery.blockui.js" type="text/javascript"></script>
+
 	<!--
 	<script src="/packages/bpez/infuse/js/jquery.imgareaselect.pack.js" type="text/javascript"></script> -->
 	<script src="/packages/bpez/infuse/js/croppic.min.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/bpez.common.jquery.js" type="text/javascript"></script>
+	@if (Config::get('infuse::add_javascript') != "")
+		<script src="{{Config::get('infuse::add_javascript')}}" type="text/javascript"></script>
+	@endif
 	<script src="/packages/bpez/infuse/js/infuse.js" type="text/javascript"></script>
 
 	<style type="text/css">
@@ -48,9 +56,9 @@
 	</style>
 	
 
-	<!--<script data-main="/packages/bpez/infuse/js/main.js" src="/packages/bpez/infuse/js/require.js"></script>-->
+	<!--<script data-main="/packages/bpez/infuse/js/main.js" src="/packages/bpez/infuse/js/require.js"></script>--> 
 </head>
-<body class="<?php echo (isset($navigation))? "infuseWrapper" : ""; ?>" style="background-image: url('{{Config::get('infuse::images.login_page_background')}}');">
+<body class="<?php echo (isset($navigation))? "infuseWrapper" : ""; ?>" style="background-image: url('{{Config::get('infuse::images.login_page_background')}}');" {{ (isset($user))? "data-user='{$user}'}" : ""}}>
 
 	<?php if (isset($navigation)): ?>
 		@include('infuse::infuse._nav')

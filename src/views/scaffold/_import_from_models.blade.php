@@ -10,13 +10,23 @@
     </ul>
   </div>
 
-
+  <?php 
+  	if (isset($import[2]['related_model'])) {
+  		$foriegnKey = key($import[2]['related_model']);
+  		$parentId = current($import[2]['related_model']);
+  		$parentId = $parentId();
+  	} else {
+  		$foriegnKey = "";
+  		$parentId = "";
+  	}
+  ?>
   <div id="importModal{{$import[0]}}" class="importModal modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" 
-  		data-map='{{json_encode($import[2]['map'])}}' data-list='{{json_encode($import[2]['list'])}}' data-child="{{$import[0]}}" data-resource="{{$import[1]}}" data-first="1" data-model-importing-to="{{get_class($entries)}}" data-model-importing-to-id="{{Util::get("id")}}" > 
+  		data-map='{{json_encode($import[2]['map'])}}' data-list='{{json_encode($import[2]['list'])}}' data-child="{{$import[0]}}" data-resource="{{$import[1]}}" data-first="1" data-model-importing-to="{{get_class($entries)}}" data-related-foriegn-key='{{$foriegnKey}}' data-related-parent-id='{{$parentId}}' data-model-importing-to-id="{{Util::get("id")}}" > 
 
 	  <div class="modal-header">
 			<h1>{{((isset($import[2]['name']))? $import[2]['name'] : Util::cleanName($import[0]) )}} <small>{{((isset($import[2]['description']))? $import[2]['description'] : "" )}}</small></h1>
 
+			@if (empty($foriegnKey) && empty($parentId))
 			<ul class="nav nav-tabs">
 			  <li class="active">
 			  	<a href="#search{{$import[0]}}" data-toggle="tab">SEARCH</a>
@@ -27,30 +37,34 @@
 			  </li>
 			  @endif
 			</ul>
-			 
+			
+			
+				
 			<div class="tab-content">
-			  <div class="tab-pane active" id="search{{$import[0]}}">
-			  	<div class="searchBox">
-			  		<form class="search">
-			  			<input class="searchInput placeholder" name="s" type="text" value="Search..." data-reset-name="Search..." data-reset="1"> 
-				  		<button type="submit" class="btn mainColor" href="">SEARCH</button>
-			  		</form>
-			  	</div>
-			  </div>
-			  @if (isset($import[2]['advanced_search']))
-			  <div class="tab-pane" id="browse{{$import[0]}}">
-			  	<p>Browse entries ordered by closest to the Latitude & Longitude point with search radius in miles. Default search radius is 25 miles. Add a search term to narrow results down.</p>
-			  	<div class="searchBox">
-			  		<form class="advancedSearch"> 
-			  			<input class="searchField searchInput placeholder" name="s" type="text" value="Search..." data-reset-name="Search..." data-reset="1"> 
-			  			<input class="searchLatitudeLongitude searchInput placeholder" name="latitude_longitude" type="text" value="Latitude, Longitude" data-reset-name="Latitude, Longitude" data-reset="1"> 
-			  			<input class="distance searchInput placeholder" name="distance" type="text" value="25" data-reset-name="25" data-reset="1"> 
-				  		<button type="submit" class="btn mainColor" href="">SEARCH</button>
-			  		</form> 
-			  	</div>
-			  </div>
-			  @endif
+				  <div class="tab-pane active" id="search{{$import[0]}}">
+				  	<div class="searchBox">
+				  		<form class="search">
+				  			<input class="searchInput placeholder" name="s" type="text" value="Search..." data-reset-name="Search..." data-reset="1"> 
+					  		<button type="submit" class="btn mainColor" href="">SEARCH</button>
+				  		</form>
+				  	</div>
+				  </div>
+				  
+				  @if (isset($import[2]['advanced_search']))
+				  <div class="tab-pane" id="browse{{$import[0]}}">
+				  	<p>Browse entries ordered by closest to the Latitude & Longitude point with search radius in miles. Default search radius is 25 miles. Add a search term to narrow results down.</p>
+				  	<div class="searchBox">
+				  		<form class="advancedSearch"> 
+				  			<input class="searchField searchInput placeholder" name="s" type="text" value="Search..." data-reset-name="Search..." data-reset="1"> 
+				  			<input class="searchLatitudeLongitude searchInput placeholder" name="latitude_longitude" type="text" value="Latitude, Longitude" data-reset-name="Latitude, Longitude" data-reset="1"> 
+				  			<input class="distance searchInput placeholder" name="distance" type="text" value="25" data-reset-name="25" data-reset="1"> 
+					  		<button type="submit" class="btn mainColor" href="">SEARCH</button>
+				  		</form> 
+				  	</div>
+				  </div>
+				  @endif
 			</div>
+			@endif
 	  </div>
 	  <div class="modal-body"> 
 	    <table class="table  table-bordered table-striped">

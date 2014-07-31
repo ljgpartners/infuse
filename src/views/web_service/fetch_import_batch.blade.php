@@ -36,14 +36,21 @@
 			<tr>
 				<td>
 					@if (Util::splitReturnFirst($key, "@"))
-						@if (!empty($entry->{Util::splitReturnFirst($key, "@")})) 
-						<div class="previewImage">
-							<input type="checkbox" data-value="{{$entry->url(Util::splitReturnFirst($key, "@")) }}" data-overite-column="{{$value}}" data-attachment="image"> 
-						</div>
+
+						@if (Util::splitReturnSecond($key, "@") == "image")
+
+							@if (!empty($entry->{Util::splitReturnFirst($key, "@")})) 
+							<div class="previewImage">
+								<input type="checkbox" checked="checked" class="checkAll" data-value="{{$entry->url(Util::splitReturnFirst($key, "@")) }}" data-overite-column="{{$value}}" data-attachment="image"> 
+							</div>
+							@endif
+
+						@else
+							<input type="checkbox" checked="checked" class="checkAll" data-value="{{$entry->{Util::splitReturnFirst($key, "@")} }}" data-overite-column="{{$value}}" data-attachment="{{Util::splitReturnSecond($key, "@")}}">
 						@endif
 
 					@else 
-						<input type="checkbox" data-value="{{$entry->{$key} }}" data-overite-column="{{$value}}" data-attachment="0">
+						<input type="checkbox" checked="checked" class="checkAll" data-value="{{$entry->{$key} }}" data-overite-column="{{$value}}" data-attachment="0">
 					@endif
 					
 				</td>
@@ -56,10 +63,14 @@
 				</th>
 				<td>
 					@if (Util::splitReturnFirst($key, "@"))
-						@if (!empty($entry->{Util::splitReturnFirst($key, "@")})) 
-						<div class="previewImage">
-							<img src="{{$entry->url(Util::splitReturnFirst($key, "@"))}}" alt="">  
-						</div>
+						@if (Util::splitReturnSecond($key, "@") == "image")
+							@if (!empty($entry->{Util::splitReturnFirst($key, "@")})) 
+							<div class="previewImage">
+								<img src="{{$entry->url(Util::splitReturnFirst($key, "@"))}}" alt="">  
+							</div>
+							@endif
+						@else
+							{{$entry->{Util::splitReturnFirst($key, "@")} }}
 						@endif
 
 					@else 
@@ -69,9 +80,11 @@
 				</td>
 			</tr>
 			@endforeach
+
 			<tr>
 				<td colspan="3">
 					<a class="importEntry btn submitButton" data-modal-id="{{$id}}">IMPORT</a>
+					<a class="importCheckAll btn submitButton" data-all-on="1">Uncheck All</a>
 				</td>
 			</tr>
 		</table>

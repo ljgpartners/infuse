@@ -2,6 +2,7 @@
 
 use Exception;
 use Bpez\Infuse\Facades\Scaffold;
+use Bpez\Infuse\Util;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,12 @@ class WebService {
 				break;
 			case 'fetch_import_batch':
 				$response = $this->fetchImportBatch();
+				break;
+			case 'nested_select_batch':
+				$response = $this->nestedSelectBatch();
+				break;
+			case 'log':
+				$response = $this->log();
 				break;
 
 			default:
@@ -139,14 +146,17 @@ class WebService {
 			$now = new \DateTime;
 			$tempFiles = \File::glob($_SERVER['DOCUMENT_ROOT'].'/uploads/tmp/*');
 			$fileTime = new \DateTime;
-			foreach($tempFiles as $file) {
-				$fileTime->setTimestamp(\File::lastModified($file));
-				$interval = $now->diff($fileTime);
-				$elapsed = (integer) $interval->format('%i');
-				// If file older then 15 minutes delete
-				if ($elapsed > 15)
-					unlink($file);
+			if (count($tempFiles) > 0) {
+				foreach($tempFiles as $file) {
+					$fileTime->setTimestamp(\File::lastModified($file));
+					$interval = $now->diff($fileTime);
+					$elapsed = (integer) $interval->format('%i');
+					// If file older then 15 minutes delete
+					if ($elapsed > 15)
+						unlink($file);
+				}
 			}
+			
 			return array("status" => 'success', "message" => 'Files cleaned up.');
 		} else {
 			return array("status" => 'success', "message" => 'No files cleaned up.');
@@ -178,6 +188,11 @@ class WebService {
 		$latitude = Util::get('latitude');
 		$longitude = Util::get('longitude');
 
+		$foriegnKey = Util::get('foriegnKey');
+		$foriegnKey = (empty($foriegnKey))? false : $foriegnKey;
+
+		$parentId = Util::get('parentId');
+		$parentId = (empty($parentId))? false : $parentId;
 
 		$config = \Config::get("infuse::{$resource}.children.{$child}");
 		$scaffold = Scaffold::model($config['model'])
@@ -187,9 +202,16 @@ class WebService {
 		if ($redirect)
 			return array("status" => 'error', "flash" => Util::flash());
 
-		if (!empty($latitude) && !empty($longitude)) {
+		 
+		if ($foriegnKey){
+			if ($parentId) {
+				$scaffold->search($parentId, array($foriegnKey));
+			} else {
+				$scaffold->search("no_value", array($foriegnKey));
+			}
+		}else if (!empty($latitude) && !empty($longitude)) {
 			$scaffold->closestLocationsWithinRadius($search, $columns, $latitude, $longitude, $distance); 
-		} else if ($search){
+		} else if ($search){ 
 			$scaffold->search($search, $columns);
 		} else {
 			$scaffold->route();
@@ -233,6 +255,48 @@ class WebService {
 	protected function noAction()
 	{
 		return array("response" => "Action does not exist.");
+	}
+	
+	
+	protected function log()
+	{
+		Util::debug(Util::get('message'), true);
+		return array("response" => "Action does not exist.");
+	}
+
+	protected function nestedSelectBatch()
+	{ 
+		$model = Util::get('model');
+		$model = new $model();
+		$foreignKey = Util::get('foreign_key');
+		$value = Util::get($foreignKey);
+		$column = Util::get('column');
+
+		$foreignKey = (Util::get('overide_foreign_key'))? Util::get('overide_foreign_key') : $foreignKey;
+		$notColumn = (Util::get('not_column'))? Util::get('not_column') : false;
+
+		$return = $model::where($foreignKey, "=", $value)
+			->orderBy($column, "asc");
+
+		if ($notColumn) { 
+			$notColumn = explode(",", $notColumn);
+			//print_r($notColumn); die();
+			$return = $return->where($notColumn[0], "!=", $notColumn[1]);
+		}
+
+		$return = $return->get(array('id', $column))
+			->toArray();
+			
+
+		$returnArray = array();
+
+		foreach ($return as $item) {
+			$columnName = end($item);
+			$returnArray[$item["id"]] = $columnName;
+		}
+		
+		return $returnArray;
+		
 	}
 
 }

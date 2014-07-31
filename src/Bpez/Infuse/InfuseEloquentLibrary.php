@@ -56,7 +56,7 @@ trait InfuseEloquentLibrary {
     } else { 
       $baseUrlUploadedAssetsLocal = \Config::get("infuse::base_url_uploaded_assets_local");
 
-      if (\App::environment() == "local") { 
+      if (\App::environment() != "production") { 
         return $baseUrlUploadedAssetsLocal.strtolower($this->uploadFolder.DIRECTORY_SEPARATOR
                   .get_class($this).DIRECTORY_SEPARATOR
                   .$column.DIRECTORY_SEPARATOR).$this->{$column};

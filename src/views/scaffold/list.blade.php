@@ -99,9 +99,9 @@ $modelInstanceForPermissionCheck = $entries->first();
 			@foreach ($columns as $column)
 				@if (in_array($column['field'], $header['list']))
 					<td>
-					@if (array_key_exists("select", $column))
-
-						@foreach ($column['select'] as $value)
+					@if (array_key_exists("select", $column)) 
+						<?php $selectArray = (array_key_exists("nested", $column) && isset($column['nested_last_array']))? $column['nested_last_array'] : $column['select'] ; ?>
+						@foreach ($selectArray as $value)
 								@if ($entry->{$column['field']} == $value["id"])
 									<?php $columnName = end($value); ?>
 									{{$columnName}}
@@ -114,9 +114,15 @@ $modelInstanceForPermissionCheck = $entries->first();
 						</div>
 
 					@elseif (array_key_exists("display_order", $column))
-										<span>{{$entry->{$column['field']} }}</span> <span class="icon-arrow-up"></span> <span class="icon-arrow-down"></span>
+						<span>{{$entry->{$column['field']} }}</span> <span class="icon-arrow-up"></span> <span class="icon-arrow-down"></span>
+
 					@else 
-									{{(($column['type'] == "text"))? Util::truncateText($entry->{$column['field']}, "25") : $entry->{$column['field']} }}
+						@if ($column['field'] == "updated_at")
+							{{$entry->{$column['field']}->format($header['formatLaravelTimestamp'])}} 
+						@else
+							{{(($column['type'] == "text"))? Util::truncateText($entry->{$column['field']}, "25") : $entry->{$column['field']} }}
+						@endif
+								
 					@endif
 					</td>
 				@endif
@@ -145,11 +151,29 @@ $modelInstanceForPermissionCheck = $entries->first();
 						@if (Util::checkPermission($user, $modelInstanceForPermissionCheck, "update"))
 							@if(count($header['callFunctions']) > 0)
 								@foreach ($header['callFunctions'] as $function)
-									<li><a href="?action=cf&id={{$entry->id}}&cf={{$function["function"]}}" onclick="return confirm('Confirm {{$function["display_name"]}}?');">{{$function["display_name"]}}</a></li>
+									<li>
+										<a {{((isset($function['target']))? 'target="'.$function['target'] .'"' : "" )}} 
+											href="?action=cf&id={{$entry->id}}&cf={{$function["function"]}}" 
+											@if (isset($function['long_process']))
+												onclick='Infuse.confirmAndblockUI("{{$function["display_name"]}}", "{{$function["function"]}}");'>
+											@else
+												onclick="return confirm('Confirm {{$function["display_name"]}}?');">
+											@endif
+											{{$function["display_name"]}}
+										</a>
+										@if (isset($function['long_process']))
+										<div class="hide {{$function["function"]}}">
+											<h4>{{$function['long_process']}}</h4>
+											<div>
+												<img width="32" height="32"  src="/packages/bpez/infuse/images/loading.gif" alt=""/>
+											</div>
+											</br>
+										</div>
+										@endif
+									</li>
 								@endforeach
 							@endif
 						@endif
-						
 						
 				  </ul>
 				</div>

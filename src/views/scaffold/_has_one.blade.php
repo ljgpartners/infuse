@@ -18,7 +18,7 @@
 		<tr>
 			@foreach ($childColumns as $column)
 				@if (is_array($column))
-					<th>{{Util::cleanName(key($column))}}</th> 
+					<th>{{Util::cleanName(key($column))}}</th>
 				@elseif (Util::splitReturnFirst(Util::cleanName($column), "@"))
 					<th>{{Util::splitReturnFirst(Util::cleanName($column), "@")}}</th>
 				@else
@@ -38,11 +38,13 @@
 
 			@foreach ($childColumns as $column)
 				@if (is_array($column)) 
+					<td>
 					@foreach (current($column) as $value)
 							@if ($child->{key($column)} == $value["id"])
-								<td>{{end($value)}}</td>
+								{{end($value)}}
 							@endif
 					@endforeach
+					</td>
 				@else
 					@if (Util::splitReturnFirst($column, "@"))
 						<td>

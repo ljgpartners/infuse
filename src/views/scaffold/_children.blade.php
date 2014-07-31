@@ -54,11 +54,13 @@
 		<tr data-class="{{$model}}" class="{{$model}}"> 
 			@foreach ($childColumns as $column)
 				@if (is_array($column)) 
+					<td>
 					@foreach (current($column) as $value)
 							@if ($child->{key($column)} == $value["id"])
-								<td>{{end($value)}}</td>
+								{{end($value)}}
 							@endif
 					@endforeach
+					</td>
 				@else
 					@if (Util::splitReturnFirst($column, "@"))
 						<td>

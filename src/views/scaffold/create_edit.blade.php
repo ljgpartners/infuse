@@ -17,6 +17,9 @@
 	<table class="table table-striped table-bordered editCreateForm"> 
 			<form method="post" action="?" enctype="multipart/form-data">
 
+			{{-- Tells infuse what type of save (save, save & return, save & create another)--}}
+			<input type="hidden" id="typeSubmit" name="typeSubmit" value="save">
+
 			{{-- Added infuse action and id to the form --}}
 
 			@if (Util::get("id") && Util::get("action") != "cd")
@@ -81,7 +84,7 @@
 
 			{{-- Hide certain fields. Laravel create and updated flags. Foreign keys. Infuse logins fields.  --}}
 
-			@if ($column['field'] != "created_at" && $column['field'] != "updated_at" && !Util::isForeignKey($column['field'])  && Util::checkInfuseLoginFields($infuseLogin, $column) )
+			@if (!Util::isForeignKey($column['field'])  && Util::checkInfuseLoginFields($infuseLogin, $column) )
 
 			<tr>
 				{{-- Column Names  --}}
@@ -94,13 +97,17 @@
 				{{-- Column Values/Form Input  --}}
 				<td> 
 				{{-- ckeditor  --}}
-				@if (array_key_exists("ckeditor", $column))
-					<textarea class="ckeditor" name="{{$column['field']}}">{{$entries->{$column['field']} }}</textarea>
+				@if (array_key_exists("ckeditor", $column)) 
+					<textarea class="infuseCkeditor" data-config="{{Util::classToString($entries)."_".$column['field']}}" name="{{$column['field']}}">{{$entries->{$column['field']} }}</textarea>
 
 				{{-- select  --}}
 				@elseif (array_key_exists("select", $column))
 
-					<select name="{{$column['field']}}">
+					{{-- do regular select  --}}
+					@if (!array_key_exists("nested", $column))
+
+
+					<select name="{{$column['field']}}" class="importReplace{{$column['field']}}">
 						@if (array_key_exists("select_blank", $column))
 							<option value=""></option>
 						@endif
@@ -113,6 +120,90 @@
 								@endif
 						@endforeach
 					</select>
+
+
+					{{-- do nested select  --}}
+					@else  
+
+						<?php  
+						$totalNested = count($column['nested']);
+						$nestedCount = 0;
+						$selectID = "{$column['field']}_{$nestedCount}";
+						$foreignKey = Util::getForeignKeyString($entries);
+						?>
+
+						@foreach ($column['nested'] as $index => $nestedModelName)
+							<?php 
+
+								if (is_array($nestedModelName)) {
+									$nestedModelName = $nestedModelName['model'];
+								}
+								$nestColumn = null;
+								if (isset($column['nested'][$index+1]) && is_array($column['nested'][$index+1])) {
+									$nextModel = $column['nested'][$index+1]['model'];
+									$nestColumn = $column['nested'][$index+1]['column'];
+								} else {
+									$nextModel = (isset($column['nested'][$index+1]))? $column['nested'][$index+1] : "";
+								}
+								
+								
+								$nestedCount++; 
+								$foreignKey = ($nestedCount == $totalNested)? $column['field'] : Util::createForeignKeyString($nestedModelName);
+								$cssClass = ($nestedCount == $totalNested)? "importReplace".$column['field'] : "importRemove".$column['field'];
+								$selectID = "{$column['field']}_{$nestedCount}";
+								$tempNextCount = $nestedCount+1;
+								$selectNextID = "{$column['field']}_{$tempNextCount}";
+								$overideForeignKey = (isset($column['nested'][$index]['foreign_key']))? "&overide_foreign_key=".$column['nested'][$index]['foreign_key'] : "";
+								
+								if (isset($column['nested'][$index+1]['not_column'])) {
+									$notColumn = $column['nested'][$index+1]['not_column'];
+									$notColumn = "&not_column=".key($notColumn).",".current($notColumn);
+								} else {
+									$notColumn = "";
+								}
+								
+								$nestColumn = (isset($nestColumn))? "&column={$nestColumn}" : "";
+							?>
+							<select id="{{$selectID}}" class="{{$cssClass}}" name="{{$foreignKey}}">
+							  <option value="">--</option>
+							  @if ($nestedCount == 1)
+							  	@foreach ($column['select'] as $value)
+										<?php $columnName = end($value); ?>
+										<option value="{{$value["id"]}}">{{$columnName}}</option>
+									@endforeach
+							  @endif
+
+							  @if (isset($column['nested_last_array']) && !empty($entries->{$column['field']}) && $nestedCount == $totalNested)
+							  	<?php $nestedLastArray = $column['nested_last_array']; ?>
+							  	@foreach ($nestedLastArray as $value)
+										<?php $columnName = end($value); ?>
+										@if ($value['id'] == $entries->{$column['field']})
+											<option selected='selected' value="{{$value["id"]}}">{{$columnName}}</option>
+										@endif
+									@endforeach
+							  @endif
+							</select>
+							
+							@if ($nestedCount != $totalNested)
+							<script type="text/javascript">
+							$(document).ready(function() {
+								$("#{{$selectNextID}}").remoteChained({
+								  parents : "#{{$selectID}}",
+								  url : "?action=nested_select_batch&model={{$nextModel}}&foreign_key={{$foreignKey}}{{$nestColumn}}{{$overideForeignKey}}{{$notColumn}}",
+								  clear : true,
+    							loading : "Loading..."
+								});
+							});
+							</script>
+							@endif
+
+							<?php $foreignKey = Util::createForeignKeyString($nestedModelName); ?>
+						@endforeach
+
+						
+
+					@endif
+					
 
 				{{-- multi select  --}}
 				@elseif (array_key_exists("multi_select", $column))
@@ -151,13 +242,13 @@
 							<button type="button" class="btn btn-mini btn-link" data-toggle="modal" data-target="#{{"Modal".$column['field'].$entries->id}}">
 								preview current
 							</button>
-
-							<div id="{{"Modal".$column['field'].$entries->id}}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							
+							<div id="{{"Modal".$column['field'].$entries->id}}" class="modal hide fade previewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 							  <div class="modal-header">
 							    <h3 id="myModalLabel">{{$entries->{$column['field']} }}</h3>
 							  </div>
 							  <div class="modal-body">
-							    <img src="{{$entries->url($column['field'])}}">
+							    <img class="uploadAreaPreviewImage" src="{{$entries->url($column['field'])}}">
 							  </div>
 							  <div class="modal-footer">
 							  	<button class="btn altColor btn-info" data-dismiss="modal" aria-hidden="true">Close</button>
@@ -201,31 +292,45 @@
 
 				{{-- other inputs based on column type  --}}
 				@else
-				
+					
+
 					<?php switch ($column['type']):
 							case 'varchar': ?>
-							<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}}>
+								<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}}>
 					<?php 	break;
 							case 'text': ?>
-							<textarea name="{{$column['field']}}" class="importReplace{{$column['field']}}" {{Util::readOnly($column)}} >{{$entries->{$column['field']} }}</textarea>
+								<textarea name="{{$column['field']}}" class="importReplace{{$column['field']}}" {{Util::readOnly($column)}} >{{$entries->{$column['field']} }}</textarea>
 					<?php 	break;
 							case 'datetime':
 							case 'timestamp': ?>
-							<input type="text" class="selectedDateTime" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
+								@if ($column['field'] == "created_at" || $column['field'] == "updated_at")
+									@if (Util::get("action") == 'c')
+										<input type="text" name="{{$column['field']}}" value="" disabled="disabled" />
+									@else
+										<input type="text" name="{{$column['field']}}" value="{{$entries->{$column['field']}->format($header['formatLaravelTimestamp'])}}" disabled="disabled" />
+									@endif
+								@else
+									<input type="text" class="selectedDateTime" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
+								@endif
+								
 					<?php 	break; 
 							case 'date': ?>
-							<input type="text" class="selectedDate" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
+								<input type="text" class="selectedDate" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
 					<?php 	break;
 							case 'int': ?>
-							<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" pattern="\d+" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
+								<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" pattern="\d+" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
 					<?php 	break;
 							case 'tinyint': ?> 
-							<select name="{{$column['field']}}" {{Util::readOnly($column)}}>
-								<option value="0" {{($entries->{$column['field']} == 0)? 'selected="selected"' : ""}} >No</option>
-								<option value="1" {{($entries->{$column['field']} == 1)? 'selected="selected"' : ""}} >Yes</option>
-							</select>
+								<select name="{{$column['field']}}" {{Util::readOnlyWithDisabled($column)}}>
+									<option value="0" {{($entries->{$column['field']} == 0)? 'selected="selected"' : ""}} >No</option>
+									<option value="1" {{($entries->{$column['field']} == 1)? 'selected="selected"' : ""}} >Yes</option>
+								</select>
+							@if (isset($column['readOnly']))
+								<input type="hidden" value="{{$entries->{$column['field']} }}" name="{{$column['field']}}">
+							@endif
 					<?php break;
 							default: ?>
+
 								<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
 					<?php		
 						endswitch;
@@ -265,33 +370,91 @@
 			<tr>
 				<td>
 					@if (Util::get("stack"))
-					<div class="btn-group">
-				    <a class="btn btn-small childBackLink" href="{{Util::childBackLink()}}">Back</a>
-				  	@if (isset($header['edit']))
-				  	<a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 's', $entries->id)}}">Show</a>
-					  	@if(!$header['onlyOne'] && $header['deleteAction'])
-							<a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 'd', $entries->id)}}" onclick="return confirm('Confirm delete?');">Delete</a>
+
+						<div class="btn-group originalBtnGroup">
+					    <a class="btn btn-small childBackLink" href="{{Util::childBackLink()}}">Back</a>
+					  	@if (isset($header['edit']))
+					  	<a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 's', $entries->id)}}">Show</a>
+						  	@if(!$header['onlyOne'] && $header['deleteAction'])
+								<a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 'd', $entries->id)}}" onclick="return confirm('Confirm delete?');">Delete</a>
+								@endif
 							@endif
-						@endif
-				  </div>
+					  </div>
+
+					  @if(count($header['callFunctions']) > 0)
+					  	<div class="btn-group callFunctionsGroup">
+								@foreach ($header['callFunctions'] as $function)
+									<a class="btn btn-small" {{((isset($function['target']))? 'target="'.$function['target'] .'"' : "" )}} 
+										href="?action=cf&id={{$entries->id}}&cf={{$function["function"]}}" 
+										@if (isset($function['long_process']))
+											onclick='Infuse.confirmAndblockUI("{{$function["display_name"]}}", "{{$function["function"]}}");'>
+										@else
+											onclick="return confirm('Confirm {{$function["display_name"]}}?');">
+										@endif
+										{{$function["display_name"]}}
+									</a>
+									@if (isset($function['long_process']))
+									<span class="hide {{$function["function"]}}">
+										<h4>{{$function['long_process']}}</h4>
+										<div>
+											<img width="32" height="32"  src="/packages/bpez/infuse/images/loading.gif" alt=""/>
+										</div>
+										</br>
+									</span>
+									@endif
+								@endforeach
+					  	</div>
+					  @endif
+
 					@else
-					<div class="btn-group">
-				    <a class="btn btn-small" href="?action=l">List</a>
-				  	@if (isset($header['edit']))
-				  	<a class="btn btn-small" href="?action=s&id={{$entries->id}}">Show</a>
-					  	@if(!$header['onlyOne'] && $header['deleteAction'])
-							<a class="btn btn-small" href="?action=d&id={{$entries->id}}" onclick="return confirm('Confirm delete?');">Delete</a>
+
+						<div class="btn-group originalBtnGroup">
+					    <a class="btn btn-small" href="?action=l">List</a>
+					  	@if (isset($header['edit']))
+					  	<a class="btn btn-small" href="?action=s&id={{$entries->id}}">Show</a>
+						  	@if(!$header['onlyOne'] && $header['deleteAction'])
+								<a class="btn btn-small" href="?action=d&id={{$entries->id}}" onclick="return confirm('Confirm delete?');">Delete</a>
+								@endif
 							@endif
+							@if($infuseLogin)
+							<a class="btn btn-small" href="?action=rrpp&id={{$entries->id}}">Send Reset</a>
+							@endif
+					  </div>
+
+					  @if(count($header['callFunctions']) > 0)
+					  	<div class="btn-group callFunctionsGroup">
+								@foreach ($header['callFunctions'] as $function)
+									<a class="btn btn-small" {{((isset($function['target']))? 'target="'.$function['target'] .'"' : "" )}} 
+										href="?action=cf&id={{$entries->id}}&cf={{$function["function"]}}" 
+										@if (isset($function['long_process']))
+											onclick='Infuse.confirmAndblockUI("{{$function["display_name"]}}", "{{$function["function"]}}");'>
+										@else
+											onclick="return confirm('Confirm {{$function["display_name"]}}?');">
+										@endif
+										{{$function["display_name"]}}
+									</a>
+									@if (isset($function['long_process']))
+									<span class="hide {{$function["function"]}}">
+										<h4>{{$function['long_process']}}</h4>
+										<div>
+											<img width="32" height="32"  src="/packages/bpez/infuse/images/loading.gif" alt=""/>
+										</div>
+										</br>
+									</span>
+									@endif
+								@endforeach
+							</div>
 						@endif
-						@if($infuseLogin)
-						<a class="btn btn-small" href="?action=rrpp&id={{$entries->id}}">Send Reset</a>
-						@endif
-				  </div>
+
 					@endif
 					
 				</td>
 				<td> 
-					<input type="submit" value="save" class="btn submitButton saveSubmitButton">
+					<input type="submit" value="save" data-type-submit="save" class="btn submitButton saveSubmitButton">
+					<input type="submit" value="save & return" data-type-submit="save_and_return" class="btn submitButton saveSubmitButton">
+					@if (Util::get("action") == "c")
+					<input type="submit" value="save & create another" data-type-submit="save_and_create_another" class="btn submitButton saveSubmitButton">
+					@endif
 				</td>
 			</tr>
 
@@ -317,7 +480,38 @@
 						@endif
 					@endif
 
-					<input type="submit" value="save" class="saveSubmitButton">
+
+					@if(count($header['callFunctions']) > 0)
+						@foreach ($header['callFunctions'] as $function)
+							<a class="" {{((isset($function['target']))? 'target="'.$function['target'] .'"' : "" )}} 
+									href="?action=cf&id={{$entries->id}}&cf={{$function["function"]}}" 
+									@if (isset($function['long_process']))
+										onclick='Infuse.confirmAndblockUI("{{$function["display_name"]}}", "{{$function["function"]}}");'>
+									@else
+										onclick="return confirm('Confirm {{$function["display_name"]}}?');">
+									@endif
+									{{$function["display_name"]}}
+							</a>
+							@if (isset($function['long_process']))
+							<div class="hide {{$function["function"]}}">
+								<h4>{{$function['long_process']}}</h4>
+								<div>
+									<img width="32" height="32"  src="/packages/bpez/infuse/images/loading.gif" alt=""/>
+								</div>
+								</br>
+							</div>
+							@endif
+						@endforeach
+					@endif
+					
+
+					<div class="submitGroup">
+						<input type="submit" value="save" data-type-submit="save" class="saveSubmitButton">
+						<input type="submit" value="save & return" data-type-submit="save_and_return" class="saveSubmitButton">
+						@if (Util::get("action") == "c")
+						<input type="submit" value="save & create another" data-type-submit="save_and_create_another" class="saveSubmitButton">
+						@endif
+					</div>
 			</div>
 
 			{{-- Relationship subviews --}}

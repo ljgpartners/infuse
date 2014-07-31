@@ -22,6 +22,11 @@ return array(
 	'one_role_per_user' => false,
 
 	/*
+	| Format Carbon object updated_at & created_at timestamp. 
+	*/
+	'format_laravel_timestamp' => "n/d/Y",
+
+	/*
 	| Base url for uploaded assets only on local environment. 
 	| On production assets are served locally. Leave blank to 
 	| serve locally on local environemnt.
@@ -37,6 +42,11 @@ return array(
 	| Overide dashboard template a custom template from your views
 	*/
 	'dashboard_template' => '', 
+
+	/*
+	| Add external javascript
+	*/
+	'add_javascript' => '', 
 
 
 	/*

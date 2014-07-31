@@ -4,7 +4,7 @@ $(document).ready(function() {
 	* Util functions
 	******************************/
 
-	var Infuse = {
+	window.Infuse  = {
 
 		capitaliseFirstLetter: function (string) {
 			return this.replaceUnderscore(string.charAt(0).toUpperCase() + string.slice(1));
@@ -43,11 +43,38 @@ $(document).ready(function() {
 		  //   returns 4: false
 
 		  return mixed_var === +mixed_var && isFinite(mixed_var) && !(mixed_var % 1);
-		}
+		},
 
+		// checking if a string is blank, null or undefined
+		isBlank: function (str) {
+		  return (!str || /^\s*$/.test(str));
+		},
+
+		// Confirms action and block UI while page is loading
+		confirmAndblockUI: function (displayName, cssClass) {
+		  if (confirm('Confirm '+displayName+'?')) {
+		  	$.blockUI({ message: $("."+cssClass).html() });
+		  	return true;
+		  } else {
+		  	return false;
+		  }
+		},
+		
 	};
 
+
 	var animating = false;
+
+	$('.infuseCkeditor').each(function() {
+		var self = $(this)
+				config = self.data("config");
+		if (typeof window[config] === "undefined") {
+			self.ckeditor();
+		} else {
+			self.ckeditor(window[config]); 
+		}
+		
+	});
 	
 	$('.selectedDateTime').datetimepicker({ dateFormat: 'yy-mm-dd', timeFormat: 'HH:mm:ss', pickerTimeFormat: 'hh-mm-tt' });
 
@@ -552,6 +579,8 @@ $(document).ready(function() {
   		point.distance = "";
   	}
 
+  	// data-related-foriegn-key='{{$foriegnKey}}' data-related-parent-id
+
   	search = (search == "Search...")? "" : search;
 
   	var modal = $(".importModal"),
@@ -562,7 +591,9 @@ $(document).ready(function() {
 				resource = modal.data("resource"),
 				loading = modal.find(".loading"),
 				modelImportingTo = modal.data("model-importing-to"),
-				modelImportingToId = modal.data("model-importing-to-id");
+				modelImportingToId = modal.data("model-importing-to-id"),
+				foriegnKey = modal.data("related-foriegn-key"),
+				parentId = modal.data("related-parent-id");
 		
   	loading.show();
   	
@@ -586,7 +617,9 @@ $(document).ready(function() {
 				modelImportingTo: modelImportingTo,
 				latitude: point.latitude, 
 				longitude: point.longitude,
-				distance: point.distance
+				distance: point.distance,
+				foriegnKey: foriegnKey, 
+				parentId: parentId
 			},
 			success: function (data, textStatus, jqXHR ) {
 			 
@@ -666,7 +699,8 @@ $(document).ready(function() {
   	var self = $(this),
   			modalId = self.data("modal-id"),
   			checkboxes = self.closest(".importModalAccordion").find("input:checked"),
-  			originalEntryForm = $(".editCreateForm");
+  			originalEntryForm = $(".editCreateForm"),
+  			combine = new Array();
 
   	$.each(checkboxes, function() {
   		var self = $(this),
@@ -677,11 +711,49 @@ $(document).ready(function() {
   			var tempColumn = overiteColumn.split("@");
   					overiteColumn = tempColumn[0];
   			originalEntryForm.find(".importReplace"+overiteColumn).attr("type", "text").val(value); 
+  		} else if (String(attachment).indexOf("combine_") > -1) {
+  			var tempColumn = overiteColumn.split("@");
+  					overiteColumn = tempColumn[0],
+  					combineColumn = tempColumn[1].split("_"),
+  					combineColumn = combineColumn[1];
+
+  			if (combineColumn in combine) {
+  				combine[combineColumn].push(overiteColumn+"#"+value);
+  			} else {
+  				combine[combineColumn] = new Array(overiteColumn+"#"+value);
+  			}
+  			
+
+  		} else if (attachment == "convert_text") {
+  			var tempColumn = overiteColumn.split("@");
+  					overiteColumn = tempColumn[0],
+  					newInput = null,
+  					oldInput = originalEntryForm.find(".importReplace"+overiteColumn);
+
+  			
+
+  			// Transform from one input to text input
+  			$(".importRemove"+overiteColumn).remove();
+
+  			if (overiteColumn in combine) {
+  				value = overiteColumn+"#"+value;
+  				for (var x in combine[overiteColumn]) {
+  					value = value+"|"+combine[overiteColumn][x];
+  				}
+  			}
+
+  			if (oldInput.is("input")) {
+  				originalEntryForm.find(".importReplace"+overiteColumn).attr("type", "text").val(value); 
+  			} else if (oldInput.is("select")) {
+  				originalEntryForm.find(".importReplace"+overiteColumn).find('option').remove().end().append('<option value="'+value+'">'+value+'</option>').val(value);
+  			}
+
   		} else {
   			originalEntryForm.find(".importReplace"+overiteColumn).val(value);
   		}
   		
   	});
+  	
   	$("#"+modalId).modal('hide');
 
 		var div = $("<div>").addClass("alert alert-success"),
@@ -706,10 +778,35 @@ $(document).ready(function() {
 
 
   $('.editCreateForm form').submit(function(event){
-		var self = $(".saveSubmitButton");
-		self.val("SAVING..");
-		self.attr("disabled", true);
+		var inputs = $(".saveSubmitButton");
+		inputs.attr("disabled", true);
 	});
+
+	$(".saveSubmitButton").click(function() {
+		var typeSubmit = $(this).data('type-submit');
+		$("input[data-type-submit="+typeSubmit+"]").val("SAVING..");
+		document.getElementById("typeSubmit").value = typeSubmit;
+	});
+
+  $(document).on("click", ".importCheckAll", function(event)
+  {
+  	event.preventDefault();
+		var self = $(this),
+				on = (self.data("all-on") == 1)? true : false,
+				inputs = self.parent().parent().parent().find(".checkAll");
+
+		if (on) {
+			inputs.prop('checked', false);
+			self.data("all-on", 0);
+			self.text("Check All");
+		} else {
+			inputs.prop('checked', true);
+			self.data("all-on", 1);
+			self.text("Uncheck All");
+		}
+	});
+
+  
 	
 });
 

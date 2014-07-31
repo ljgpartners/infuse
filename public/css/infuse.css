@@ -8216,12 +8216,10 @@ body.infuseWrapper input[type="password"] {
   height: 39px;
   background-color: #E4E4E4;
   font-size: 0px;
+  z-index: 200;
 }
 .infuseScaffold .actionFixedNav input[type="submit"] {
   text-transform: uppercase;
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
   height: 39px;
   padding: 0px 40px;
   color: white;
@@ -8229,6 +8227,12 @@ body.infuseWrapper input[type="password"] {
   border: 0px;
   background-color: #A01A27;
   font-family: 'Open Sans', sans-serif;
+  margin-left: 1px;
+}
+.infuseScaffold .actionFixedNav .submitGroup {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
 }
 .infuseScaffold .actionFixedNav a {
   text-transform: uppercase;
@@ -8322,6 +8326,7 @@ body.infuseWrapper input[type="password"] {
 .infuseLogin .logo {
   display: block;
   margin: 0px auto 20px;
+  max-width: 50%;
 }
 .infuseLogin .infuseU,
 .infuseLogin .infuseP {
@@ -8430,6 +8435,9 @@ input.infuseLoginSubmit {
 .infuseNav .navElement.navElementCenter {
   width: auto;
   padding: 0px 15px;
+}
+.navElementCenter .logo {
+  max-width: 34%;
 }
 .infuseNav .infuseTextLogo {
   font-size: 60px;
@@ -8645,7 +8653,7 @@ input.infuseLoginSubmit {
   z-index: 100;
 }
 .manyToManyAssociations .checkbox {
-  white-space: nowrap;
+  /*white-space: nowrap;*/
   text-align: left;
   vertical-align: middle;
 }
@@ -8734,6 +8742,19 @@ input.infuseLoginSubmit {
 .importModal .searchBox form {
   margin: 0px;
 }
+.uploadAreaPreviewImage {
+  overflow: auto;
+  max-height: 400px;
+}
+.previewModal .modal-body {
+  text-align: center;
+}
+.originalBtnGroup {
+  margin-bottom: 5px;
+}
+.callFunctionsGroup {
+  margin-left: 0px !important;
+}
 /* croppic */
 .imagePreviewCrop {
   display: none;
@@ -8756,3 +8777,35 @@ input.infuseLoginSubmit {
 font-family: 'Open Sans', sans-serif;
 
 	*/
+/* iPad 3 & 4 Media Queries */
+/* Retina iPad in portrait & landscape */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
+  .infuseInner {
+    width: 95%;
+    padding: 0px 2.5%;
+  }
+  .infuseWrapper .container {
+    width: 95%;
+    padding: 0px 2.5%;
+  }
+}
+/* Retina iPad in landscape */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 2) {
+  body,
+  html {
+    min-width: 1024px;
+  }
+}
+/* Retina iPad in portrait */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 2) {
+  body,
+  html {
+    min-width: 100%;
+  }
+  .infuseNav .innerNav {
+    width: 100%;
+  }
+}
+html {
+  -webkit-text-size-adjust: 100% !important;
+}

@@ -19,6 +19,12 @@ class Util {
 		$this->request = $request;
 	}
 
+	public static function requestPath()
+	{
+		$request = $this->request;
+		return $request::path();
+	}
+
 	public static function get($name)
 	{
 		return (isset($_POST["{$name}"]))? $_POST["{$name}"] : 
@@ -47,12 +53,12 @@ class Util {
 
 	public static function getForeignKeyString($class) 
 	{
-		return strtolower(get_class($class))."_id";
+		return strtolower(self::camel2under(get_class($class)))."_id";
 	}
 
 	public static function foreignKeyString($modelString) 
 	{
-		return strtolower($modelString)."_id";
+		return strtolower(self::camel2under($modelString))."_id";
 	}
 
 	public static function foreignKeyStringToCleanName($modelString) 
@@ -62,7 +68,7 @@ class Util {
 
 	public static function createForeignKeyString($modelString) 
 	{
-		return self::camel2under(strtolower($modelString))."_id";
+		return strtolower(self::camel2under($modelString))."_id";
 	}
 
 	public static function isForeignKey($columnString)
@@ -231,7 +237,7 @@ class Util {
 		 
 	}
 	
-	public static function childBackLink()
+	public static function childBackLink($action = "e", $overrideId = null)
 	{
 		if (self::stackSize() == 2) { 
 			$parent = self::stackParent();
@@ -295,9 +301,24 @@ class Util {
 		return new $class;
 	}
 
-	public static function redirectUrl()
+	public static function redirectUrl($action = "l", $overrideId = null)
 	{
-		return str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
+		switch ($action) {
+			case 'l':
+				$return = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
+				break;
+			case 'c':
+				$return = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'])."?action=c";
+				break;
+			case 'e':
+					$return = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'])."?action=e&id={$overrideId}";
+					break;
+			
+			default:
+				$return = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
+				break;
+		}
+		return $return;
 	}
 
 	public static function redirectUrlSaveFailed($id)
@@ -332,6 +353,16 @@ class Util {
 		}
 	}
 
+	public static function splitReturnSecond($string, $delimiter)
+	{
+		if (strpos($string, "@") !== FALSE) {
+			$string = explode($delimiter, $string);
+			return $string[1];
+		} else {
+			return false;
+		}
+	}
+
 
 	public static function camel2under($str) 
   { 
@@ -358,7 +389,7 @@ class Util {
        return preg_replace($regexp, "strtoupper('\\1')", $str); 
     */
     $regexp = '#_(.)#';
-    return preg_replace_callback($regexp, function($matches){ return '_'.strtolower($matches[1]); }, $str);
+    return ucfirst(preg_replace_callback($regexp, function($matches){ return strtoupper($matches[1]); }, $str));
   } 
 
 
@@ -508,6 +539,12 @@ class Util {
   {
   	return (isset($column['readOnly']))? 'readonly="readonly"' : "";
   }
+
+  public static function readOnlyWithDisabled($column)
+  {
+  	return (isset($column['readOnly']))? 'disabled="disabled"' : "";
+  }
+  
 
 
   public static function checkInfuseLoginFields($infuseLogin, $column) 

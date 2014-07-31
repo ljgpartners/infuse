@@ -18,7 +18,6 @@ use Bpez\Infuse\Exceptions\ScaffoldModelNotRecognizedException;
 use Bpez\Infuse\Exceptions\ScaffoldUnknownConfigurationIndexException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-
 /**
  * Scaffold class contains all the logic for configuring and generating a scaffold on a model.
  *
@@ -34,7 +33,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * @api
  * @todo Implement dependency on request instance
  */
-class Scaffold {
+class Scaffold
+{
 
 	/**
    * Toggles role/permission authentication.
@@ -261,7 +261,21 @@ class Scaffold {
    */
 	private $addOtherActions = array();
 
-	
+   /**
+   * Call function before edit page.
+   *
+   * @access private
+   * @var array
+   */
+   private $beforeEdit;
+
+	/**
+   * Attach elequent where method calls to the main filter
+   *
+   * @access private
+   * @var array
+   */
+	private $permanentFilters = array();
 
 	/**
    * Contains the model configuration to what models to import from. 
@@ -311,6 +325,15 @@ class Scaffold {
    * @var object
    */
 	protected $event;
+
+   /**
+   * Date format for laravel timestamps (updated_at, created_at) displayed infuse
+   *
+   * @access private
+   * @var string
+   */
+   private $formatLaravelTimestamp;
+   
 	
 
 	/**
@@ -329,8 +352,10 @@ class Scaffold {
 		$this->user = $user;
 		$this->request = $request;
 		$this->event = $event;
-		self::$db = $db;
+		self::$db = $db; 
 		$this->rolePermission = (\Config::get("infuse::role_permission"))? true : false;
+      $this->formatLaravelTimestamp = \Config::get("infuse::format_laravel_timestamp");
+      $this->beforeEdit = function() { return true; };
 	}
 
 	/**
@@ -578,7 +603,7 @@ class Scaffold {
 
 	public function addSelect($info) 
 	{	
-		$base = 'addSelect(array(array("column" => $columnName, "array" => array(), "insertBlank" => false, "topSelect" => false)));';
+		$base = 'addSelect(array(array("column" => $columnName, "array" => array(), "insertBlank" => false, "topSelect" => false, "nested" => array("Model1", "Model2"), "nestedLastArray" => array() )));';
 
 		if (!is_array($info) ) 
 			throw new ScaffoldConfigurationException($base.' Must be an array.');
@@ -592,6 +617,10 @@ class Scaffold {
 					$this->columns["{$info['column']}"]["select_blank"] = true;
 				if (isset($info['topSelect']) && $info['topSelect'] == true)
 					$this->columns["{$info['column']}"]["top_select"] = true;
+				if (isset($info['nested']) && $info['nested'] == true)
+					$this->columns["{$info['column']}"]["nested"] = $info['nested'];
+				if (isset($info['nestedLastArray']) && $info['nestedLastArray'] == true)
+					$this->columns["{$info['column']}"]["nested_last_array"] = $info['nestedLastArray'];
 				
 			} else {
 				throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
@@ -610,6 +639,11 @@ class Scaffold {
 						$this->columns["{$i['column']}"]["select_blank"] = true;
 					if (isset($i['topSelect']) && $i['topSelect'] == true)
 						$this->columns["{$i['column']}"]["top_select"] = true;
+					if (isset($i['nested']) && $i['nested'] == true)
+						$this->columns["{$i['column']}"]["nested"] = $i['nested'];
+					if (isset($i['nestedLastArray']) && $i['nestedLastArray'] == true)
+						$this->columns["{$i['column']}"]["nested_last_array"] = $i['nestedLastArray'];
+					
 				} else {
 					throw new ScaffoldConfigurationException($base.' Column doesn\'t exist.');
 				}
@@ -812,7 +846,8 @@ class Scaffold {
 	{
 		if (!is_array($list)) 
 			throw new ScaffoldConfigurationException('list(array("name", "count", "active")); First argument should be an array of the names of the columns wanted listed on landing page.');
-		$this->list = $list;
+		array_push($list, "updated_at");
+      $this->list = $list;
 		return $this;
 	}
 
@@ -895,7 +930,7 @@ class Scaffold {
 	
 	public function callFunction($info) 
 	{	
-		$base = 'callFunction(array("function" => "duplicate", "display_name" => "Duplicate"));';
+		$base = 'callFunction(array("function" => "duplicate", "display_name" => "Duplicate")); Optional: target (anchor tag target), long_process (UI Block Screen and message shown).';
 		
 		if (!is_array($info) ) 
 			throw new ScaffoldConfigurationException($base.' Must be an array.');
@@ -941,7 +976,18 @@ class Scaffold {
 		return $this;
 	}
 
+   public function beforeEdit($info) 
+   {  
+      $base = 'beforeEdit(function(){});';
+      
+      if (!is_callable($info)) 
+         throw new ScaffoldConfigurationException($base.' Must be a function.');
 
+      $this->beforeEdit = $info;
+      
+      return $this;
+   }
+   
 
 	public function belongsToUserManyToMany($info)
 	{
@@ -957,6 +1003,31 @@ class Scaffold {
 		
 		return $this;
 	}
+
+	public function addPermanentFilters($info) 
+	{	
+		$base = 'addPermanentFilters(array("column" => "columnName", "operator" => "=", "value" => 34));';
+		
+		if (!is_array($info) ) 
+			throw new ScaffoldConfigurationException($base.' Must be an array.');
+
+		// If only one
+		if ( isset($info['column']) && isset($info['operator']) && isset($info['value'])) {
+
+			array_push($this->permanentFilters, $info);
+
+		// If more then one
+		} else {
+			foreach ($info as $i) {
+				if (is_array($i) && (!isset($i['column']) || !isset($i['operator']) || !isset($i['value']))) 
+					throw new ScaffoldConfigurationException($base.' First argument must an array. column and array must be set. ');
+				array_push($this->permanentFilters, $i);
+			}
+		}
+		
+		return $this;
+	}
+	
 	
 	
 	public function mapConfig($config)
@@ -1057,6 +1128,13 @@ class Scaffold {
 				case 'addOtherAction':
 					$this->addOtherAction($f);
 					break;
+				case 'addPermanentFilters':
+					$this->addPermanentFilters($f);
+					break;
+            case 'beforeEdit':
+               $this->beforeEdit($f);
+               break;
+            
 				
 				
 				case 'children':
@@ -1259,6 +1337,10 @@ class Scaffold {
 
 		}
 
+		foreach($this->permanentFilters as $where) {
+			$modelInstance = $modelInstance->where($where['column'], $where['operator'], $where['value']);
+		}
+
   	return $modelInstance;
   }
 
@@ -1361,14 +1443,15 @@ class Scaffold {
 			"active_page" => 1,
 			"count" => 0
 		);
+
 		
 		$prepareModel = $this->filterQueryForListings(false, $pagination);
 		
 		foreach ($columns as $column) {
 			if ($columns[0] == $column) 
-				$prepareModel->where($column, "LIKE", "%".$search."%");
+				$prepareModel =  $prepareModel->where($column, "LIKE", "%".$search."%");
 			else
-				$prepareModel->orWhere($column, "LIKE", "%".$search."%");
+				$prepareModel = $prepareModel->orWhere($column, "LIKE", "%".$search."%");
 		}
 
 
@@ -1382,9 +1465,9 @@ class Scaffold {
 
 		foreach ($columns as $column) {
 			if ($columns[0] == $column) 
-				$prepareModelForCount->where($column, "LIKE", "%".$search."%");
+				$prepareModelForCount = $prepareModelForCount->where($column, "LIKE", "%".$search."%");
 			else
-				$prepareModelForCount->orWhere($column, "LIKE", "%".$search."%");
+				$prepareModelForCount = $prepareModelForCount->orWhere($column, "LIKE", "%".$search."%");
 		}
 
 		$pagination['count'] = $prepareModelForCount->count();
@@ -1407,6 +1490,11 @@ class Scaffold {
 			"active_page" => 1,
 			"count" => 0
 		);
+
+		$page = Util::get("pg");
+		if ($page && $page != 1 && $page != 'a') {
+			$pagination['active_page'] = $page;
+		}
 		
 
 		$prepareModel = $this->filterQueryForListings(false, $pagination);
@@ -1414,9 +1502,9 @@ class Scaffold {
 		if (!empty($search)) {
 			foreach ($columns as $column) {
 				if ($columns[0] == $column) 
-					$prepareModel->where($column, "LIKE", "%".$search."%");
+					$prepareModel = $prepareModel->where($column, "LIKE", "%".$search."%");
 				else
-					$prepareModel->orWhere($column, "LIKE", "%".$search."%");
+					$prepareModel = $prepareModel->orWhere($column, "LIKE", "%".$search."%");
 			}
 		}
 		
@@ -1429,7 +1517,7 @@ class Scaffold {
 		*/
 
 		$db = self::$db;
-		$prepareModel
+		$prepareModel = $prepareModel
 			->select($db::raw("*, ( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) ) AS distance "))
 			->having('distance', '<', $distance);
 
@@ -1447,13 +1535,13 @@ class Scaffold {
 		if (!empty($search)) { 
 			foreach ($columns as $column) {
 				if ($columns[0] == $column) 
-					$prepareModelForCount->where($column, "LIKE", "%".$search."%");
+					$prepareModelForCount = $prepareModelForCount->where($column, "LIKE", "%".$search."%");
 				else
-					$prepareModelForCount->orWhere($column, "LIKE", "%".$search."%");
+					$prepareModelForCount = $prepareModelForCount->orWhere($column, "LIKE", "%".$search."%");
 			}
 		}
 
-		$prepareModelForCount
+		$prepareModelForCount = $prepareModelForCount
 			->select($db::raw("( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) ) AS distance "))
 			->having('distance', '<', $distance);
 
@@ -1573,6 +1661,7 @@ class Scaffold {
 				"columnNames" => $this->columnNames,
 				"importFromModel" => $this->importFromModel
 			);
+      $beforeEdit = $this->beforeEdit;
 
 		$post = Util::flashArray("post");
 		if (!$post) {
@@ -1605,9 +1694,12 @@ class Scaffold {
 				
 			} else if ($this->belongsToUserManyToMany) {
 				try {
-					$this->entries = $this->user
+					$this->user
 						->belongsToMany($this->belongsToUserManyToMany[0], $this->belongsToUserManyToMany[1], $this->belongsToUserManyToMany[2], $this->belongsToUserManyToMany[3])
 						->findOrFail(Util::get("id"));
+               // laravel many to many bug. Call by it self to get updated_at and created_at times stamps returned
+               $this->entries = $model::find(Util::get("id"));
+
 				} catch (ModelNotFoundException $e) {
 
 					if (Util::get("stack")) {
@@ -1639,6 +1731,27 @@ class Scaffold {
 					$this->entries->{$column['field']} = $post[$column['field']];
 			}
 		}
+
+      // Check if beforeEdit function returns false then exit and redirect
+      $exitCheck = $beforeEdit($this->entries);
+      if (!$exitCheck) {
+         if (Util::get("stack")) {
+            $redirect_path = Util::childBackLink();
+         } else {
+            $redirect_path = Util::redirectUrl();
+         }
+
+         Util::flash(array(
+            "message" => "Can not edit this entry.", 
+            "type" => "error"
+            )
+         );
+         
+         if (!$this->testing) {
+            header("Location: {$redirect_path}");
+            exit();
+         }
+      }
 		
 	}
 
@@ -1735,7 +1848,7 @@ class Scaffold {
 
 			if ($entry->delete()) {
 				foreach ($this->columns as $column) {
-					if (array_key_exists("upload", $column) && !empty($entryBackUp->{$column['field']})) {
+					if (array_key_exists("upload", $column) && !empty($entryBackUp->{$column['field']}) && file_exists($_SERVER['DOCUMENT_ROOT']."/".$entryBackUp->url($column['field']))) {
 						unlink($_SERVER['DOCUMENT_ROOT']."/".$entryBackUp->url($column['field']));
 						$entryBackUp->{$column['field']} = ""; // Set to blank so nested unlinks can work in model
 					}
@@ -1973,7 +2086,13 @@ class Scaffold {
 							$success = $transit->importFromLocal($overwrite, $delete);
 						} else if ($checkIfExternalFile) {
 							$overwrite = false;
-							$success = $transit->importFromRemote($overwrite);
+							$options = array(
+		            CURLOPT_RETURNTRANSFER => true,
+		            CURLOPT_FOLLOWLOCATION => false,
+		            CURLOPT_FAILONERROR => true,
+		            CURLOPT_SSL_VERIFYPEER => false
+			        );
+							$success = $transit->importFromRemote($overwrite, $options);
 						}
 						
 						if ($success) {
@@ -2011,8 +2130,7 @@ class Scaffold {
 					} 
 					
 					$entry->{$column['field']} = $inputsTemp;
-					if ($column['field'] == "image")
-						die("else");
+					
 				}
 			}
 		}
@@ -2077,15 +2195,15 @@ class Scaffold {
 						}
 
 						
-						//if ($this->infuseLogin && $entry->id == 1 && $this->user->is('Super Admin'))
-							//$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach(1);
+						if ($this->infuseLogin && $entry->id == 1)
+							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach(1);
 
 					} else {
-						//if ($this->infuseLogin && $entry->id == 1 && $this->user->is('Super Admin')) {
-						//} else {
+						if ($this->infuseLogin && $entry->id == 1 && $this->user->is('Super Admin')) {
+						} else {
 							$event::fire('infuse.detach.'.Util::camel2under($model).'.'.Util::camel2under($belongsToModel), array($entry, 0));
 							$entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach();
-						//}
+						}
 							
 					}
 				}
@@ -2108,10 +2226,41 @@ class Scaffold {
 				$entry->belongsTo(ucfirst(Util::get("oneToOne")))->get()->{Util::getForeignKeyString($entry)} = $entry->id;
 			}
 
+         $afterSavePage = Util::get("typeSubmit");
+         
+
 			if (Util::get("stack")) {
-				$redirect_path = Util::childBackLink();
+            switch (Util::get("typeSubmit")) {
+               case 'save':
+                  $redirect_path = Util::childBackLink();
+                  break;
+               case 'save_and_return':
+                  $redirect_path = Util::childActionLink(Util::get("stack"),"e", $entry->id);
+                  break;
+               case 'save_and_create_another':
+                  $redirect_path = Util::childActionLink(Util::get("stack"), "c");
+                  break;
+               
+               default:
+                  $redirect_path = Util::childBackLink();
+                  break;
+            }
 			} else {
-				$redirect_path = Util::redirectUrl();
+            switch (Util::get("typeSubmit")) {
+               case 'save':
+                  $redirect_path = Util::redirectUrl();
+                  break;
+               case 'save_and_return':
+                  $redirect_path = Util::redirectUrl("e", $entry->id);
+                  break;
+               case 'save_and_create_another':
+                  $redirect_path = Util::redirectUrl("c");
+                  break;
+               
+               default:
+                  $redirect_path = Util::redirectUrl();
+                  break;
+            }
 			}
 			
 		} else {
@@ -2170,7 +2319,13 @@ class Scaffold {
 
 		$success = $entry->{$callFunction}();
 
-		if ($success) {
+		if ($success && is_array($success) && isset($success['message']) && isset($success['type'])) {
+			Util::flash(array(
+				"message" => $success['message'], 
+				"type" => $success['type']
+				)
+			);
+		} else if ($success) {
 			Util::flash(array(
 				"message" => "Succesfully called {$callFunction} action.", 
 				"type" => "success"
@@ -2184,7 +2339,6 @@ class Scaffold {
 			);
 		}
 		 
-
 		if (Util::get("stack")) {
 			$redirect_path = Util::childBackLink();
 		} else {
@@ -2245,7 +2399,7 @@ class Scaffold {
 		$this->header['description'] = $this->description;
 		$this->header['deleteAction'] = $this->deleteAction;
 		$this->header['callFunctions'] = $this->callFunctions;
-
+      $this->header['formatLaravelTimestamp'] = $this->formatLaravelTimestamp;
 
 		$data = array(
 			"action" => $this->action,
@@ -2266,6 +2420,7 @@ class Scaffold {
 		$this->header['description'] = $this->description;
 		$this->header['deleteAction'] = $this->deleteAction;
 		$this->header['callFunctions'] = $this->callFunctions;
+      $this->header['formatLaravelTimestamp'] = $this->formatLaravelTimestamp;
 
 		$data = array(
 			"action" => $this->action,

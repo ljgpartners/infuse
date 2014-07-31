@@ -13,7 +13,7 @@ Steps for installing
 
 > Install through composer package
 >
-> require: "bpez/infuse": "dev-master"
+> $ composer require bpez/infuse:3.*
 >
 > Add the Infuse Service Provider to your config in app/config/app.php: 
 >
@@ -28,6 +28,12 @@ Steps for installing
 > In app/config/auth.php set:
 > 'auth.driver' => 'verify'
 > 'auth.model' => 'InfuseUser'
+>
+> php artisan debugbar:publish
+>
+> add the following to post-update-cmd in composer.json
+> "php artisan debugbar:publish",
+> "php artisan asset:publish bpez/infuse"
 
 ### When working in workbench
 
@@ -55,7 +61,7 @@ Steps for installing
 >
 
 
-### Future features 
+### Possible future features 
 
 > add Throttling
 >

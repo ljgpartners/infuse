@@ -13,13 +13,15 @@
 			<tr>
 
 				@if (array_key_exists("select", $column))
-						@foreach ($column['select'] as $value)
-								@if ($entries->{$column['field']} == $value["id"])
-									<?php $columnName = end($value); ?>
-									<th>{{Util::cleanName($column['field'])}}</th>
-									<td>{{$columnName}}</td>
-								@endif
-						@endforeach
+					<?php $selectArray = (array_key_exists("nested", $column) && isset($column['nested_last_array']))? $column['nested_last_array'] : $column['select'] ; ?>
+					@foreach ($selectArray as $value)
+							@if ($entries->{$column['field']} == $value["id"])
+								<?php $columnName = end($value); ?>
+								<th>{{Util::cleanName($column['field'])}}</th>
+								<td>{{$columnName}}</td>
+							@endif
+					@endforeach
+					
 				@elseif (array_key_exists("upload", $column))
 					<th>{{Util::cleanName($column['field'])}}</th>
 					<td>
