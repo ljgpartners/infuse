@@ -59,6 +59,11 @@ Steps for installing
 > 	'production' => array('dev.domain.com')
 >	));
 >
+> add the following .htaccess rule for adding validate http cache to static assets
+
+# Munee Validate Cache .htaccess Code Start #
+RewriteRule ^(.*\.(?:css|less|scss|js|coffee|jpg|png|gif|jpeg))$ packages/bpez/infuse/munee.php?files=/$1 [L,QSA,NC]
+# Munee Validate Cache .htaccess Code End #
 
 
 ### Possible future features 

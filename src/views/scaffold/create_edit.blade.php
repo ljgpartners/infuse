@@ -296,7 +296,7 @@
 
 					<?php switch ($column['type']):
 							case 'varchar': ?>
-								<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}}>
+								<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" value="{{htmlspecialchars($entries->{$column['field']}) }}" {{Util::readOnly($column)}}>
 					<?php 	break;
 							case 'text': ?>
 								<textarea name="{{$column['field']}}" class="importReplace{{$column['field']}}" {{Util::readOnly($column)}} >{{$entries->{$column['field']} }}</textarea>
@@ -331,7 +331,7 @@
 					<?php break;
 							default: ?>
 
-								<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />
+								<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" value="{{htmlspecialchars($entries->{$column['field']}) }}" {{Util::readOnly($column)}} />
 					<?php		
 						endswitch;
 					?>
