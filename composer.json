@@ -2,7 +2,7 @@
     "name": "bpez/infuse",
     "type": "library",
     "description": "Infuse is a laravel admin package for generating administration style interfaces",
-    "version": "3.1.0",
+    "version": "3.1.1",
     "keywords": [
         "laravel 4", 
         "laravel", 
@@ -26,7 +26,7 @@
         "nesbot/Carbon": "1.8.*",
         "barryvdh/laravel-debugbar": "1.*",
         "way/generators": "2.*",
-        "meenie/Munee": "1.5.*"
+        "bpez/munee": "1.5.*"
     },
     "autoload": {
         "classmap": [
