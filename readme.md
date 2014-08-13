@@ -61,10 +61,22 @@ Steps for installing
 >
 > add the following .htaccess rule for adding validate http cache to static assets
 
-# Munee Validate Cache .htaccess Code Start #
+### Munee Validate Cache .htaccess Code Start #
 RewriteRule ^(.*\.(?:css|less|scss|js|coffee|jpg|png|gif|jpeg))$ packages/bpez/infuse/munee.php?files=/$1 [L,QSA,NC]
-# Munee Validate Cache .htaccess Code End #
 
+
+#### Munee Validate Cache .htaccess Code Start ####
+RewriteCond %{REQUEST_URI} !^/packages/bpez/infuse/ckeditor/(.*)
+RewriteCond %{REQUEST_URI} !^/packages/maximebf/(.*)
+RewriteCond %{REQUEST_URI} !^/packages/barryvdh/(.*)
+# RewriteRule ^(.*.(?:css|less|scss|js|coffee))$ packages/bpez/infuse/munee.php?files=/$1 [L,QSA,NC]
+RewriteRule ^(.*.(?:css|less|scss|js|coffee|jpg|png|gif|jpeg))$ packages/bpez/infuse/munee.php?files=/$1 [L,QSA,NC]
+### Munee Validate Cache .htaccess Code End #
+
+####  Serve Retina Images .htaccess Code Start ####
+RewriteCond %{HTTP:Cookie} devicePixelRatio [NC]
+RewriteRule \.(?:jpe?g|gif|png|bmp)$ /packages/bpez/infuse/retinaimages.php [NC,L]
+### Serve Retina Images .htaccess Code End #
 
 ### Possible future features 
 

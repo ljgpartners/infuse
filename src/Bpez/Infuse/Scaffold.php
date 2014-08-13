@@ -12,6 +12,8 @@ namespace Bpez\Infuse;
 use Exception;
 use Transit\Transit;
 use Transit\Validator\ImageValidator;
+use Transit\Transformer\Image\ResizeTransformer;
+use Transit\File;
 use Illuminate\Support\Facades\Log;
 use Bpez\Infuse\Exceptions\ScaffoldConfigurationException;
 use Bpez\Infuse\Exceptions\ScaffoldModelNotRecognizedException;
@@ -1849,7 +1851,14 @@ class Scaffold
 			if ($entry->delete()) {
 				foreach ($this->columns as $column) {
 					if (array_key_exists("upload", $column) && !empty($entryBackUp->{$column['field']}) && file_exists($_SERVER['DOCUMENT_ROOT']."/".$entryBackUp->url($column['field']))) {
-						unlink($_SERVER['DOCUMENT_ROOT']."/".$entryBackUp->url($column['field']));
+            $currentFile = $_SERVER['DOCUMENT_ROOT']."/".$entryBackUp->url($column['field']);
+            unlink($currentFile);
+            $name = pathinfo($currentFile, PATHINFO_FILENAME);
+            $ext  = pathinfo($currentFile, PATHINFO_EXTENSION);
+            $retinaImage = $entryBackUp->uploadPath($column['field']).$name."@2x.".$ext;
+            if (file_exists($retinaImage)) {
+              unlink($retinaImage);
+            }
 						$entryBackUp->{$column['field']} = ""; // Set to blank so nested unlinks can work in model
 					}
 				}
@@ -2097,10 +2106,40 @@ class Scaffold
 						
 						if ($success) {
 							$fileName = explode(DIRECTORY_SEPARATOR, $transit->getOriginalFile());
+              $fileName = end($fileName);
 							
-							if (!empty($entry->{$column['field']}))
-								unlink($_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']));
-							$entry->{$column['field']} = end($fileName);
+							if (!empty($entry->{$column['field']}) && file_exists($_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']))) {
+                $currentFile = $_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']);
+                unlink($currentFile);
+                $name = pathinfo($currentFile, PATHINFO_FILENAME);
+                $ext  = pathinfo($currentFile, PATHINFO_EXTENSION);
+                $retinaImage = $entry->uploadPath($column['field']).$name."@2x.".$ext;
+                if (file_exists($retinaImage)) {
+                  unlink($retinaImage);
+                }
+              }
+								
+							
+              if(strpos($fileName, "@2x.") !== FALSE) {
+                $uploadPath = $model->uploadPath($column['field']);
+                $halfRetinaSize = floor($transit->getOriginalFile()->width()/2);
+                $retinaFileName = $fileName;
+
+                $fileName = explode("@2x.", $fileName);
+                $fileName = $fileName[0].".".$fileName[1];
+                if (copy($uploadPath.$retinaFileName, $uploadPath.$fileName)) {
+
+                  $transitRetina = new ResizeTransformer(array('width' => $halfRetinaSize));
+
+                  if (!$transitRetina->transform(new File($uploadPath.$fileName), true)) {
+                    throw new Exception("Failed to resize retina for non retina version.");
+                  }
+                } else {
+                  throw new Exception("Failed to copy retina image for processing.");
+                }
+              }
+
+              $entry->{$column['field']} = $fileName;
 
 						} 
 					} catch (Exception $e) {
@@ -2109,7 +2148,17 @@ class Scaffold
 				}
 				
 				if (Util::get($column['field']."_delete")) {
-					unlink($_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']));
+          $currentFile = $_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']);
+          if (file_exists($currentFile)) {
+            unlink($currentFile);
+          }
+          $name = pathinfo($currentFile, PATHINFO_FILENAME);
+          $ext  = pathinfo($currentFile, PATHINFO_EXTENSION);
+          $retinaImage = $entry->uploadPath($column['field']).$name."@2x.".$ext;
+          if (file_exists($retinaImage)) {
+            unlink($retinaImage);
+          }
+
 					$entry->{$column['field']} = "";
 				}
 					

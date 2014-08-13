@@ -51,19 +51,21 @@ trait InfuseEloquentLibrary {
 
   public function url($column)
   { 
+    $processedColumn = $this->{$column};
+
     if (filter_var($this->{$column}, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
-      return $this->{$column};
+      return $processedColumn;
     } else { 
       $baseUrlUploadedAssetsLocal = \Config::get("infuse::base_url_uploaded_assets_local");
 
       if (\App::environment() != "production") { 
         return $baseUrlUploadedAssetsLocal.strtolower($this->uploadFolder.DIRECTORY_SEPARATOR
                   .get_class($this).DIRECTORY_SEPARATOR
-                  .$column.DIRECTORY_SEPARATOR).$this->{$column};
+                  .$column.DIRECTORY_SEPARATOR).$processedColumn;
       } else {
         return strtolower($this->uploadFolder.DIRECTORY_SEPARATOR
                   .get_class($this).DIRECTORY_SEPARATOR
-                  .$column.DIRECTORY_SEPARATOR).$this->{$column};
+                  .$column.DIRECTORY_SEPARATOR).$processedColumn;
       }
     }
   }
