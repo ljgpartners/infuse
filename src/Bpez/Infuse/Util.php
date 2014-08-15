@@ -569,6 +569,16 @@ class Util {
 	}
 
 
+	public static function infuse()
+	{
+		$return = <<<STRING
+		<script>(function(w){var dpr=((w.devicePixelRatio===undefined)?1:w.devicePixelRatio);if(!!w.navigator.standalone){var r=new XMLHttpRequest();r.open('GET','/packages/bpez/infuse/retinaimages.php?devicePixelRatio='+dpr,false);r.send()}else{document.cookie='devicePixelRatio='+dpr+'; path=/'}})(window)</script>
+		<noscript><style id="devicePixelRatio" media="only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2)">html{background-image:url("/packages/bpez/infuse/retinaimages.php?devicePixelRatio=2")}</style></noscript>
+STRING;
+		return $return;
+	}
+
+
 }
 
 ?>

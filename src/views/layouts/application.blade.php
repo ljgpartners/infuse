@@ -16,7 +16,7 @@
 	<script src="/packages/bpez/infuse/js/jquery-ui.min.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/ckeditor/ckeditor.js" type="text/javascript"></script>
-	<script src="/packages/bpez/infuse/ckeditor/adapters/jquery.js"></script>
+	<script src="/packages/bpez/infuse/ckeditor/adapters/jquery.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/magicsuggest-1.3.1.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/jquery.chained.min.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/jquery.blockui.js" type="text/javascript"></script>
@@ -54,6 +54,8 @@
 
 	.fixTextEditorHighlightingClass{}
 	</style>
+
+	{{Util::infuse()}}
 	
 
 	<!--<script data-main="/packages/bpez/infuse/js/main.js" src="/packages/bpez/infuse/js/require.js"></script>--> 
