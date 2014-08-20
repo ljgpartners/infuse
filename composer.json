@@ -27,7 +27,7 @@
         "barryvdh/laravel-debugbar": "1.*",
         "way/generators": "2.*",
         "bpez/munee": "1.5.*",
-        "olamedia/nokogiri": "dev-master"
+        "paquettg/php-html-parser": "1.6.3"
     },
     "autoload": {
         "classmap": [
