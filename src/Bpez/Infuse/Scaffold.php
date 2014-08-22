@@ -817,15 +817,27 @@ class Scaffold
 		if (!is_array($describes))
 			throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here"))); Must pass array in. ');
 
-		foreach ($describes as $d) {
-			if (!isset($d['column']) || !isset($d['desc'])) 
-				throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here"))); Both argument are required');
-			if (array_key_exists($d['column'], $this->columns)) { 
-				$this->columns["{$d['column']}"]["description"] = (is_string($d['desc']))? $d['desc'] : ""; 	
-			} else {
-				throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here")));  Column doesn\'t exist.');
-			}
-		}
+      // If only one
+      if ( is_array($describes) && isset($describes['column']) && isset($describes['desc'])) {
+         if (array_key_exists($describes['column'], $this->columns)) { 
+            $this->columns["{$describes['column']}"]["description"] = (is_string($describes['desc']))? $describes['desc'] : "";  
+         } else {
+            throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here")));  Column doesn\'t exist.');
+         }
+
+      // If more then one
+      } else {
+
+   		foreach ($describes as $d) {
+   			if (!isset($d['column']) || !isset($d['desc'])) 
+   				throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here"))); Both argument are required');
+   			if (array_key_exists($d['column'], $this->columns)) { 
+   				$this->columns["{$d['column']}"]["description"] = (is_string($d['desc']))? $d['desc'] : ""; 	
+   			} else {
+   				throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here")));  Column doesn\'t exist.');
+   			}
+   		}
+      }
 		
 		return $this;
 	}

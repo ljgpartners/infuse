@@ -339,12 +339,12 @@ $(document).ready(function() {
 		if(value.indexOf(",") !== -1) {
 			var tempArray = new Array();
 			$.each(value.split(","), function(index, value) {
-				tempArray.push(value);
+				tempArray.push(parseInt(value));
 			});
 			value = tempArray;
 		} else {
 			var tempArray = new Array();
-			tempArray[0] = value;
+			tempArray[0] = parseInt(value);
 			value = tempArray;
 		}
 				

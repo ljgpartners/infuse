@@ -1,5 +1,7 @@
 <?php
 
+use Bpez\Infuse\Util;
+
 /*
 |--------------------------------------------------------------------------
 | InfuseController 
@@ -130,5 +132,42 @@ class InfuseController extends BaseController {
 			
 		$this->layout->content = $scaffold->process(); 
 	}
+
+	public function call_function()
+	{	
+		set_time_limit(1800);
+		$callFunction = Util::get("cf");
+    $callClass = Util::get("cc");
+
+    try {
+    	$success = $callClass::$callFunction();
+    } catch (Exception $e) {
+    	Util::flash(array(
+				"message" => "Failed to call {$callFunction} action. {$e->getMessage()}", 
+				"type" => "error"
+				)
+			);
+			return Redirect::route('dashboard');
+    }
+		
+
+		if ($success) {
+			Util::flash(array(
+				"message" => "Succesfully called {$callFunction} action.", 
+				"type" => "success"
+				)
+			);
+		} else {
+			Util::flash(array(
+				"message" => "Failed to call {$callFunction} action.", 
+				"type" => "error"
+				)
+			);
+		}
+			
+			
+		return Redirect::route('dashboard');
+	}
+
 
 }

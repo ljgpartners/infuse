@@ -217,7 +217,7 @@
 					?>
 					
 					<div class="multiSelect"  data-name="{{$column['field']}}" data-data='{{json_encode($dataMultiSelect)}}' data-value="{{$entries->{$column['field']} }}"></div>
-					<input class="multiSelect{{$column['field']}}" name="{{$column['field']}}" type="hidden" value='{{$entries->{$column['field']} }}'>
+					<input class="multiSelect{{$column['field']}}" name="{{$column['field']}}" type="hidden" value="{{$entries->{$column['field']} }}">
 
 				{{-- upload  --}}
 				@elseif (array_key_exists("upload", $column))
