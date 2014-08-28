@@ -145,7 +145,8 @@ $(document).ready(function() {
 		    		{ id: 'equals', value: 'equals' }, 
 		    		{ id: 'less than', value: 'less than'}, 
 		    		{ id: 'greater than', value: 'greater than'}, 
-		    		{ id: 'not equal to', value: 'not equal to'}
+		    		{ id: 'not equal to', value: 'not equal to'},
+		    		{ id: 'contains', value: 'contains' }
 		      ]
 			});
 
@@ -180,6 +181,7 @@ $(document).ready(function() {
 		    		{ id: 'less than', value: 'less than'}, 
 		    		{ id: 'greater than', value: 'greater than'}, 
 		    		{ id: 'not equal to', value: 'not equal to'},
+		    		{ id: 'contains', value: 'contains' }, 
 		    		{ id: third, value: third }
 		      ]
 			});

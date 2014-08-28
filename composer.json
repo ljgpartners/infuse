@@ -2,7 +2,7 @@
     "name": "bpez/infuse",
     "type": "library",
     "description": "Infuse is a laravel admin package for generating administration style interfaces",
-    "version": "3.3.0",
+    "version": "3.3.1",
     "keywords": [
         "laravel 4", 
         "laravel", 

@@ -1416,10 +1416,14 @@ class Scaffold
 		$prepareModel = $this->filterQueryForListings(false, $pagination);
 
 		$columnNames = array_keys($this->columns);
-		$comparisons = array("equals" => "=", "less than" => "<", "greater than" => ">", "not equal to" => "!=");
+		$comparisons = array("equals" => "=", "less than" => "<", "greater than" => ">", "not equal to" => "!=", "contains" => "like");
 
 		foreach($filters as $filter) {
-				$prepareModel = $prepareModel->where($filter[0], $comparisons[$filter[1]], $filter[2]);
+         if (isset($comparisons[$filter[1]]) && $comparisons[$filter[1]] == "like" && in_array($filter[0], $columnNames)) {
+            $prepareModel = $prepareModel->whereRaw("{$filter[0]} LIKE ?", array("%".$filter[2]."%"));
+         } else if (isset($comparisons[$filter[1]])) {
+            $prepareModel = $prepareModel->where($filter[0], $comparisons[$filter[1]], $filter[2]);
+         }
 		}
 
 
@@ -1432,7 +1436,11 @@ class Scaffold
 		$prepareModelForCount = $this->filterQueryForListings(true, $pagination);
 
 		foreach($filters as $filter) {
-			$prepareModelForCount = $prepareModelForCount->where($filter[0], $comparisons[$filter[1]], $filter[2]);
+         if (isset($comparisons[$filter[1]]) && $comparisons[$filter[1]] == "like" && in_array($filter[0], $columnNames)) {
+            $prepareModelForCount = $prepareModelForCount->whereRaw("{$filter[0]} LIKE ?", array("%".$filter[2]."%"));
+         } else if (isset($comparisons[$filter[1]])) {
+            $prepareModelForCount = $prepareModelForCount->where($filter[0], $comparisons[$filter[1]], $filter[2]);
+         }
 		}
 
 		$pagination['count'] = $prepareModelForCount->count();
