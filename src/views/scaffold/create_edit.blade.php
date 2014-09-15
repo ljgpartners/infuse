@@ -219,6 +219,11 @@
 					<div class="multiSelect"  data-name="{{$column['field']}}" data-data='{{json_encode($dataMultiSelect)}}' data-value="{{$entries->{$column['field']} }}"></div>
 					<input class="multiSelect{{$column['field']}}" name="{{$column['field']}}" type="hidden" value="{{$entries->{$column['field']} }}">
 
+				{{-- display order  --}}
+				@elseif (array_key_exists("display_order", $column))
+
+					<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" pattern="\d+" value="{{$entries->{$column['field']} }}" readonly="readonly" />
+
 				{{-- upload  --}}
 				@elseif (array_key_exists("upload", $column))
 

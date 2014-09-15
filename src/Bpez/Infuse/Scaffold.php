@@ -842,18 +842,22 @@ class Scaffold
 		return $this;
 	}
 
-	public function displayOrder($column)
+	public function displayOrder($columns)
 	{
-		if (!is_string($column)) 
-			throw new ScaffoldConfigurationException('displayOrder("name"); First argument should name of column. ');
-		if (array_key_exists($column, $this->columns)) { 
-			if ($this->columns["{$column}"]["type"] != "int") 
-				throw new ScaffoldConfigurationException('displayOrder("name"); Column type should be an integer. ');
-			$this->columns["{$column}"]["display_order"] = true;
-			return $this;
-		} else {
-			throw new ScaffoldConfigurationException('displayOrder("name");  Column doesn\'t exist.');
-		}
+      $base = 'displayOrder(array("column"));';
+
+      if (!is_array($columns)) 
+         throw new ScaffoldConfigurationException($base.' First argument must an array. column index must be set. ');
+      
+      foreach ($columns as $column) {
+         if (array_key_exists($column, $this->columns)) { 
+            $this->columns["{$column}"]["display_order"] = true;
+         } else {
+            throw new ScaffoldConfigurationException($base.'  Column doesn\'t exist.');
+         }
+      }
+      
+      return $this;
 	}
 
 	public function listColumns($list)
@@ -875,18 +879,6 @@ class Scaffold
 	{	
 		$this->deleteAction = $bool;
 		return $this;
-	}
-
-	public function displayOrderColumn($column)
-	{
-		if (!is_string($column)) 
-			throw new ScaffoldConfigurationException('displayOrderColumn("name");  First argument should name of column.');
-		if (array_key_exists($column, $this->columns)) {
-			$this->columns["{$column}"]["displayOrder"] = true;
-			return $this;
-		} else {
-			throw new ScaffoldConfigurationException('displayOrderColumn("name");  Column doesn\'t exist.');
-		}
 	}
 
 	public function belongsToUser()
@@ -2192,12 +2184,18 @@ class Scaffold
 						$inputsTemp = $this->user->id;
 
 
-					if (isset($column['displayOrder']) && Util::get("stack") && $inputsTemp == "") {
-						$count = $model::where(Util::foreignKeyString(Util::stackParent()), "=", Util::stackParentId())->count();
+               /*   
+					if (isset($column['display_order']) && Util::get("stack") && empty($inputsTemp)) {
+                  $parent = Util::stackParentName();
+                  $parent = Util::foreignKeyString($parent);
+                  $parentId = Util::stackParentId();
+
+						$count = $model::where($parent, "=", $parentId)->count();
 						$count = 1+(int)$count;
 						$inputsTemp = $count;
-					} 
-					
+					} else 
+               */
+
 					$entry->{$column['field']} = $inputsTemp;
 					
 				}
@@ -2211,7 +2209,7 @@ class Scaffold
 		$data = array_filter($data);
 		
 		if ($entry->validate($data) && count($fileErrors) == 0) {
-			
+
 			
 			// Check if brand new user
 			if ($this->infuseLogin && !Util::get("id")) { 
@@ -2282,6 +2280,11 @@ class Scaffold
 			
 			$entry->save();
 			Util::flash($message);
+
+         if (isset($column['display_order']) && empty($entry->{$column['field']})) {
+           $entry->{$column['field']} =  $entry->id;
+           $entry->save();
+         } 
 
 			if (!Util::get("id") && $this->belongsToUserManyToMany) {
 				$this->user

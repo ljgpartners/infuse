@@ -113,9 +113,6 @@ $modelInstanceForPermissionCheck = $entries->first();
 							<img src="{{$entry->url($column['field'])}}" alt=""> 
 						</div>
 
-					@elseif (array_key_exists("display_order", $column))
-						<span>{{$entry->{$column['field']} }}</span> <span class="icon-arrow-up"></span> <span class="icon-arrow-down"></span>
-
 					@else 
 						@if ($column['field'] == "updated_at")
 							{{$entry->{$column['field']}->format($header['formatLaravelTimestamp'])}} 
