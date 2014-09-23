@@ -2281,10 +2281,12 @@ class Scaffold
 			$entry->save();
 			Util::flash($message);
 
-         if (isset($column['display_order']) && empty($entry->{$column['field']})) {
-           $entry->{$column['field']} =  $entry->id;
-           $entry->save();
-         } 
+         foreach ($this->columns as $column) {
+            if (isset($column['display_order']) && empty($entry->{$column['field']})) {
+              $entry->{$column['field']} =  $entry->id;
+              $entry->save();
+            } 
+         }
 
 			if (!Util::get("id") && $this->belongsToUserManyToMany) {
 				$this->user
