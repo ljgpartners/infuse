@@ -4,6 +4,8 @@
 	
 	<div class="page-header">
 	  <h1>{{$header['name']}} <small> {{$header['description']}}</small></h1>
+
+	  @include('infuse::scaffold._breadcrumbs')
 	</div>
 	
 	<?php $errors = Util::flashArray("errors"); ?>
@@ -312,7 +314,7 @@
 									@if (Util::get("action") == 'c')
 										<input type="text" name="{{$column['field']}}" value="" disabled="disabled" />
 									@else
-										<input type="text" name="{{$column['field']}}" value="{{$entries->{$column['field']}->format($header['formatLaravelTimestamp'])}}" disabled="disabled" />
+										<input type="text" name="{{$column['field']}}" value="{{$entries->{$column['field']}->tz(\Config::get('app.timezone'))->format($header['formatLaravelTimestamp'])}}" disabled="disabled" />
 									@endif
 								@else
 									<input type="text" class="selectedDateTime" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}" {{Util::readOnly($column)}} />

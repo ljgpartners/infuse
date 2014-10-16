@@ -4,6 +4,8 @@
 
 	<div class="page-header">
 	  <h1>{{$header['name']}} <small> {{$header['description']}}</small></h1>
+
+	  @include('infuse::scaffold._breadcrumbs')
 	</div>
 
 	{{Util::fuseAlerts(Util::flash())}}
@@ -36,10 +38,28 @@
 
 				@if (array_key_exists($column['field'], $header['columnNames']))
 					<th>{{$header['columnNames']["{$column['field']}"]}}</th>
+				@elseif ($column['field'] == "infuse_user_id") 
+					<th>User</th>
 				@else
 					<th>{{Util::cleanName($column['field'])}}</th>
 				@endif
-				<td>{{$entries->{$column['field']} }}</td>
+
+				@if ($column['field'] == "created_at" || $column['field'] == "updated_at")
+					<td>{{$entries->{$column['field']}->tz(\Config::get('app.timezone'))->format($header['formatLaravelTimestamp']) }}</td>
+				@elseif ($column['field'] == "infuse_user_id")
+					<?php 
+						try {
+							$name = InfuseUser::findOrFail($entries->{$column['field']})->full_name;
+						} catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+							$name = "User not found";
+						}
+					?>
+					<td>{{$name}}</td>
+				@else
+					<td>{{$entries->{$column['field']} }}</td>
+				@endif
+
+				
 
 				@endif
 			</tr>

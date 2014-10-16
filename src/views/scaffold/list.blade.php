@@ -17,6 +17,8 @@ $modelInstanceForPermissionCheck = $entries->first();
 
 	<div class="page-header">
 	  <h1>{{$header['name']}} <small> {{$header['description']}}</small></h1>
+
+	  @include('infuse::scaffold._breadcrumbs')
 	</div>
 
 	{{Util::fuseAlerts(Util::flash())}}
@@ -115,7 +117,7 @@ $modelInstanceForPermissionCheck = $entries->first();
 
 					@else 
 						@if ($column['field'] == "updated_at")
-							{{$entry->{$column['field']}->format($header['formatLaravelTimestamp'])}} 
+							{{$entry->{$column['field']}->tz(\Config::get('app.timezone'))->format($header['formatLaravelTimestamp'])}} 
 						@else
 							{{(($column['type'] == "text"))? Util::truncateText($entry->{$column['field']}, "25") : $entry->{$column['field']} }}
 						@endif

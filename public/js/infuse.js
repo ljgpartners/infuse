@@ -139,14 +139,14 @@ $(document).ready(function() {
 				maxSelectioninteger: 3,
 				emptyText: "Type here",
 				displayField: 'value',
-		    value: [self.data("filter-column"), 'equals'],
+		    value: [self.data("filter-column"), 'contains'],
 		    data: [
 		    		{ id: self.data("filter-column"), value: self.text()}, 
+		    		{ id: 'contains', value: 'contains' },
 		    		{ id: 'equals', value: 'equals' }, 
 		    		{ id: 'less than', value: 'less than'}, 
 		    		{ id: 'greater than', value: 'greater than'}, 
-		    		{ id: 'not equal to', value: 'not equal to'},
-		    		{ id: 'contains', value: 'contains' }
+		    		{ id: 'not equal to', value: 'not equal to'}
 		      ]
 			});
 
@@ -177,11 +177,11 @@ $(document).ready(function() {
 		    value: [first, second, third],
 		    data: [
 		    		{ id: first, value: display}, 
+		    		{ id: 'contains', value: 'contains' }, 
 		    		{ id: 'equals', value: 'equals' }, 
 		    		{ id: 'less than', value: 'less than'}, 
 		    		{ id: 'greater than', value: 'greater than'}, 
 		    		{ id: 'not equal to', value: 'not equal to'},
-		    		{ id: 'contains', value: 'contains' }, 
 		    		{ id: third, value: third }
 		      ]
 			});
