@@ -2,8 +2,6 @@
 
 use Illuminate\Support\ServiceProvider;
 
-
-
 class InfuseServiceProvider extends ServiceProvider {
 
 	/**
@@ -20,6 +18,8 @@ class InfuseServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
+		$this->package('bpez/infuse');
+
 		$this->package('bpez/infuse');
 
 		// Register namespace for config resources
@@ -106,8 +106,6 @@ class InfuseServiceProvider extends ServiceProvider {
         $loader->alias('InfuseEloquentLibrary', 'Bpez\Infuse\InfuseEloquentLibrary');
         $loader->alias('InfuseUserLibrary', 'Bpez\Infuse\InfuseUserLibrary');
     });
-
-   
 	}
 
 	/**
@@ -117,7 +115,7 @@ class InfuseServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('scaffold', 'util', 'web.service', 'infuse.eloquent', 'infuse.eloquent.library', 'infuse.user.library');// 
+		return array('scaffold', 'util', 'web.service', 'infuse.eloquent', 'infuse.eloquent.library', 'infuse.user.library');
 	}
 
 }
