@@ -43,9 +43,10 @@ class InfuseController extends BaseController {
 		Util::stackPush($resource, Input::get('id', null), $uri);
 		
 		$config = Config::get("infuse::{$resource}");
-
-		$scaffold = Scaffold::model($config['model'])
+		
+			$scaffold = Scaffold::model($config['model'])
 									->mapConfig($config);
+
 
 		$redirect = $scaffold->checkPermissions($uri);
 		if ($redirect)

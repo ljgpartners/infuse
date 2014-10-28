@@ -11,24 +11,32 @@
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,300,700,800' rel='stylesheet' type='text/css'>
 	<link href='/packages/bpez/infuse/css/infuse.css' rel='stylesheet' type='text/css'>
 	
+	<script src="/packages/bpez/infuse/js/dependencies.min.js" type="text/javascript"></script>
+	@if (Config::get('infuse::add_javascript') != "")
+		<script src="{{Config::get('infuse::add_javascript')}}" type="text/javascript"></script>
+	@endif
+	<script src="/packages/bpez/infuse/js/infuse.min.js" type="text/javascript"></script>
+
+
+	<!--
 	<script src="/packages/bpez/infuse/js/jquery-1.11.0.min.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/bootstrap.min.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/jquery-ui.min.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+
 	<script src="/packages/bpez/infuse/ckeditor/ckeditor.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/ckeditor/adapters/jquery.js" type="text/javascript"></script>
+
 	<script src="/packages/bpez/infuse/js/magicsuggest-1.3.1.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/jquery.chained.min.js" type="text/javascript"></script>
 	<script src="/packages/bpez/infuse/js/jquery.blockui.js" type="text/javascript"></script>
 
+	<script src="/packages/bpez/infuse/js/croppic.min.js" type="text/javascript"></script>
+	<script src="/packages/bpez/infuse/js/bpez.common.jquery.js" type="text/javascript"></script> -->
+
 	<!--
 	<script src="/packages/bpez/infuse/js/jquery.imgareaselect.pack.js" type="text/javascript"></script> -->
-	<script src="/packages/bpez/infuse/js/croppic.min.js" type="text/javascript"></script>
-	<script src="/packages/bpez/infuse/js/bpez.common.jquery.js" type="text/javascript"></script>
-	@if (Config::get('infuse::add_javascript') != "")
-		<script src="{{Config::get('infuse::add_javascript')}}" type="text/javascript"></script>
-	@endif
-	<script src="/packages/bpez/infuse/js/infuse.js" type="text/javascript"></script>
+	
 
 	<style type="text/css">
 	.infuseNav{ border-color: {{Config::get('infuse::colors.nav_border_color')}}; background-color: {{Config::get('infuse::colors.top_nav_background_color')}}; }

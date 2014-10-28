@@ -31,7 +31,7 @@ class CreateVerifyInit extends Migration {
         // Create the permissions table
         Schema::create($prefix.'permissions', function($table)
         {
-            $table->engine = 'InnoDB';
+            //$table->engine = 'InnoDB';
 
             $table->increments('id');
             $table->string('name', 100)->index();
@@ -42,7 +42,7 @@ class CreateVerifyInit extends Migration {
         // Create the roles table
         Schema::create($prefix.'roles', function($table)
         {
-            $table->engine = 'InnoDB';
+            //$table->engine = 'InnoDB';
 
             $table->increments('id');
             $table->string('name', 100)->index();
@@ -54,7 +54,7 @@ class CreateVerifyInit extends Migration {
         // Create the users table
         Schema::create($prefix.'users', function($table)
         {
-            $table->engine = 'InnoDB';
+            //$table->engine = 'InnoDB';
 
             $table->increments('id');
             $table->string('username', 30)->index();
@@ -71,11 +71,13 @@ class CreateVerifyInit extends Migration {
         // Create the role/user relationship table
         Schema::create($prefix.'role_user', function($table) use ($prefix)
         {
-            $table->engine = 'InnoDB';
+            //$table->engine = 'InnoDB';
 
             $table->integer('user_id')->unsigned()->index();
             $table->integer('role_id')->unsigned()->index();
-            $table->timestamps();
+            //$table->timestamps();
+            $table->date('created_at')->nullable();
+            $table->date('updated_at')->nullable();
 
             //$table->foreign('user_id')->references('id')->on($prefix.'users')->onDelete('cascade');
            // $table->foreign('role_id')->references('id')->on($prefix.'roles')->onDelete('cascade');
@@ -84,11 +86,13 @@ class CreateVerifyInit extends Migration {
         // Create the permission/role relationship table
         Schema::create($prefix.'permission_role', function($table) use ($prefix)
         {
-            $table->engine = 'InnoDB';
+           //$table->engine = 'InnoDB';
 
             $table->integer('permission_id')->unsigned()->index();
             $table->integer('role_id')->unsigned()->index();
-            $table->timestamps();
+            //$table->timestamps();
+            $table->date('created_at')->nullable();
+            $table->date('updated_at')->nullable();
 
             //$table->foreign('permission_id')->references('id')->on($prefix.'permissions')->onDelete('cascade');
             //$table->foreign('role_id')->references('id')->on($prefix.'roles')->onDelete('cascade');

@@ -20,13 +20,11 @@ class InfuseServiceProvider extends ServiceProvider {
 	{
 		$this->package('bpez/infuse');
 
-		$this->package('bpez/infuse');
-
 		// Register namespace for config resources
 		\Config::addNamespace('infuse', app_path().'/config/packages/bpez/infuse');
 		\Config::addNamespace('infuse_deploy', app_path().'/config/packages/bpez/infuse/deploy');
-
-		include __DIR__.'/../../routes.php';
+		
+		require __DIR__.'/../../routes.php';
 		require __DIR__.'/../../events.php';
 	}
 
