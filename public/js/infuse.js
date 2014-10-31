@@ -1,3 +1,5 @@
+// @codekit-prepend InfusePages.js
+
 $(document).ready(function() {
 
 	/*****************************
@@ -108,14 +110,16 @@ $(document).ready(function() {
 		event.preventDefault();
 		var self = $(this);
 		if (self.data("open") == true && !animating) {
+			self.removeClass("active");
 			animating = true;
-			$(".infuseSideMenu").animate({left:"-=360px"}, 500, function() {
+			$(".sideNavSlideOut").animate({left:"-=300px"}, 500, function() {
 				self.data("open", false)
 				animating = false;
 			});
 		} else if (self.data("open") == false && !animating) {
+			self.addClass("active");
 			animating = true;
-			$(".infuseSideMenu").animate({left:"+=360px"}, 500, function() {
+			$(".sideNavSlideOut").animate({left:"+=300px"}, 500, function() {
 				self.data("open", true);
 				animating = false;
 			})
@@ -351,7 +355,6 @@ $(document).ready(function() {
 		}
 				
 		multiSelects[name] = self.magicSuggest({
-				width: 495,
 				allowFreeEntries: false,
 				name: name+multiSelectCount,
 				emptyText: "Click arrow to add",
@@ -808,7 +811,46 @@ $(document).ready(function() {
 		}
 	});
 
-  
+  /*******************************************************
+   * Twitter bootstrap - upload button functionality
+   ********************************************************/
+	$(document).on('change', '.btn-file :file', function() {
+		var input = $(this),
+		numFiles = input.get(0).files ? input.get(0).files.length : 1,
+		label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+		input.trigger('fileselect', [numFiles, label]);
+	});
+
+	$('.btn-file :file').on('fileselect', function(event, numFiles, label)
+	{
+		var self = $(this)
+				textInput = self.parent().parent().siblings("input.form-control");
+		textInput.val(label);
+		//console.log(numFiles);
+		//console.log(label);
+	});
+
+	/*******************************************************
+   * Twitter bootstrap - Collapse always one item open
+   ********************************************************/
+  $('.sideNavSlideOut .panel-heading a').on('click', function(event)
+  { 
+    if($(this).parent().parent().find('.panel-collapse').hasClass('in'))	{
+    	event.stopPropagation();
+    	event.preventDefault();
+    }
+	});
+
+  /*******************************************************
+   * Twitter bootstrap - Let checkboxes in dropdowns work
+   ********************************************************/
+	$('.dropdown-menu-form .checkbox').on('click', function(event)
+	{
+    event.stopPropagation();
+	});
+
+
+	window.InfusePages.init();
 	
 });
 

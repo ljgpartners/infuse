@@ -336,6 +336,14 @@ class Scaffold
    */
    private $formatLaravelTimestamp;
    
+   /**
+   * Type of database (pgsql or mysql)
+   *
+   * @access private
+   * @var string
+   */
+   private $databaseConnection; 
+   
 	
 
 	/**
@@ -348,7 +356,7 @@ class Scaffold
 	 *
 	 * @api
 	 */
-	public function __construct(\Illuminate\View\Environment $view, \InfuseUser $user, \Illuminate\Support\Facades\DB $db, \Illuminate\Http\Request $request, \Event $event)
+	public function __construct(\Illuminate\View\Factory $view, \InfuseUser $user, \Illuminate\Support\Facades\DB $db, \Illuminate\Http\Request $request, \Event $event)
 	{	
 		$this->view = $view;
 		$this->user = $user;
@@ -358,6 +366,7 @@ class Scaffold
 		$this->rolePermission = (\Config::get("infuse::role_permission"))? true : false;
       $this->formatLaravelTimestamp = \Config::get("infuse::format_laravel_timestamp");
       $this->beforeEdit = function() { return true; };
+      $this->databaseConnection = \Config::get('database.default');
 	}
 
 	/**
@@ -403,28 +412,30 @@ class Scaffold
   	
   	$this->action = Util::get("action");
 		$db = self::$db;
-		$columns =  $db::select("SHOW COLUMNS FROM ".$this->model->getTable());
+      $columns =  $db::select("select column_name as field, data_type as type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name = '".$this->model->getTable()."'");
 
 		$this->order['column'] = $this->model->getKeyName();
 
 		$this->primaryKey = $this->model->getKeyName();
 		
 		foreach ($columns as $column) {
-			if ($column->Field != $this->primaryKey ) {
-				if (strlen(strstr($column->Type, "varchar")) > 0) {
+			if ($column->field != $this->primaryKey ) {
+				if (strlen(strstr($column->type, "varchar")) > 0 || strlen(strstr($column->type, "character varying")) > 0) {
 					$type = "varchar";
-				} else if (strlen(strstr($column->Type, "tinyint")) > 0) {
+				} else if (strlen(strstr($column->type, "tinyint")) > 0 || strlen(strstr($column->type, "boolean")) > 0) {
 					$type = "tinyint";
-				} else if (strlen(strstr($column->Type, "int")) > 0) {
+				} else if (strlen(strstr($column->type, "int")) > 0) {
 					$type = "int";
+            } else if (strlen(strstr($column->type, "timestamp")) > 0) {
+               $type = "timestamp";
 				} else {
-					$type = $column->Type;
+					$type = $column->type;
 				}
+            
 
-
-				array_push($this->list, $column->Field);
-				$this->columns["{$column->Field}"] = array(
-						"field" => $column->Field,
+				array_push($this->list, $column->field);
+				$this->columns["{$column->field}"] = array(
+						"field" => $column->field,
 						"type"  => $type
 					);
 			}
@@ -2204,13 +2215,21 @@ class Scaffold
 
 		$data = Util::getAll();
 		
-		
-		// Remove any FALSE values. This includes NULL values, EMPTY arrays, etc.
+      // Remove any FALSE values. This includes NULL values, EMPTY arrays, etc. 
 		$data = array_filter($data);
+
+		
+      if ($this->databaseConnection == "mysql") {
+         //$data = array_filter($data);
+      } elseif ($this->databaseConnection == "pgsql" ) {
+         //$data = array_filter($data);
+      }
+
+      
+		
 		
 		if ($entry->validate($data) && count($fileErrors) == 0) {
 
-			
 			// Check if brand new user
 			if ($this->infuseLogin && !Util::get("id")) { 
 				$entry->verified = 1;
@@ -2337,7 +2356,7 @@ class Scaffold
             }
 			}
 			
-		} else {
+		} else { 
 			Util::flash(array(
 				"message" => "Failed to save {$this->name}.", 
 				"type" => "error"
@@ -2360,7 +2379,7 @@ class Scaffold
 			
 			
 		}
-
+      
 		if (!$this->testing) {
 			header("Location: {$redirect_path}");
 			exit();

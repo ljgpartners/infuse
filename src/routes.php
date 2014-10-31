@@ -17,6 +17,9 @@ Route::group(array('prefix' => "admin", 'before' => array('InfuseAuth', 'WebServ
   Route::any('user', array('as' => 'user', 'uses' => 'InfuseController@user') );
   Route::any('permission', array('as' => 'permission', 'uses' => 'InfuseController@permission') );
   Route::any('role', array('as' => 'role', 'uses' => 'InfuseController@role') );
+
+  Route::any('page/{page}', array('as' => 'page', 'uses' => 'InfuseController@page'));
+
   Route::any('resource/{resource}', array('as' => 'resource', 'uses' => 'InfuseController@resource'));
   Route::any('resource/{resource}/child', array('as' => 'child', 'uses' => 'InfuseController@child'));
   Route::any('call-function', array('as' => 'call_function', 'uses' => 'InfuseController@call_function') );

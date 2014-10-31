@@ -1,43 +1,62 @@
-<div class="infuseNav"> 
-	<div class="innerNav">
-		<div class="navElement"> 
-			<a class="{{(isset($dashboardActive))? "active" : ""}}" href="/admin">
-				<span>Dashboard</span>
-			</a>
-		</div>
-		<div class="navElement">
-			<a href="" class="infuseManage {{(isset($manageActive))? "active" : ""}}" data-open="0">
-				<span>Manage</span>
-			</a>
-		</div>
+<nav class="side">
+	<a class="toggle" href="">
+		<!--<div class="inner">
+			<span class="glyphicon glyphicon-circle-arrow-right"></span>
+			<span class="glyphicon glyphicon-circle-arrow-left hide"></span>
+		</div>-->
+	</a>
 
-		<div class="navElement navElementCenter">
-			@if (Config::get('infuse::images.logo') != "")
-				<img class="logo" src="{{Config::get('infuse::images.logo')}}" > 
-			@else
-				<div class="infuseTextLogo">Infuse</div>
-			@endif
-		</div>
-		
-		<div class="navElement"> 
-			@if (!$rolePermission || ($rolePermission && $user->can('infuse_user_view')) )
-			<a class="{{(isset($userActive))? "active" : ""}}" href="/admin/user">
-				<span>Users</span>
-			</a>
-			@endif
-		</div>
-
-		<div class="navElement">
-			<a href="/admin/logout">
-				<span>Logout</span>
-			</a>
-		</div>
-
-		@if (Config::get('infuse::admin_site_link') != "")
-		<a target="_BLANK" class="siteLink" href="{{Config::get('infuse::admin_site_link')}}">
-			<span>site</span>
+	<div class="sideNavElements">
+		<a class="{{(isset($dashboardActive))? "active" : ""}}" href="/admin">
+			<div class="inner">
+				<span class="glyphicon glyphicon-home"></span>
+			</div>
+		</a>
+		<a href="">
+			<div class="inner">
+				<span class="glyphicon glyphicon-star"></span>
+			</div>
+		</a>
+		<a href="" class="infuseManage {{(isset($manageActive))? "active" : ""}}" data-open="0">
+			<div class="inner">
+				<span class="glyphicon glyphicon-pencil"></span>
+			</div>
+		</a>
+		@if (!$rolePermission || ($rolePermission && $user->can('infuse_user_view')) )
+		<a class="{{(isset($userActive))? "active" : ""}}" href="/admin/user">
+			<div class="inner">
+				<span class="glyphicon glyphicon-user"></span>
+			</div>
 		</a>
 		@endif
+		@if (Config::get('infuse::admin_site_link') != "")
+		<a target="_BLANK" class="siteLink" href="{{Config::get('infuse::admin_site_link')}}">
+			<div class="inner">
+				<span class="glyphicon glyphicon-eye-open"></span>
+			</div>
+		</a>
+		@endif
+		<a href="/admin/logout">
+			<div class="inner">
+				<span class="glyphicon glyphicon-log-out"></span>
+			</div>
+		</a>
 
+		@if ($superAdmin && $rolePermission)
+			<a href="/admin/permission">
+				<div class="inner">
+					<span class="glyphicon glyphicon-wrench"></span>
+				</div>
+			</a>
+		@endif
+
+		@if ($superAdmin && $rolePermission)
+			<a href="/admin/role">
+				<div class="inner">
+					<span class="glyphicon glyphicon-link"></span>
+				</div>
+			</a>
+		@endif
+		
 	</div>
-</div>
+</nav>

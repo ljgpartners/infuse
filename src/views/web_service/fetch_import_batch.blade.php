@@ -4,7 +4,7 @@
 	@foreach ($columns as $column)
 	<td>
 		@if ($columns[0] == $column)
-			<span class="iconImportAccordion icon-chevron-right"></span>
+			<span class="iconImportAccordion glyphicon .glyphicon-chevron-right"></span>
 		@endif
 		{{$entry->{$column} }}
 	</td>
@@ -83,8 +83,8 @@
 
 			<tr>
 				<td colspan="3">
-					<a class="importEntry btn submitButton" data-modal-id="{{$id}}">IMPORT</a>
-					<a class="importCheckAll btn submitButton" data-all-on="1">Uncheck All</a>
+					<a class="importEntry btn btn-default submitButton" data-modal-id="{{$id}}">IMPORT</a>
+					<a class="importCheckAll btn btn-default submitButton" data-all-on="1">Uncheck All</a>
 				</td>
 			</tr>
 		</table>

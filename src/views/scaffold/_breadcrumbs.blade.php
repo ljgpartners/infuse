@@ -6,15 +6,15 @@ $length = count($stack);
 $count = 1;
 ?>
 
-<ul class="breadcrumb">
+<ol class="breadcrumb pull-right">
 	@foreach ($stack as $element)
 		@if ($count == $length)
 			<li class="active">{{Util::cleanName($element[0])}} </li>
 		@else 
-			<li>{{Util::cleanName($element[0])}} <span class="divider">/</span></li>
+			<li>{{Util::cleanName($element[0])}} </li>
 		@endif
 		<?php $count++; ?>
 	@endforeach
-</ul>
+</ol>
 
 @endif

@@ -469,7 +469,7 @@ class Util {
 					$message['type'] = "alert-block";
 					break;
 				case 'error':
-					$message['type'] = "alert-error";
+					$message['type'] = "alert-danger";
 					break;
 				case 'success':
 					$message['type'] = "alert-success";
@@ -482,13 +482,14 @@ class Util {
 					break;
 			}
 
-			echo '<div class="alert '.$message['type'].'">
-					  <button type="button" class="close" data-dismiss="alert">&times;</button>
-					  <h4>'.$message['message'].'</h4>
-						</div>';
+			echo '<div class="alert '.$message['type'].' alert-dismissible fade in" role="alert">
+					    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+					    '.$message['message'].'
+					  </div>';
 		}
 		
 	}
+	
 
 	
 
@@ -576,6 +577,25 @@ class Util {
 		<noscript><style id="devicePixelRatio" media="only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2)">html{background-image:url("/packages/bpez/infuse/retinaimages.php?devicePixelRatio=2")}</style></noscript>
 STRING;
 		return $return;
+	}
+
+
+	public static function getControllerClassName()
+	{
+		if (\Route::currentRouteAction()) {
+			$name = \Route::currentRouteAction();
+			$data = explode("@", $name);
+			return $data[0];
+		}
+	}
+
+	public static function getControllerClassNameWithMethod()
+	{
+		if (\Route::currentRouteAction()) {
+			$name = \Route::currentRouteAction();
+			$data = explode("@", $name);
+			return $data[0]."".$data[1];
+		}
 	}
 
 

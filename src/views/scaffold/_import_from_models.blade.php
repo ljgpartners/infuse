@@ -4,7 +4,7 @@
 	<?php $import = $header['importFromModel']; ?>
 
   <div class="btn-group">
-    <button class="btn altColor btn-info  dropdown-toggle" data-toggle="dropdown">Import from <span class="caret"></span></button>
+    <button class="btn btn-default altColor btn-info  dropdown-toggle" data-toggle="dropdown">Import from <span class="caret"></span></button>
     <ul class="dropdown-menu filtersDropDown">
 				<li><a href="" data-toggle="modal" data-target="#importModal{{$import[0]}}" class="">{{((isset($import[2]) && $import[2]['name'])? $import[2]['name'] : Util::cleanName($import[0]) )}}</a></li>
     </ul>
@@ -45,7 +45,7 @@
 				  	<div class="searchBox">
 				  		<form class="search">
 				  			<input class="searchInput placeholder" name="s" type="text" value="Search..." data-reset-name="Search..." data-reset="1"> 
-					  		<button type="submit" class="btn mainColor" href="">SEARCH</button>
+					  		<button type="submit" class="btn btn-default mainColor" href="">SEARCH</button>
 				  		</form>
 				  	</div>
 				  </div>
@@ -58,7 +58,7 @@
 				  			<input class="searchField searchInput placeholder" name="s" type="text" value="Search..." data-reset-name="Search..." data-reset="1"> 
 				  			<input class="searchLatitudeLongitude searchInput placeholder" name="latitude_longitude" type="text" value="Latitude, Longitude" data-reset-name="Latitude, Longitude" data-reset="1"> 
 				  			<input class="distance searchInput placeholder" name="distance" type="text" value="25" data-reset-name="25" data-reset="1"> 
-					  		<button type="submit" class="btn mainColor" href="">SEARCH</button>
+					  		<button type="submit" class="btn btn-default mainColor" href="">SEARCH</button>
 				  		</form> 
 				  	</div>
 				  </div>
@@ -89,7 +89,7 @@
 	  		</ul>
 			</div>
 
-	  	<button class="btn altColor btn-info" data-dismiss="modal" aria-hidden="true">Close</button>
+	  	<button class="btn btn-default altColor btn-info" data-dismiss="modal" aria-hidden="true">Close</button>
 	  </div>
 	</div>
 

@@ -12,6 +12,7 @@ class CreateWebcrawler extends Migration {
 	 */
 	public function up()
 	{
+		/* only in mysql migrate to postgres?
 		Schema::create('webcrawlers', function($table)
 		{
 	    $table->engine = 'MyISAM';
@@ -23,6 +24,7 @@ class CreateWebcrawler extends Migration {
 		});
 
 		DB::statement('ALTER TABLE webcrawlers ADD FULLTEXT fulltext_page_content(page_content)');
+		*/
 	}
 
 	/**

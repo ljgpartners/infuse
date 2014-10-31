@@ -4,21 +4,22 @@ trait InfuseEloquentLibrary {
 
   public function validate($data)
   {
+    /*
       $replace = ($this->getKey() > 0) ? $this->getKey() : '';
       foreach ($this->rules as $key => $rule) {
           $this->rules[$key] = str_replace('[id]', $replace, $rule);
       }
-
+    */
       // make a new validator object
       $v = \Validator::make($data, $this->rules);
 
       // check for failure
-      if ($v->fails()) {
+      if ($v->fails()) { 
           // set errors and return false
           $this->errors = $v->messages();
           return false;
       }
-
+      
       // validation pass
       return true;
   }

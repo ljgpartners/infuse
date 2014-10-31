@@ -2,8 +2,6 @@
 
 use Illuminate\Support\ServiceProvider;
 
-
-
 class InfuseServiceProvider extends ServiceProvider {
 
 	/**
@@ -25,8 +23,8 @@ class InfuseServiceProvider extends ServiceProvider {
 		// Register namespace for config resources
 		\Config::addNamespace('infuse', app_path().'/config/packages/bpez/infuse');
 		\Config::addNamespace('infuse_deploy', app_path().'/config/packages/bpez/infuse/deploy');
-
-		include __DIR__.'/../../routes.php';
+		
+		require __DIR__.'/../../routes.php';
 		require __DIR__.'/../../events.php';
 	}
 
@@ -106,8 +104,6 @@ class InfuseServiceProvider extends ServiceProvider {
         $loader->alias('InfuseEloquentLibrary', 'Bpez\Infuse\InfuseEloquentLibrary');
         $loader->alias('InfuseUserLibrary', 'Bpez\Infuse\InfuseUserLibrary');
     });
-
-   
 	}
 
 	/**
@@ -117,7 +113,7 @@ class InfuseServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('scaffold', 'util', 'web.service', 'infuse.eloquent', 'infuse.eloquent.library', 'infuse.user.library');// 
+		return array('scaffold', 'util', 'web.service', 'infuse.eloquent', 'infuse.eloquent.library', 'infuse.user.library');
 	}
 
 }

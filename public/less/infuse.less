@@ -1,4 +1,5 @@
-@import url("bootstrap-combined.min.less");
+@import url("bootstrap.less");
+@import url("bootstrap-theme.less");
 @import url("jquery-ui.min.less");
 @import url("jquery-ui-timepicker-addon.less");
 @import url("magicsuggest-1.3.1.less");
@@ -27,7 +28,7 @@ body.infuseWrapper input[type="text"], body.infuseWrapper input[type="password"]
 .infuseScaffold{ font-size: 12px; }
 .infuseScaffold textarea{ min-height: 80px; }
 
-.infuseScaffold .label, .infuseScaffold .badge{ font-weight: normal; margin: 2px 0px 0px 0px;  }
+.infuseScaffold .label.label-default, .infuseScaffold .badge{ font-weight: normal; margin: 2px 0px 0px 0px;  }
 .infuseScaffold input[type="file"], .infuseScaffold input[type="checkbox"]{ height: auto !important; line-height: 15px !important; }
 .infuseScaffold input[type="checkbox"]{ width: auto !important; font-size: 12px;  }
 .infuseScaffold label.checkbox{ font-size: 12px;  }
@@ -77,22 +78,22 @@ input.infuseLoginSubmit{ background-color: #A01A27; margin: 0px auto; display: b
 .infuseSideMenu{ border-radius: 0px; position: absolute; top: 89px; left: -360px; z-index: 100; width: 360px;  height: 100%; background-color: #FFFFFF; border-right: 1px solid #F8F8F8;  }
 .nav-header{ color: #3AACE2; font-size: 14px; text-shadow: none !important; font-weight: 400; text-indent: 15px;  }
 .nav-list a{ color: black;  font-size: 13px; text-shadow: none !important; font-weight: 400; text-indent: 15px; }
-.infuseSideMenu .accordion-heading .accordion-toggle{ padding: 22px 15px; text-decoration: none !important;  margin-bottom: 1px; color: #0093CF; font-weight: 300; }
-.infuseSideMenu .accordion-heading{ font-size: 18px; text-indent: 15px; }
-.infuseSideMenu .accordion-group:first-child{ border-top: 0px;  margin-top: 0px;}
-.infuseSideMenu .accordion-group{ border-radius: 0px; border: 0px; border-bottom: 1px solid #F8F8F8;  border-top: 1px solid #F8F8F8; margin-top: -3px; }
+.infuseSideMenu .panel-heading .accordion-toggle{ padding: 22px 15px; text-decoration: none !important;  margin-bottom: 1px; color: #0093CF; font-weight: 300; }
+.infuseSideMenu .panel-heading{ font-size: 18px; text-indent: 15px; }
+.infuseSideMenu .panel.panel-default:first-child{ border-top: 0px;  margin-top: 0px;}
+.infuseSideMenu .panel.panel-default{ border-radius: 0px; border: 0px; border-bottom: 1px solid #F8F8F8;  border-top: 1px solid #F8F8F8; margin-top: -3px; }
 .infuseSideMenu .nav>li>a:hover, .infuseSideMenu .nav>li>a:focus{ background-color: transparent; }
 .infuseSideMenu .divider{ display: none;  }
 .infuseSideMenu .nav-list a{ padding: 6px 0px; font-size: 13px; text-transform: uppercase; font-weight: 300; }
-.infuseSideMenu .accordion-inner{ background-color: #E4E4E4; padding: 19px 15px; border-top: 0px;  }
+.infuseSideMenu .panel-body{ background-color: #E4E4E4; padding: 19px 15px; border-top: 0px;  }
 .infuseSideMenu .nav-list a:hover, .infuseSideMenu .nav-list a:focus{ color: inherit;}
 .infuseSideMenu .nav-list a{ color: #000000; }
 
 /* buttons */
 .infuseTopButtonGroup{ margin-bottom: 15px; }
-.infuseTopButtonGroup .btn, .infuseWrapper .hero-unit .btn{ letter-spacing: 2px; font-weight: 300; font-size: 13px; text-transform: uppercase; color: white;   background-image: none; border-color: transparent; padding: 9px 30px; margin-bottom: 0; text-shadow: none; }
-.infuseTopButtonGroup .btn.mainColor, .infuseWrapper .hero-unit .btn.mainColor{ background-color: #A01A27; }
-.infuseTopButtonGroup .btn.altColor{ background-color: #33352E; }
+.infuseTopButtonGroup .btn.btn-default, .infuseWrapper .jumbotron .btn.btn-default{ letter-spacing: 2px; font-weight: 300; font-size: 13px; text-transform: uppercase; color: white;   background-image: none; border-color: transparent; padding: 9px 30px; margin-bottom: 0; text-shadow: none; }
+.infuseTopButtonGroup .btn.btn-default.mainColor, .infuseWrapper .jumbotron .btn.btn-default.mainColor{ background-color: #A01A27; }
+.infuseTopButtonGroup .btn.btn-default.altColor{ background-color: #33352E; }
 .infuseWrapper .submitButton{ padding: 6px 18px; background-color: #A01A27; font-weight: 300; color: white; letter-spacing: 1px;  font-size: 12px; text-transform: uppercase; background-image: none; border-color: transparent; text-shadow: none; }
 
 
@@ -104,7 +105,7 @@ input.infuseLoginSubmit{ background-color: #A01A27; margin: 0px auto; display: b
 .appendFilters{ display: inline-block; vertical-align: middle; max-width: 1023px; }
 
 .ms-sel-ctn .ms-sel-item{ background-color: #f5f5f5; color: black; }
-.page-header .hero-unit{ margin-top: 50px; }
+.page-header .jumbotron{ margin-top: 50px; }
 
 .previewImage{ width: 100%; text-align: center; vertical-align: middle; }
 .previewImage img{ max-width: 100%; }

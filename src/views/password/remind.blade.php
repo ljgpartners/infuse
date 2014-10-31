@@ -1,4 +1,4 @@
-<div class="hero-unit infuseLogin">
+<div class="jumbotron infuseLogin">
   
 	@if (Config::get('infuse::images.logo') != "")
 		<img class="logo" src="{{Config::get('infuse::images.logo')}}">

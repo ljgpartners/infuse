@@ -1,12 +1,20 @@
-<div class="infuseInner">
-
-<div class="infuseScaffold">
-
-	<div class="page-header">
-	  <h1>{{$header['name']}} <small> {{$header['description']}}</small></h1>
-
-	  @include('infuse::scaffold._breadcrumbs')
+<div class="sectionNavigation">
+	<div class="sectionInfo">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-sm-6">
+					<h1>{{$header['name']}}</h1>
+					<p>{{$header['description']}}</p>
+				</div>
+				<div class="col-sm-6">
+					@include('infuse::scaffold._breadcrumbs')
+				</div>
+		  </div>
+		</div>
 	</div>
+</div> <!-- end of .sectionNavigation -->
+
+<div class="container-fluid">
 
 	{{Util::fuseAlerts(Util::flash())}}
 
@@ -65,31 +73,11 @@
 			</tr>
 			@endforeach
 
-			<tr>
-				<td colspan="2"> 
-					@if (Util::get("stack"))
-					<div class="btn-group"> 
-					    <a class="btn btn-small" href="{{Util::childBackLink()}}">Back</a>
-					    <a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 'e', $entries->id)}}">Edit</a>
-					    @if(!$header['onlyOne'] && $header['deleteAction'])
-							<a class="btn btn-small" href="{{Util::childActionLink(Util::get("stack"), 'd', $entries->id)}}" onclick="return confirm('Confirm delete?');">Delete</a>
-							@endif
-					</div>
-					@else
-					<div class="btn-group">
-					    <a class="btn btn-small" href="?action=l">List</a>
-					    <a class="btn btn-small" href="?action=e&id={{$entries->id}}">Edit</a>
-					    @if(!$header['onlyOne'] && $header['deleteAction'])
-							<a class="btn btn-small" href="?action=d&id={{$entries->id}}" onclick="return confirm('Confirm delete?');">Delete</a>
-							@endif
-					</div>
-					@endif
-				</td>
-			</tr>
+			
 
 	</table>
 
-	<div class="actionFixedNav">
+	<nav class="bottom">
 			@if (Util::get("stack"))
 		    <a class="" href="{{Util::childBackLink()}}">Back</a>
 	  		<a class="" href="{{Util::childActionLink(Util::get("stack"), 'e', $entries->id)}}">Edit</a>
@@ -104,8 +92,6 @@
 				<a class="" href="?action=d&id={{$entries->id}}" onclick="return confirm('Confirm delete?');">Delete</a>
 				@endif
 			@endif
-	</div>
-
-</div>
+	</nav>
 
 </div>

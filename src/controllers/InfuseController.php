@@ -33,6 +33,16 @@ class InfuseController extends BaseController {
 		$this->layout->content = $content;
 	}
 
+	public function page($page) 
+	{
+		$this->layout->title = "Page | Infuse"; 
+		View::share('manageActive', true);
+		$uri = Request::path();
+
+		$this->layout->content = View::make('infuse::page.create_edit');
+	}
+
+
 	public function resource($resource) 
 	{
 		$this->layout->title = "Resource | Infuse"; 
@@ -43,9 +53,10 @@ class InfuseController extends BaseController {
 		Util::stackPush($resource, Input::get('id', null), $uri);
 		
 		$config = Config::get("infuse::{$resource}");
-
-		$scaffold = Scaffold::model($config['model'])
+		
+			$scaffold = Scaffold::model($config['model'])
 									->mapConfig($config);
+
 
 		$redirect = $scaffold->checkPermissions($uri);
 		if ($redirect)

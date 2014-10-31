@@ -3,9 +3,16 @@
 trait InfuseUserLibrary {
 
 	protected $rules = array(
-	  'username' => "required|unique:users,username,[id]",
-	  'email'  => 'required|email|unique:users,email,[id]'
+	  'username' => "required|unique:users,username",
+	  'email'  => 'required|email|unique:users,email'
   );
+
+  /*
+  protected $rules = array(
+    'username' => "required|unique:users,username,[id]",
+    'email'  => 'required|email|unique:users,email,[id]'
+  );
+  */
 
   protected $errors;
 
