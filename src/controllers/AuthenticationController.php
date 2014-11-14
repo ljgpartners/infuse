@@ -16,6 +16,7 @@ class AuthenticationController extends BaseController {
 	{
 		Config::set('auth.driver', 'verify');
 		Config::set('auth.model', 'InfuseUser');
+		View::share("superAdmin", false);
 	}
 
 	public function login()

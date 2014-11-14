@@ -428,6 +428,8 @@ class Scaffold
 					$type = "int";
             } else if (strlen(strstr($column->type, "timestamp")) > 0) {
                $type = "timestamp";
+            } else if (strlen(strstr($column->type, "json")) > 0) {
+               $type = "text";
 				} else {
 					$type = $column->type;
 				}

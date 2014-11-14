@@ -22,25 +22,18 @@ class InfuseController extends BaseController {
 		View::share('navigation', Config::get('infuse::navigation'));
 		$rolePermission = (\Config::get("infuse::role_permission"))? true : false;
 		View::share('rolePermission', $rolePermission);
+		View::share('databaseConnectionType', \Config::get('database.default')); 
 	}
 
 
 	public function dashboard()
-	{
+	{	//\Session::flush();
 		$this->layout->title = "Dashboard | Infuse";
 		View::share('dashboardActive', true);
 		$content = (Config::get('infuse::dashboard_template') != "")? View::make(Config::get('infuse::dashboard_template')): View::make('infuse::infuse.dashboard');
 		$this->layout->content = $content;
 	}
 
-	public function page($page) 
-	{
-		$this->layout->title = "Page | Infuse"; 
-		View::share('manageActive', true);
-		$uri = Request::path();
-
-		$this->layout->content = View::make('infuse::page.create_edit');
-	}
 
 
 	public function resource($resource) 

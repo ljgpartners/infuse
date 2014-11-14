@@ -12,11 +12,13 @@
 				<span class="glyphicon glyphicon-home"></span>
 			</div>
 		</a>
+		<!--
 		<a href="">
 			<div class="inner">
 				<span class="glyphicon glyphicon-star"></span>
 			</div>
 		</a>
+		-->
 		<a href="" class="infuseManage {{(isset($manageActive))? "active" : ""}}" data-open="0">
 			<div class="inner">
 				<span class="glyphicon glyphicon-pencil"></span>
@@ -38,7 +40,7 @@
 		@endif
 		<a href="/admin/logout">
 			<div class="inner">
-				<span class="glyphicon glyphicon-log-out"></span>
+				<span class="glyphicon glyphicon-off"></span>
 			</div>
 		</a>
 
@@ -54,6 +56,14 @@
 			<a href="/admin/role">
 				<div class="inner">
 					<span class="glyphicon glyphicon-link"></span>
+				</div>
+			</a>
+		@endif
+
+		@if ($superAdmin && $databaseConnectionType == "pgsql") 
+			<a href="/admin/resource/infuse_page">
+				<div class="inner">
+					<span class="glyphicon glyphicon-file"></span>
 				</div>
 			</a>
 		@endif

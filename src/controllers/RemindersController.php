@@ -17,6 +17,7 @@ class RemindersController extends BaseController {
 		Config::set('auth.model', 'InfuseUser');
 		Config::set('auth.reminder.email', 'infuse::emails.reminder');
 		Config::set('auth.reminder.expire', Config::get('infuse::reminder_expire'));
+		View::share("superAdmin", false);
 	}
 
 	/**

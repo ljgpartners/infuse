@@ -29,7 +29,13 @@ $modelInstanceForPermissionCheck = $entries->first();
 </div> <!-- end of .sectionNavigation -->
 
 
-{{Util::fuseAlerts(Util::flash())}}
+<div class="container-fluid">
+	<div class="row">
+  	<div class="col-sm-12 col-xs-12">
+		{{Util::fuseAlerts(Util::flash())}} 
+		</div>
+	</div>
+</div>
 
 <div class="container-fluid">
 
@@ -235,8 +241,8 @@ $modelInstanceForPermissionCheck = $entries->first();
 	</div> <!-- end of row -->
 
 	@if ($header['pagination']['count'] > 0)
-	<div class="">
-	  <ul class="pagination pagination-small pagination-centered">
+	<div class="text-center">
+	  <ul class="pagination pagination-sm ">
 
 	  	<?php $pagination = $header['pagination']; ?>
 	  	@if ($pagination['active_page'] != 1)

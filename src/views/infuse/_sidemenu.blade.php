@@ -8,6 +8,8 @@
 			foreach ($n as $title => $link ):
 				$showSection = ((strpos($link,'::') !== false) || !$rolePermission || ($rolePermission && $user->can("{$link}_view")))? true : $showSection;
 			endforeach;
+
+
 		?>
 
 			@if ($showSection)
@@ -24,10 +26,12 @@
 		    <div id="collapse{{$count}}" class="panel-collapse collapse <?php echo ($count == 0)? "in" : ""; ?>" role="tabpanel" aria-labelledby="heading{{$count}}">
 		    	<div class="panel-body">
 		        <ul class="list-group">
-			        <li class="list-group-item"><span>Pages</span></li>
-				    	<li class="list-group-item"><a href="">Title</a></li>
-					    <li class="list-group-item"><a href="">Title</a></li>
-							<li class="list-group-item"><span>Resources</span></li>
+
+		        	@if (isset($databaseConnectionType) && $databaseConnectionType == "pgsql")
+				    	<li class="list-group-item">
+				    		<a href="/admin/page?infuse_pages_section={{$count+1}}">Pages</a>
+				    	</li>
+				    	@endif
 
 							@foreach ($n as $title => $link )
 					    	@if ((strpos($link,'::') !== false) || !$rolePermission || ($rolePermission && $user->can("{$link}_view")) )

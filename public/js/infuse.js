@@ -1,4 +1,4 @@
-// @codekit-prepend InfusePages.js
+// @codekit-prepend infuse.pages.js
 
 $(document).ready(function() {
 
@@ -46,7 +46,7 @@ $(document).ready(function() {
 
 		  return mixed_var === +mixed_var && isFinite(mixed_var) && !(mixed_var % 1);
 		},
-
+		
 		// checking if a string is blank, null or undefined
 		isBlank: function (str) {
 		  return (!str || /^\s*$/.test(str));
@@ -64,8 +64,75 @@ $(document).ready(function() {
 		
 	};
 
+	/*******************************************************
+   * Global
+   ********************************************************/
 
 	var animating = false;
+
+	$(".infuseManage").bind("click", function(event) {
+		event.preventDefault();
+		var self = $(this);
+		if (self.data("open") == true && !animating) {
+			self.removeClass("active");
+			animating = true;
+			$(".sideNavSlideOut").animate({left:"-=300px"}, 500, function() {
+				self.data("open", false)
+				animating = false;
+			});
+		} else if (self.data("open") == false && !animating) {
+			self.addClass("active");
+			animating = true;
+			$(".sideNavSlideOut").animate({left:"+=300px"}, 500, function() {
+				self.data("open", true);
+				animating = false;
+			})
+		}
+	});
+
+	/*******************************************************
+   * Login Page 
+   ********************************************************/
+	
+	$(".placeholder").placeholder();
+
+	$(".focusPassword").focus(function() {
+  	$(this).attr("type", "password");
+  });
+  
+  $(".placeholder").placeholder();
+  $(".infuseLogin form").submit( function() {
+    var submitValidation = $(this).validate({errorClass: "errorInput"});
+    return submitValidation.bool;
+  });
+  
+
+	/*******************************************************
+   * Twitter bootstrap - Collapse always one item open
+   ********************************************************/
+  $('.sideNavSlideOut .panel-heading a').on('click', function(event)
+  { 
+    if($(this).parent().parent().find('.panel-collapse').hasClass('in'))	{
+    	event.stopPropagation();
+    	event.preventDefault();
+    }
+	});
+
+  /*******************************************************
+   * Twitter bootstrap - Let checkboxes in dropdowns work
+   ********************************************************/
+	$('.dropdown-menu-form .checkbox').on('click', function(event)
+	{
+    event.stopPropagation();
+	});
+
+
+
+/*******************************************************
+ * InfuseController only actions
+ ********************************************************/
+if ($(".InfuseController").length > 0) {
+
 
 	$('.infuseCkeditor').each(function() {
 		var self = $(this)
@@ -75,7 +142,6 @@ $(document).ready(function() {
 		} else {
 			self.ckeditor(window[config]); 
 		}
-		
 	});
 	
 	$('.selectedDateTime').datetimepicker({ dateFormat: 'yy-mm-dd', timeFormat: 'HH:mm:ss', pickerTimeFormat: 'hh-mm-tt' });
@@ -105,26 +171,6 @@ $(document).ready(function() {
 		}); // End of Ajax 
 	});
 
-
-	$(".infuseManage").bind("click", function(event) {
-		event.preventDefault();
-		var self = $(this);
-		if (self.data("open") == true && !animating) {
-			self.removeClass("active");
-			animating = true;
-			$(".sideNavSlideOut").animate({left:"-=300px"}, 500, function() {
-				self.data("open", false)
-				animating = false;
-			});
-		} else if (self.data("open") == false && !animating) {
-			self.addClass("active");
-			animating = true;
-			$(".sideNavSlideOut").animate({left:"+=300px"}, 500, function() {
-				self.data("open", true);
-				animating = false;
-			})
-		}
-	});
 
 	var filterCount = 0;
 
@@ -367,21 +413,8 @@ $(document).ready(function() {
 			$(".multiSelect"+name).val(multiSelects[name].getValue());
 		});
 	});
-	
-	$(".placeholder").placeholder();
 
-	$(".focusPassword").focus(function() {
-  	$(this).attr("type", "password");
-  });
-  
-  $(".placeholder").placeholder();
-  $(".infuseLogin form").submit( function() {
-    var submitValidation = $(this).validate({errorClass: "errorInput"});
-    return submitValidation.bool;
-  });
-  
-
-  // Infuse check if clean up of temp folder needed
+	// Infuse check if clean up of temp folder needed
   setTimeout(function() {
   	$.ajax({
 			type: 'POST',
@@ -401,9 +434,7 @@ $(document).ready(function() {
   }, 1000);
 
 
-
-
-  /*************************************************************************************
+	/*************************************************************************************
 	* Below are the functions/events for importing from another table
 	**************************************************************************************/
 
@@ -790,7 +821,11 @@ $(document).ready(function() {
 	$(".saveSubmitButton").click(function() {
 		var typeSubmit = $(this).data('type-submit');
 		$("input[data-type-submit="+typeSubmit+"]").val("SAVING..");
-		document.getElementById("typeSubmit").value = typeSubmit;
+		//document.getElementById("typeSubmit").value = typeSubmit;
+		var typeSubmitElement = $("#typeSubmit");
+		if (typeSubmitElement.length > 0) {
+			typeSubmitElement.val(typeSubmit);
+		}
 	});
 
   $(document).on("click", ".importCheckAll", function(event)
@@ -811,46 +846,11 @@ $(document).ready(function() {
 		}
 	});
 
-  /*******************************************************
-   * Twitter bootstrap - upload button functionality
-   ********************************************************/
-	$(document).on('change', '.btn-file :file', function() {
-		var input = $(this),
-		numFiles = input.get(0).files ? input.get(0).files.length : 1,
-		label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-		input.trigger('fileselect', [numFiles, label]);
-	});
 
-	$('.btn-file :file').on('fileselect', function(event, numFiles, label)
-	{
-		var self = $(this)
-				textInput = self.parent().parent().siblings("input.form-control");
-		textInput.val(label);
-		//console.log(numFiles);
-		//console.log(label);
-	});
-
-	/*******************************************************
-   * Twitter bootstrap - Collapse always one item open
-   ********************************************************/
-  $('.sideNavSlideOut .panel-heading a').on('click', function(event)
-  { 
-    if($(this).parent().parent().find('.panel-collapse').hasClass('in'))	{
-    	event.stopPropagation();
-    	event.preventDefault();
-    }
-	});
-
-  /*******************************************************
-   * Twitter bootstrap - Let checkboxes in dropdowns work
-   ********************************************************/
-	$('.dropdown-menu-form .checkbox').on('click', function(event)
-	{
-    event.stopPropagation();
-	});
-
-
-	window.InfusePages.init();
+}
+/*******************************************************
+ * END OF Infuse resource action
+ ********************************************************/
 	
 });
 

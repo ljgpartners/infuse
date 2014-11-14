@@ -10386,10 +10386,16 @@ body .ui-tooltip {
 html {
   -webkit-text-size-adjust: 100% !important;
 }
+a:focus {
+  outline: 0;
+}
 body {
   font-family: 'Open Sans', sans-serif;
   padding: 50px 0 75px 50px !important;
   background-color: #F0F0F0;
+}
+body.developer {
+  padding: 50px 0 116px 50px !important;
 }
 header {
   position: fixed;
@@ -10552,6 +10558,9 @@ input.infuseLoginSubmit {
   border: 1px solid #A01A27;
 }
 /* side nav */
+.sideNavSlideOut {
+  background-color: #FFF;
+}
 nav.side {
   position: fixed;
   top: 0;
@@ -10621,6 +10630,9 @@ nav.side .sideNavElements a div.inner {
 nav.side .sideNavElements a span.glyphicon {
   font-size: 17px;
   vertical-align: middle;
+}
+#accordion .list-group-item {
+  border: 0px solid black;
 }
 .sideNavSlideOut {
   position: fixed;
@@ -10827,6 +10839,7 @@ section .subPages {
   background-color: #DC4A4F;
   width: 100%;
   position: relative;
+  min-height: 42px;
 }
 section .subPages a {
   display: inline-block;
@@ -10836,7 +10849,8 @@ section .subPages a {
   text-transform: uppercase;
   text-decoration: none;
 }
-section .addPages {
+section .addPage {
+  display: none;
   text-align: center;
   width: 40px;
   height: 40px;
@@ -10847,7 +10861,8 @@ section .addPages {
   right: 0;
   color: white;
 }
-section .addSubPages {
+section a.addSubPage {
+  display: none;
   text-align: center;
   width: 42px;
   height: 42px;
@@ -10857,6 +10872,10 @@ section .addSubPages {
   position: absolute;
   top: 0;
   right: 0;
+}
+.developer .addSubPage,
+.developer .addPage {
+  display: block;
 }
 section .inputBuilder {
   display: block;
@@ -10871,9 +10890,13 @@ section .inputBuilder {
   font-weight: bold;
   text-decoration: none;
 }
-section .form-horizontal {
+section .form-horizontal .formBlock {
   padding: 15px;
   background-color: #FAFAFA;
+  margin-bottom: 10px;
+}
+.developer .pagesGroup {
+  padding-right: 45px;
 }
 section .pagesGroup .input-group {
   margin-bottom: 7px;
@@ -10913,13 +10936,30 @@ section .infuseLabels .label {
 section form {
   margin-bottom: 30px;
 }
-.infusePage.developer .form-group .col-sm-12.col-xs-12 .input-group {
-  padding-right: 45px;
+section .groupEditEvent {
+  margin-top: 5px;
 }
-.infusePage .form-group .glyphicon.glyphicon-pushpin {
+section .quickEdit input {
   display: none;
 }
-.infusePage.developer .form-group .glyphicon.glyphicon-pushpin {
+section .infuseDivider {
+  background-color: #CCC;
+  width: 100%;
+  height: 1px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: block;
+}
+.infusePage {
+  position: relative;
+}
+.developer .form-group .col-sm-12.col-xs-12 .input-group {
+  padding-right: 45px;
+}
+.infusePage .form-group .glyphicon.glyphicon-paperclip {
+  display: none;
+}
+.developer .form-group .glyphicon.glyphicon-paperclip {
   display: block;
   font-size: 16px;
   color: black;
@@ -10927,6 +10967,20 @@ section form {
   right: 20px;
   top: 7px;
   cursor: pointer;
+}
+.developer .developerMenu {
+  display: block;
+  position: fixed;
+  bottom: 39px;
+  left: 65px;
+  z-index: 110;
+  width: 96%;
+  padding-top: 15px;
+  /*padding-left: 15px;*/
+  background-color: #F0F0F0;
+}
+.developerMenu {
+  display: none;
 }
 .label-default-bryan {
   background-color: #F0F0F0;

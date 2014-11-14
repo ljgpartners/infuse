@@ -3,8 +3,6 @@ Infuse
 
 [![Latest Stable Version](https://poser.pugx.org/bpez/infuse/v/stable.png)](https://packagist.org/packages/bpez/infuse) [![Total Downloads](https://poser.pugx.org/bpez/infuse/downloads.png)](https://packagist.org/packages/bpez/infuse) [![Latest Unstable Version](https://poser.pugx.org/bpez/infuse/v/unstable.png)](https://packagist.org/packages/bpez/infuse) [![License](https://poser.pugx.org/bpez/infuse/license.png)](https://packagist.org/packages/bpez/infuse)
 
-> uses Verify (L4) A simple role/permission authentication package for Laravel 4. http://docs.toddish.co.uk/verify-l4/
-
 
 Steps for installing 
 ---------------------
@@ -13,7 +11,7 @@ Steps for installing
 
 > Install through composer package
 >
-> $ composer require bpez/infuse:3.*
+> $ composer require bpez/infuse:4.*
 >
 > Add the Infuse Service Provider to your config in app/config/app.php: 
 >
@@ -29,10 +27,9 @@ Steps for installing
 > 'auth.driver' => 'verify'
 > 'auth.model' => 'InfuseUser'
 >
-> php artisan debugbar:publish
 >
 > add the following to post-update-cmd in composer.json
-> "php artisan debugbar:publish",
+>
 > "php artisan asset:publish bpez/infuse"
 
 ### When working in workbench

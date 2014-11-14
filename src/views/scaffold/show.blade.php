@@ -16,7 +16,11 @@
 
 <div class="container-fluid">
 
-	{{Util::fuseAlerts(Util::flash())}}
+	<div class="row">
+  	<div class="col-sm-12 col-xs-12">
+		{{Util::fuseAlerts(Util::flash())}} 
+		</div>
+	</div>
 
 	<table class="table table-striped table-bordered">
 			@foreach ($columns as $column)

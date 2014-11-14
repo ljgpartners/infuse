@@ -49,6 +49,16 @@ class InfuseServiceProvider extends ServiceProvider {
         );
     });
 
+		$this->app->bind('InfusePageController', function($app)
+    {
+        return new \InfusePageController(
+        	$app->make("auth")->user(),
+            $app['request'],
+            $app['session.store']
+        );
+    });
+    
+
 		$this->app['scaffold'] = $this->app->share(function($app)
     {
         return new  Scaffold(
@@ -103,6 +113,14 @@ class InfuseServiceProvider extends ServiceProvider {
         $loader->alias('InfuseEloquent', 'Bpez\Infuse\InfuseEloquent');
         $loader->alias('InfuseEloquentLibrary', 'Bpez\Infuse\InfuseEloquentLibrary');
         $loader->alias('InfuseUserLibrary', 'Bpez\Infuse\InfuseUserLibrary');
+    });
+
+    $this->app->after(function($request, $response)
+    { 
+      if (\Session::has('infuse_page_values')) {
+        \Session::forget('infuse_page_values');
+        \Session::forget('infuse_page_extract_current');
+      }
     });
 	}
 

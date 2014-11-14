@@ -1,17 +1,13 @@
 <div class="jumbotron infuseLogin">
 
-	@if (Config::get('infuse::titles.login_above_logo') != "")
-		<div class="infuseTextLogoAbove">{{Config::get('infuse::titles.login_above_logo')}}</div>
-	@endif
-
-	@if (Config::get('infuse::images.logo') != "")
-		<img class="logo" src="{{Config::get('infuse::images.logo')}}">
+	@if (Config::get('infuse::company_logo') != "")
+		<img class="logo" src="{{Config::get('infuse::company_logo')}}">
 	@else
 		<div class="infuseTextLogo">Infuse</div>
 	@endif
 
-	@if (Config::get('infuse::titles.login_site_title') != "")
-		<div class="infuseSiteTitle">{{Config::get('infuse::titles.login_site_title')}}</div>
+	@if (Config::get('infuse::site_title') != "")
+		<div class="infuseSiteTitle">{{Config::get('infuse::site_title')}}</div>
 	@endif
 
   @if (isset($error))
