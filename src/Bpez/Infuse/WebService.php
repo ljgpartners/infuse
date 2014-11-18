@@ -292,7 +292,7 @@ class WebService {
 
 		foreach ($return as $item) {
 			$columnName = end($item);
-			$returnArray[$item["id"]] = $columnName;
+			$returnArray[] = array($item["id"], $columnName);
 		}
 		
 		return $returnArray;
