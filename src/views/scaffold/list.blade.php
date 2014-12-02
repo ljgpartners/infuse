@@ -9,6 +9,15 @@ else:
 endif;
 
 $modelInstanceForPermissionCheck = $entries->first();
+
+$filterList = $header['list'];
+if(($key = array_search("updated_at", $filterList)) !== false) {
+    unset($filterList[$key]);
+}
+if (isset($header['filterList'])) {
+	$filterList = (empty($header['filterList']))? $filterList : $header['filterList'];
+}
+
 ?>
 
 <div class="infuseInner">
@@ -34,7 +43,7 @@ $modelInstanceForPermissionCheck = $entries->first();
       <button class="btn altColor btn-info  dropdown-toggle" data-toggle="dropdown">Add Filter <span class="caret"></span></button>
       <ul class="dropdown-menu filtersDropDown">
       	@foreach ($columns as $column)
-      			@if (!Util::isForeignKey($column['field']))
+      			@if (!Util::isForeignKey($column['field']) && in_array($column['field'], $filterList))
 							<li><a href="" class="filterColumn filter{{$column['field']}}" data-filter-column="{{$column['field']}}">{{Util::cleanName($column['field'])}}</a></li>
 						@endif
 				@endforeach

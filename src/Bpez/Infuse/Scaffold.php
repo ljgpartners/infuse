@@ -181,6 +181,14 @@ class Scaffold
    */
 	private $list = array();
 
+  /**
+   * Contains the list of columns to be allowed to filter through 
+   *
+   * @access private
+   * @var array
+   */
+  private $filterList = array();
+
 	/**
    * Boolean for setting special rules for processing InfuseUser model.
    *
@@ -878,6 +886,14 @@ class Scaffold
 		return $this;
 	}
 
+  public function filterListColumns($list)
+  {
+    if (!is_array($list)) 
+      throw new ScaffoldConfigurationException('filterListColumns(array("name", "count", "active")); First argument should be an array of the names of the columns allowed to be filtered on landing page.');
+    $this->filterList = $list;
+    return $this;
+  }
+
 	public function onlyOne()
 	{
 		$this->onlyOne = true;
@@ -1146,9 +1162,12 @@ class Scaffold
 				case 'addPermanentFilters':
 					$this->addPermanentFilters($f);
 					break;
-            case 'beforeEdit':
-               $this->beforeEdit($f);
-               break;
+        case 'beforeEdit':
+           $this->beforeEdit($f);
+           break;
+        case 'filterListColumns':
+           $this->filterListColumns($f);
+           break;
             
 				
 				
@@ -1401,6 +1420,7 @@ class Scaffold
 				"pagination" => $pagination,
 				"name" => $this->name,
 				"list" => $this->list,
+        "filterList" => $this->filterList,
 				"onlyOne" => $this->onlyOne,
 				"addOtherActions" => $this->addOtherActions,
 				"columnNames" => $this->columnNames
@@ -1469,6 +1489,7 @@ class Scaffold
 				"pagination" => $pagination,
 				"name" => $this->name,
 				"list" => $this->list,
+        "filterList" => $this->filterList,
 				"filters" => $filters,
 				"onlyOne" => $this->onlyOne,
 				"addOtherActions" => $this->addOtherActions,
@@ -1518,6 +1539,7 @@ class Scaffold
 				"pagination" => $pagination,
 				"name" => $this->name,
 				"list" => $this->list,
+        "filterList" => $this->filterList,
 				"onlyOne" => $this->onlyOne,
 				"addOtherActions" => $this->addOtherActions,
 				"columnNames" => $this->columnNames
@@ -1594,6 +1616,7 @@ class Scaffold
 				"pagination" => $pagination,
 				"name" => $this->name,
 				"list" => $this->list,
+        "filterList" => $this->filterList,
 				"onlyOne" => $this->onlyOne,
 				"addOtherActions" => $this->addOtherActions,
 				"columnNames" => $this->columnNames
