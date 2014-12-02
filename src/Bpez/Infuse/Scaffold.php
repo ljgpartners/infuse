@@ -365,7 +365,7 @@ class Scaffold
 	 * @api
 	 */
 
-	public function __construct(\Illuminate\View\Environment $view, \InfuseUser $user, \Illuminate\Support\Facades\DB $db, \Illuminate\Http\Request $request, \Event $event, \Illuminate\Session\SessionManager $session)
+	public function __construct(\Illuminate\View\Factory $view, \InfuseUser $user, \Illuminate\Support\Facades\DB $db, \Illuminate\Http\Request $request, \Event $event, \Illuminate\Session\SessionManager $session)
 	{	
 		$this->view = $view;
 		$this->user = $user;
