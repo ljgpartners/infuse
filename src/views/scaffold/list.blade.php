@@ -80,7 +80,9 @@ $modelInstanceForPermissionCheck = $entries->first();
 		<div class="col-sm-12 col-xs-12">
 			<div class="form-group">
 
+
 			<table class="table  table-bordered table-striped">
+
 
 				<tr class="filtersContainer">
 					<td colspan="{{count($columns)+1}}">
@@ -113,9 +115,9 @@ $modelInstanceForPermissionCheck = $entries->first();
 						@if (in_array($column['field'], $header['list']))
 
 							@if (array_key_exists($column['field'], $header['columnNames']))
-								<th>{{$header['columnNames']["{$column['field']}"]}}</th>
+								<th><a href="?action=l&order={{$column['field']}}">{{$header['columnNames']["{$column['field']}"]}}</a></th> 
 							@else
-								<th>{{Util::cleanName($column['field'])}}</th>
+								<th><a href="?action=l&order={{$column['field']}}">{{Util::cleanName($column['field'])}}</a></th>
 							@endif
 							
 						@endif

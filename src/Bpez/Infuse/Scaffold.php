@@ -329,6 +329,14 @@ class Scaffold
 	protected $event;
 
    /**
+   *  \Illuminate\Session\Store instance of current session
+   *
+   * @access protected
+   * @var object
+   */
+   protected $session;
+
+   /**
    * Date format for laravel timestamps (updated_at, created_at) displayed infuse
    *
    * @access private
@@ -356,12 +364,14 @@ class Scaffold
 	 *
 	 * @api
 	 */
-	public function __construct(\Illuminate\View\Factory $view, \InfuseUser $user, \Illuminate\Support\Facades\DB $db, \Illuminate\Http\Request $request, \Event $event)
+
+	public function __construct(\Illuminate\View\Environment $view, \InfuseUser $user, \Illuminate\Support\Facades\DB $db, \Illuminate\Http\Request $request, \Event $event, \Illuminate\Session\SessionManager $session)
 	{	
 		$this->view = $view;
 		$this->user = $user;
 		$this->request = $request;
 		$this->event = $event;
+    $this->session = $session;
 		self::$db = $db; 
 		$this->rolePermission = (\Config::get("infuse::role_permission"))? true : false;
       $this->formatLaravelTimestamp = \Config::get("infuse::format_laravel_timestamp");
@@ -1291,6 +1301,8 @@ class Scaffold
   	$model = $this->model;
   	$modelInstance = null;
 
+    $order = Util::get("order");
+
   	$offset = 0;
 		$page = Util::get("pg");
 		if ($page && $page != 1 && $page != 'a') {
@@ -1312,10 +1324,27 @@ class Scaffold
 		}
 		
 		if (!$count) { 
+      $modelNameString = get_class($model);
+
+      if ($order) { 
+        if ($this->session->has("infuse_order_column") && $this->session->has("infuse_order") && $this->session->has("infuse_order_model") && $this->session->get("infuse_order_column") == $order && $this->session->get("infuse_order_model") == $modelNameString) {
+          $direction = ($this->session->get("infuse_order") == "asc")? "desc" : "asc";
+          $this->session->put("infuse_order", $direction);
+        } else {
+          $this->session->put("infuse_order_model", $modelNameString);
+          $this->session->put("infuse_order", "asc");
+          $this->session->put("infuse_order_column", $order);
+        }
+      }
+
+      $orderSessionCheck = ($this->session->has("infuse_order_column") && $this->session->has("infuse_order") && $this->session->has("infuse_order_model") && $this->session->get("infuse_order_model") == $modelNameString);
+      $orderByColumn = ($orderSessionCheck)? $this->session->get("infuse_order_column") : $this->order["column"];
+      $orderByDirection = ($orderSessionCheck)? $this->session->get("infuse_order") : $this->order["order"];
+      
 			if ($page == "a") { 
-				$modelInstance = $modelInstance->orderBy($this->order["column"], $this->order["order"]);
+				$modelInstance = $modelInstance->orderBy($orderByColumn, $orderByDirection);
 			} else { 
-				$modelInstance = $modelInstance->orderBy($this->order["column"], $this->order["order"])->take($pagination['limit'])->skip($offset);
+				$modelInstance = $modelInstance->orderBy($orderByColumn, $orderByDirection)->take($pagination['limit'])->skip($offset);
 			}
 		}
 		

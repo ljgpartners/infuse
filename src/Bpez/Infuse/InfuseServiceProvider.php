@@ -66,7 +66,8 @@ class InfuseServiceProvider extends ServiceProvider {
         	$app->make("auth")->user(),
         	$app->make("DB"),
         	$app['request'],
-        	new \Event
+        	new \Event,
+        	$this->app->session
         );
     });
 
