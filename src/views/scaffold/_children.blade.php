@@ -18,6 +18,9 @@
 			$importCSVFunctionUrl = (isset($association[3]) && is_array($association[3]) && isset($association[3]['import_csv_function_url']) )? $association[3]['import_csv_function_url'] : false; 
 			$importCSVFunctionText = (isset($association[3]) && is_array($association[3]) && isset($association[3]['import_csv_function_text']) )? $association[3]['import_csv_function_text'] : false;
 
+			$exportCSVFunction = (isset($association[3]) && is_array($association[3]) && isset($association[3]['export_csv_function']) )? $association[3]['export_csv_function'] : false;
+			$exportCSVFunctionText = (isset($association[3]) && is_array($association[3]) && isset($association[3]['export_csv_function_text']) )? $association[3]['export_csv_function_text'] : false;
+
 			$numColumns = count($childColumns)+1;
 	?>
 	<div class="panel panel-default">
@@ -94,6 +97,7 @@
 			</tr>
 			@endforeach
 
+
 			@if ($importCSV)  
 			<tr>
 				<th colspan="{{$numColumns}}">
@@ -128,6 +132,22 @@
 				</th>
 			</tr>
 			@endif
+
+
+			@if ($exportCSVFunction)
+			<tr>
+				<th colspan="{{$numColumns}}">
+					<form method="POST"  enctype="multipart/form-data" target="_BLANK"> 
+						<p>{{(($exportCSVFunctionText)? $exportCSVFunctionText : "Export all." )}}</p>
+						<input type="hidden" name="action" value="ecsvc">
+						<input type="hidden" name="function" value="{{$exportCSVFunction}}">
+						<input type="hidden" name="back" value="{{$_SERVER['REQUEST_URI']}}">
+						<input type="hidden" name="parent_id" value="{{$entries->id}}"> 
+						<input type="submit" value="export" class="btn submitButton">
+					</form>
+				</th>
+			</tr>
+			@endif 
 
 
 		</table>

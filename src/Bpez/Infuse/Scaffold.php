@@ -1237,6 +1237,9 @@ class Scaffold
 			case 'icsvc':
 				$this->importCSVCustom();
 				break;
+         case 'ecsvc':
+            $this->exportCSVCustom();
+            break;
 			case 'cf':
 				$this->callActionFunction();
 				break;
@@ -1261,6 +1264,7 @@ class Scaffold
 			case 'l':
 			case 's':
 			case 'f':
+         case 'ecsvc':
 				$action = "view";
 				$redirect = "/admin/dashboard";
 				break;
@@ -1279,6 +1283,7 @@ class Scaffold
 			case 'cd':
 			case 'cu':
 			case 'icsv':
+         case 'icsvc':
 				$action = "create";
 				$redirect = $redirectBack;
 				break;
@@ -2065,6 +2070,21 @@ class Scaffold
 			exit();
 		}
 	}
+
+   private function exportCSVCustom()
+   {
+      $model = $this->model;
+      $entry = $model::find(Util::get("parent_id"));
+      $redirect_path = Util::get("back");
+      $function = Util::get("function");
+
+      $entry->{$function}();
+      exit();
+      if (!$this->testing) {
+         header("Location: {$redirect_path}");
+         exit();
+      }
+   }
 	
 
 	private function sendRequestResetPasswordPage()
