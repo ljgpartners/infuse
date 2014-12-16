@@ -1,6 +1,7 @@
 <?php namespace Bpez\Infuse;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /*
 |--------------------------------------------------------------------------
@@ -596,6 +597,19 @@ STRING;
 			$data = explode("@", $name);
 			return $data[0]."".$data[1];
 		}
+	}
+
+	public static function checkPsqlPagesExist($index)
+	{
+		try { 
+			\InfusePage::select("id")
+				->where("navigation_section", "=", $index)
+				->firstOrFail();
+			$infusePage = true;
+		} catch (ModelNotFoundException $e) {
+			$infusePage = false;
+		}
+		return $infusePage;
 	}
 
 

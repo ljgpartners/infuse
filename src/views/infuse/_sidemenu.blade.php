@@ -27,7 +27,7 @@
 		    	<div class="panel-body">
 		        <ul class="list-group">
 
-		        	@if (isset($databaseConnectionType) && $databaseConnectionType == "pgsql")
+		        	@if ($superAdmin || (isset($databaseConnectionType) && $databaseConnectionType == "pgsql" && Util::checkPsqlPagesExist($count+1)))
 				    	<li class="list-group-item">
 				    		<a href="/admin/page?infuse_pages_section={{$count+1}}">Pages</a>
 				    	</li>
