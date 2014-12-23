@@ -104,6 +104,9 @@ CKEDITOR.editorConfig = function( config ) {
 
 	config.forcePasteAsPlainText = true;
 
+	// to disable the filtering of HTML elements in the editor.
+	config.allowedContent = true;
+
 
 	config.filebrowserBrowseUrl = '/packages/bpez/infuse/ckeditor/kcfinder/browse.php?type=files';
 	config.filebrowserImageBrowseUrl = '/packages/bpez/infuse/ckeditor/kcfinder/browse.php?type=images';
