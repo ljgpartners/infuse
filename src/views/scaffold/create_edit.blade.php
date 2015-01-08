@@ -340,7 +340,7 @@
 			
 				<?php switch ($column['type']):
 						case 'varchar': ?>
-							<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" value="{{htmlspecialchars($entries->{$column['field']}) }}" {{Util::readOnly($column)}}>
+							<input type="text" maxlength="{{preg_replace("/[^0-9]/", "", $column['type_original'])}}" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" value="{{htmlspecialchars($entries->{$column['field']}) }}" {{Util::readOnly($column)}}>
 				<?php 	break;
 						case 'text': ?>
 							<textarea name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" {{Util::readOnly($column)}} >{{$entries->{$column['field']} }}</textarea>

@@ -456,7 +456,8 @@ class Scaffold
 				array_push($this->list, $column->field);
 				$this->columns["{$column->field}"] = array(
 						"field" => $column->field,
-						"type"  => $type
+						"type"  => $type,
+                  "type_original" => $column->Type
 					);
 			}
 		}
