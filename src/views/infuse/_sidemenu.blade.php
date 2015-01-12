@@ -3,6 +3,12 @@
 	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 		@foreach ($navigation as $header => $n )
 
+		@if (is_string($n) && substr($n, 0, 1) == "_")
+			<div class="sectionTextDivider"> 
+				<span>{{substr($n, 1)}}</span>
+			</div>
+		@else
+
 		<?php 
 			$showSection = false;
 			foreach ($n as $title => $link ):
@@ -66,6 +72,7 @@
 	  	</div>
 	  	<?php $count++; ?>
 	 		@endif
+	 	@endif
 		@endforeach
 	</div>
 

@@ -10682,7 +10682,6 @@ nav.side .sideNavElements a span.glyphicon {
 .sideNavSlideOut .panel-heading a {
   color: white;
   text-decoration: none;
-  text-transform: uppercase;
 }
 .sideNavSlideOut .panel-heading a:focus,
 .sideNavSlideOut .panel-heading a:focus,
@@ -10693,6 +10692,15 @@ nav.side .sideNavElements a span.glyphicon {
 }
 .sideNavSlideOut .panel {
   border: 0px solid transparent;
+}
+.sectionTextDivider {
+  padding: 10px 15px;
+  height: 40px;
+  background-color: #222;
+}
+.sectionTextDivider span {
+  color: white;
+  text-transform: uppercase;
 }
 .redInfuseGradient {
   background: #c74247;
