@@ -10873,6 +10873,7 @@ section .addPage {
   top: 0;
   right: 0;
   color: white;
+  z-index: 100;
 }
 section a.addSubPage {
   display: none;
