@@ -18,6 +18,17 @@ if (isset($header['filterList'])) {
 	$filterList = (empty($header['filterList']))? $filterList : $header['filterList'];
 }
 
+$currentScope = Util::get("scope");
+$currentScopeUrl = (!empty($currentScope))? "&scope=".$currentScope : "";
+
+$displayOrder = false;
+foreach ($columns as $column) {
+	if (array_key_exists("display_order", $column)) {
+		$displayOrder = true;
+		break;
+	}
+}
+
 ?>
 
 
@@ -86,6 +97,29 @@ if (isset($header['filterList'])) {
 		</div>
 	</div> <!-- end of row -->
 
+	@if (isset($header['queryScopes']))
+		<?php 
+			$header['queryScopes'] = array_chunk($header['queryScopes'], 6, true); 
+		?>
+		@foreach ($header['queryScopes'] as $row)
+		<div class="row"> 
+			<div class="col-sm-12 col-xs-12">
+			<div class="form-group">
+			<div class="btn-group btn-group-justified" role="group">
+		  
+			@foreach ($row as $displayName => $functionName)
+			<div class="btn-group" role="group">
+		    <a href="?action=l&scope={{$functionName}}" class="btn btn-default {{($currentScope == $functionName)? "disabled" : ""}}">{{$displayName}}</a> 
+		  </div>
+			@endforeach
+
+			</div>
+			</div>
+			</div>
+		</div> <!-- end of row -->
+		@endforeach
+	@endif
+
 
 	<div class="row"> 
 		<div class="col-sm-12 col-xs-12">
@@ -125,10 +159,18 @@ if (isset($header['filterList'])) {
 					@foreach ($columns as $column)
 						@if (in_array($column['field'], $header['list']))
 
-							@if (array_key_exists($column['field'], $header['columnNames']))
-								<th><a href="?action=l&order={{$column['field']}}">{{$header['columnNames']["{$column['field']}"]}}</a></th> 
+							@if (!$displayOrder)
+								@if (array_key_exists($column['field'], $header['columnNames']))
+									<th><a href="?action=l&order={{$column['field']}}">{{$header['columnNames']["{$column['field']}"]}}</a></th> 
+								@else
+									<th><a href="?action=l&order={{$column['field']}}">{{Util::cleanName($column['field'])}}</a></th>
+								@endif
 							@else
-								<th><a href="?action=l&order={{$column['field']}}">{{Util::cleanName($column['field'])}}</a></th>
+								@if (array_key_exists($column['field'], $header['columnNames']))
+									<th>{{$header['columnNames']["{$column['field']}"]}}</th> 
+								@else
+									<th>{{Util::cleanName($column['field'])}}</th>
+								@endif
 							@endif
 							
 						@endif
@@ -137,7 +179,7 @@ if (isset($header['filterList'])) {
 				</tr>
 
 				@foreach ($entries as $entry)
-				<tr>
+				<tr data-class="{{get_class($entry)}}" class="{{get_class($entry)}}">
 					@foreach ($columns as $column)
 						@if (in_array($column['field'], $header['list']))
 							<td>
@@ -149,6 +191,12 @@ if (isset($header['filterList'])) {
 											{{$columnName}}
 										@endif
 								@endforeach
+
+							@elseif (array_key_exists("display_order", $column)) 
+								<div class="orderColumn">
+									<a class="upOrder" data-id="{{$entry->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column['field']}}" data-model="{{get_class($entry)}}" href="">[up]</a> 
+									<a class="downOrder" data-id="{{$entry->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column['field']}}" data-model="{{get_class($entry)}}" href="">[down]</a>
+								</div>
 
 							@elseif (array_key_exists("upload", $column))
 								<div class="previewImage">
@@ -259,7 +307,7 @@ if (isset($header['filterList'])) {
 
 	  	<?php $pagination = $header['pagination']; ?>
 	  	@if ($pagination['active_page'] != 1)
-	  		<li><a href='?pg={{$pagination['active_page']-1}}{{$filters}}'>&laquo;</a></li>
+	  		<li><a href='?pg={{$pagination['active_page']-1}}{{$filters}}{{$currentScopeUrl}}'>&laquo;</a></li>
 	  	@else
 	  		<li class="disabled"><a href="javascript: void(0)">&laquo;</a></li>
 	  	@endif
@@ -268,7 +316,7 @@ if (isset($header['filterList'])) {
 	  		<?php $times = ceil((int)$pagination['count']/(int)$pagination['limit']); ?>
 	  		@for ($i=1; $i < $times+1; $i++)
 	  			<li class="{{($pagination['active_page'] == $i)? "active" : ""}}">
-	  				<a href='?pg={{$i}}{{$filters}}'>
+	  				<a href='?pg={{$i}}{{$filters}}{{$currentScopeUrl}}'>
 	  					{{$i}}
 	  				</a>
 	  			</li>
@@ -277,7 +325,7 @@ if (isset($header['filterList'])) {
 	  	@endif
 	  	
 	  	@if (isset($times) && $pagination['active_page'] != $times)
-	    	<li><a href='?pg={{$pagination['active_page']+1}}{{$filters}}'>&raquo;</a></li>
+	    	<li><a href='?pg={{$pagination['active_page']+1}}{{$filters}}{{$currentScopeUrl}}'>&raquo;</a></li>
 	    @else
 	    	<li class="disabled"><a href="javascript: void(0)">&raquo;</a></li>
 	   	@endif

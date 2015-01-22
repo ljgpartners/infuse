@@ -189,6 +189,14 @@ class Scaffold
    */
   private $filterList = array();
 
+  /**
+   * Contains the list query scopes. Index as the display name and value as the function name.
+   *
+   * @access private
+   * @var array
+   */
+  private $queryScopes = array();
+
 	/**
    * Boolean for setting special rules for processing InfuseUser model.
    *
@@ -204,6 +212,15 @@ class Scaffold
    * @var boolean
    */
 	private $onlyOne = false;
+
+  /**
+   * Set a column default value when saved and load only load item that match that value.
+   * array("column" => "value", ...)
+   *
+   * @access private
+   * @var boolean
+   */
+  private $defaultColumnValues = array();
 
 	/**
    * Associates model to current user when a new instance is created and only load ones that belong to user.
@@ -430,37 +447,46 @@ class Scaffold
   	
   	$this->action = Util::get("action");
 		$db = self::$db;
-      $columns =  $db::select("select column_name as field, data_type as type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name = '".$this->model->getTable()."'");
+    $columns =  $db::select("select column_name as field, data_type as type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name = '".$this->model->getTable()."'");
 
 		$this->order['column'] = $this->model->getKeyName();
 
 		$this->primaryKey = $this->model->getKeyName();
+
+    $typeString = ($this->databaseConnection == "pgsql")? "type" : "Type";
+    $fieldString = ($this->databaseConnection == "pgsql")? "field" : "Field";
 		
 		foreach ($columns as $column) {
-			if ($column->field != $this->primaryKey ) {
-				if (strlen(strstr($column->type, "varchar")) > 0 || strlen(strstr($column->type, "character varying")) > 0) {
-					$type = "varchar";
-				} else if (strlen(strstr($column->type, "tinyint")) > 0 || strlen(strstr($column->type, "boolean")) > 0) {
-					$type = "tinyint";
-				} else if (strlen(strstr($column->type, "int")) > 0) {
-					$type = "int";
-            } else if (strlen(strstr($column->type, "timestamp")) > 0) {
-               $type = "timestamp";
-            } else if (strlen(strstr($column->type, "json")) > 0) {
-               $type = "text";
-				} else {
-					$type = $column->type;
-				}
-            
+      if ($column->{$fieldString} != $this->primaryKey ) {
+        if (strlen(strstr($column->{$typeString}, "varchar")) > 0 || strlen(strstr($column->{$typeString}, "character varying")) > 0) {
+          $type = "varchar";
+        } else if (strlen(strstr($column->{$typeString}, "tinyint")) > 0 || strlen(strstr($column->{$typeString}, "boolean")) > 0) {
+          $type = "tinyint";
+        } else if (strlen(strstr($column->{$typeString}, "int")) > 0) { 
+          $type = "int";
+        } else if (strlen(strstr($column->{$typeString}, "timestamp")) > 0) {
+           $type = "timestamp";
+        } else if (strlen(strstr($column->{$typeString}, "json")) > 0) {
+           $type = "text";
+        } else if (strlen(strstr($column->{$typeString}, "float")) > 0 || strlen(strstr($column->{$typeString}, "double precision")) > 0) {
+           $type = "float";
+        } else if (strlen(strstr($column->{$typeString}, "hstore")) > 0) {
+           $type = "hstore";
+        }else {
+          $type = $column->{$typeString};
+        }
 
-				array_push($this->list, $column->field);
-				$this->columns["{$column->field}"] = array(
-						"field" => $column->field,
-						"type"  => $type,
-                  "type_original" => $column->Type
-					);
-			}
-		}
+        
+            
+       
+        array_push($this->list, $column->{$fieldString});
+        $this->columns["{$column->{$fieldString}}"] = array(
+            "field" => $column->{$fieldString},
+            "type"  => $type,
+            "type_original" => $column->{$typeString}
+          );
+      }
+    }
   }
 
   /**
@@ -852,7 +878,10 @@ class Scaffold
       // If only one
       if ( is_array($describes) && isset($describes['column']) && isset($describes['desc'])) {
          if (array_key_exists($describes['column'], $this->columns)) { 
-            $this->columns["{$describes['column']}"]["description"] = (is_string($describes['desc']))? $describes['desc'] : "";  
+            $this->columns["{$describes['column']}"]["description"] = (is_string($describes['desc']))? $describes['desc'] : ""; 
+            if (isset($describes['popover'])) {
+              $this->columns["{$describes['column']}"]["description_popover"] = $describes['popover']; 
+            }
          } else {
             throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here")));  Column doesn\'t exist.');
          }
@@ -864,7 +893,10 @@ class Scaffold
    			if (!isset($d['column']) || !isset($d['desc'])) 
    				throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here"))); Both argument are required');
    			if (array_key_exists($d['column'], $this->columns)) { 
-   				$this->columns["{$d['column']}"]["description"] = (is_string($d['desc']))? $d['desc'] : ""; 	
+   				$this->columns["{$d['column']}"]["description"] = (is_string($d['desc']))? $d['desc'] : ""; 
+          if (isset($d['popover'])) {
+            $this->columns["{$d['column']}"]["description_popover"] = $d['popover']; 
+          } 
    			} else {
    				throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here")));  Column doesn\'t exist.');
    			}
@@ -906,6 +938,14 @@ class Scaffold
     if (!is_array($list)) 
       throw new ScaffoldConfigurationException('filterListColumns(array("name", "count", "active")); First argument should be an array of the names of the columns allowed to be filtered on landing page.');
     $this->filterList = $list;
+    return $this;
+  }
+
+  public function queryScopes($list)
+  {
+    if (!is_array($list)) 
+      throw new ScaffoldConfigurationException('queryScopes(array("display_name" => "function_name")); First argument should be an array. Index as the display name and value as the function name.');
+    $this->queryScopes = $list;
     return $this;
   }
 
@@ -972,6 +1012,22 @@ class Scaffold
 		$this->siblingOfUserParentOnly = $info;
 		return $this;
 	}
+
+  public function defaultColumnValues($info) 
+  { 
+    $base = 'defaultColumnValues(array("column" => "column_value", ...));';
+    
+    if (!is_array($info) ) 
+      throw new ScaffoldConfigurationException($base.' Must be an array.');
+
+    foreach ($info as $i => $value) {
+      if (!array_key_exists($i, $this->columns)) 
+        throw new ScaffoldConfigurationException($base.' First argument must an array. column and value must be set. ');
+      $this->defaultColumnValues["{$i}"] = $value;
+    }
+  
+    return $this;
+  }
 
 	
 	public function callFunction($info) 
@@ -1183,6 +1239,12 @@ class Scaffold
         case 'filterListColumns':
            $this->filterListColumns($f);
            break;
+        case 'defaultColumnValues':
+          $this->defaultColumnValues($f);
+          break;
+        case 'queryScopes':
+          $this->queryScopes($f);
+          break;
             
 				
 				
@@ -1414,6 +1476,18 @@ class Scaffold
 			$modelInstance = $modelInstance->where($where['column'], $where['operator'], $where['value']);
 		}
 
+    foreach($this->defaultColumnValues as $index => $value) {
+      $modelInstance = $modelInstance->where($index, "=", $value);
+    }
+
+    $scope = Util::get("scope");
+
+    foreach($this->queryScopes as $key => $functionName) {
+      if ($scope == $functionName) {
+        $modelInstance = $modelInstance->{$functionName}();
+      }
+    }
+
   	return $modelInstance;
   }
 
@@ -1441,6 +1515,7 @@ class Scaffold
 				"name" => $this->name,
 				"list" => $this->list,
         "filterList" => $this->filterList,
+        "queryScopes" => $this->queryScopes,
 				"onlyOne" => $this->onlyOne,
 				"addOtherActions" => $this->addOtherActions,
 				"columnNames" => $this->columnNames
@@ -1510,6 +1585,7 @@ class Scaffold
 				"name" => $this->name,
 				"list" => $this->list,
         "filterList" => $this->filterList,
+        "queryScopes" => $this->queryScopes,
 				"filters" => $filters,
 				"onlyOne" => $this->onlyOne,
 				"addOtherActions" => $this->addOtherActions,
@@ -1560,6 +1636,7 @@ class Scaffold
 				"name" => $this->name,
 				"list" => $this->list,
         "filterList" => $this->filterList,
+        "queryScopes" => $this->queryScopes,
 				"onlyOne" => $this->onlyOne,
 				"addOtherActions" => $this->addOtherActions,
 				"columnNames" => $this->columnNames
@@ -1637,6 +1714,7 @@ class Scaffold
 				"name" => $this->name,
 				"list" => $this->list,
         "filterList" => $this->filterList,
+        "queryScopes" => $this->queryScopes,
 				"onlyOne" => $this->onlyOne,
 				"addOtherActions" => $this->addOtherActions,
 				"columnNames" => $this->columnNames
@@ -2220,7 +2298,8 @@ class Scaffold
 							
               if(strpos($fileName, "@2x.") !== FALSE) {
                 $uploadPath = $model->uploadPath($column['field']);
-                $halfRetinaSize = floor($transit->getOriginalFile()->width()/2);
+                // 1.5 instead of 2. Almost same quality but saves more space and bandwidth.
+                $halfRetinaSize = floor($transit->getOriginalFile()->width()/1.5);
                 $retinaFileName = $fileName;
 
                 $fileName = explode("@2x.", $fileName);
@@ -2266,21 +2345,18 @@ class Scaffold
 
 					$inputsTemp = Util::get($column['field']);
 
-					if ($this->belongsToUser && $column['field'] == "infuse_user_id" && !$this->user->is('Super Admin'))
-						$inputsTemp = $this->user->id;
+					if ($this->belongsToUser && $column['field'] == "infuse_user_id" && !$this->user->is('Super Admin')) {
+            $inputsTemp = $this->user->id;
+          }
 
+          if (array_key_exists($column['field'], $this->defaultColumnValues)) {
+            $inputsTemp = $this->defaultColumnValues["{$column['field']}"];
+          }
+					
+          if (empty($inputsTemp) && $column['type'] == "int") {
+            $inputsTemp = 0;
+          }
 
-               /*   
-					if (isset($column['display_order']) && Util::get("stack") && empty($inputsTemp)) {
-                  $parent = Util::stackParentName();
-                  $parent = Util::foreignKeyString($parent);
-                  $parentId = Util::stackParentId();
-
-						$count = $model::where($parent, "=", $parentId)->count();
-						$count = 1+(int)$count;
-						$inputsTemp = $count;
-					} else 
-               */
 
 					$entry->{$column['field']} = $inputsTemp;
 					

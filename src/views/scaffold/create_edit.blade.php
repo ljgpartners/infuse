@@ -364,6 +364,9 @@
 						case 'int': ?> 
 							<input type="number" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" pattern="\d+" value="{{ (empty($entries->{$column['field']}))? 0 : $entries->{$column['field']}  }}" {{Util::readOnly($column)}} />
 				<?php 	break;
+						case 'float': ?> 
+									<input type="number" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" step="any" value="{{ (empty($entries->{$column['field']}))? 0 : $entries->{$column['field']}  }}" {{Util::readOnly($column)}} />
+				<?php 	break;
 						case 'tinyint': ?> 
 							<select name="{{$column['field']}}" {{Util::readOnlyWithDisabled($column)}} class="form-control">
 								<option value="0" {{($entries->{$column['field']} == 0)? 'selected="selected"' : ""}} >No</option>
@@ -387,7 +390,11 @@
 				<div class="infuseLabels">
 					{{-- Add column description  --}}
 					@if (array_key_exists("description", $column)) 
-						<span class="label label-default-bryan">{{$column['description']}}</span>
+						@if (array_key_exists("description_popover", $column))
+							<a href="#" tabindex="0" class="infoPopOver" role="button" data-toggle="popover" data-html="true" data-trigger="focus" title="Information" data-content="{{$column['description']}}">Information</a>
+						@else
+							<span class="label label-default-bryan">{{$column['description']}}</span> 
+						@endif
 					@endif
 
 					

@@ -71,6 +71,105 @@ trait InfuseEloquentLibrary {
     }
   }
 
+
+  public function generateThumbnail($thumbnailToColumn, $thumbnailFromColumn, $width, $height)
+  {   
+      // Only process if image changed
+      $original = $this->getOriginal();
+      if (isset($original[$thumbnailFromColumn]) &&  $this->{$thumbnailFromColumn} == $original[$thumbnailFromColumn]) {
+        return false;
+      } else {
+        // Remove old thumbnails if exist
+        if (!empty($this->{$thumbnailToColumn}) && file_exists($_SERVER['DOCUMENT_ROOT']."/".$this->url($thumbnailToColumn))) {
+          $currentFile = $_SERVER['DOCUMENT_ROOT']."/".$this->url($thumbnailToColumn);
+          unlink($currentFile);
+          $name = pathinfo($currentFile, PATHINFO_FILENAME);
+          $ext  = pathinfo($currentFile, PATHINFO_EXTENSION);
+          $retinaImage = $this->uploadPath($thumbnailToColumn).$name."@2x.".$ext;
+          if (file_exists($retinaImage)) {
+            unlink($retinaImage);
+          }
+          unset($currentFile);
+          unset($retinaImage);
+        }
+      }
+
+      // Get image from current column.
+      $thumbnailImageFrom = $this->uploadPath($thumbnailFromColumn).$this->{$thumbnailFromColumn};
+
+      $fileName = $this->{$thumbnailFromColumn};
+      $name = pathinfo($fileName, PATHINFO_FILENAME);
+      $ext  = pathinfo($fileName, PATHINFO_EXTENSION);
+      $retinaImage = $this->uploadPath($thumbnailFromColumn).$name."@2x.".$ext;
+      
+      // Process retina 
+      if (file_exists($retinaImage)) { 
+        $retinaImageThumbnail = $this->uploadPath($thumbnailToColumn).$name.".thumbnail@2x.".$ext;
+        $imageThumbnail = $this->uploadPath($thumbnailToColumn).$name.".thumbnail.".$ext;
+        $widthRetina = 1.5*$width;
+        $heightRetina = 1.5*$height;
+        try {
+
+          if (!file_exists($this->uploadPath($thumbnailToColumn))) {
+            mkdir(dirname($retinaImageThumbnail), 0775, true);
+          }
+
+          
+          if (copy($retinaImage, $retinaImageThumbnail)) {
+              $transitRetina = new ResizeTransformer(array('width' => $widthRetina));
+              if (!$transitRetina->transform(new File($retinaImageThumbnail), true)) {
+                throw new Exception("Failed to resize retina for non retina version.");
+              }
+
+              if (copy($retinaImageThumbnail, $imageThumbnail)) {
+                $transitRetina = new ResizeTransformer(array('width' => $width));
+                if (!$transitRetina->transform(new File($imageThumbnail), true)) {
+                  throw new Exception("Failed to resize retina for non retina version.");
+                }
+              } else {
+                throw new Exception("Failed to copy retina image for processing.");
+              }
+
+
+              $this->{$thumbnailToColumn} = $name.".thumbnail.".$ext;
+              //return $this->save();
+
+
+          } else {
+            throw new Exception("Failed to copy retina image for processing.");
+          }
+
+        } catch (Exception $e) {
+          return die($e->getMessage());
+        }
+      
+      // Process standard 
+      } else if (!empty($this->{$thumbnailFromColumn}) && file_exists($thumbnailImageFrom)) { 
+        $imageThumbnail = $this->uploadPath($thumbnailToColumn).$name.".thumbnail.".$ext;
+        try {
+
+          if (!file_exists($this->uploadPath($thumbnailToColumn))) {
+            mkdir(dirname($imageThumbnail), 0775, true);
+          }
+          
+          if (copy($thumbnailImageFrom, $imageThumbnail)) {
+            $transitRetina = new ResizeTransformer(array('width' => $width));
+            if (!$transitRetina->transform(new File($imageThumbnail), true)) {
+              throw new Exception("Failed to resize retina for non retina version.");
+            }
+          } else {
+            throw new Exception("Failed to copy retina image for processing.");
+          }
+
+
+          $this->{$thumbnailToColumn} = $name.".thumbnail.".$ext;
+
+        } catch (Exception $e) {
+          return die($e->getMessage());
+        }
+      }
+  }
+
   
 
 }

@@ -26,7 +26,7 @@ class InfusePage extends InfuseEloquent {
         break;
       case 'upload':
         $infusePage = new InfusePage;
-        $return = $infusePage->uploadPath("page_data").$pageValue['value'];
+        $return = (!empty($pageValue['value']))? $infusePage->url("page_data").$pageValue['value'] : "";
         break;
       case 'group':
         $temp = array();

@@ -338,7 +338,7 @@ class InfusePageController extends BaseController {
 	 * @return Response
 	 */
 	public function update($id)
-	{
+	{ 
 		$resource = array();
 		$infusePagesSection = Session::get('infuse_pages_section');
 		$nested = (Input::has("pip"))? true : false;
@@ -392,51 +392,16 @@ class InfusePageController extends BaseController {
 			//  Update page values of page instance
 			
 			// Process adding new images
-			$newImages = array();
+			$newImages = array(); 
 			foreach ($updatePageInstance->pageValues as &$item) {
 				if ($item->type == "upload") {
-					$newImages[$item->id] = false;
-
-					if (isset($_FILES["{$item->id}"])) {
-						$transit = new Transit($_FILES["{$item->id}"]);
-
-						$transit->setDirectory($infusePage->uploadPath("page_data"));
-						
-						try { 
-
-							$success = $transit->upload();
-							
-							if ($success) {
-								$fileName = explode(DIRECTORY_SEPARATOR, $transit->getOriginalFile());
-			          $fileName = end($fileName);
-								
-			          if(strpos($fileName, "@2x.") !== FALSE) {
-			            $uploadPath = $infusePage->uploadPath("page_data");
-			            $halfRetinaSize = floor($transit->getOriginalFile()->width()/2);
-			            $retinaFileName = $fileName;
-
-			            $fileName = explode("@2x.", $fileName);
-			            $fileName = $fileName[0].".".$fileName[1];
-			            if (copy($uploadPath.$retinaFileName, $uploadPath.$fileName)) {
-
-			              $transitRetina = new ResizeTransformer(array('width' => $halfRetinaSize));
-
-			              if (!$transitRetina->transform(new File($uploadPath.$fileName), true)) {
-			                throw new Exception("Failed to resize retina for non retina version.");
-			              }
-			            } else {
-			              throw new Exception("Failed to copy retina image for processing.");
-			            }
-			          }
-
-			          $item->value = $fileName;
-			          $newImages[$item->id] = true;
-
-							} 
-						} catch (Exception $e) {
-							$fileErrors["{$item->id}"] = $e->getMessage();
+					self::processUploads($item, $newImages, $pageInstance, $infusePage);
+				} else if ($item->type == "group") {
+					foreach ($item->value as $groupItem) {
+						if ($groupItem->type == "upload") {
+							self::processUploads($groupItem, $newImages, $pageInstance, $infusePage);
 						}
-					} // end of isset($_FILES["{$item->id}"])
+					}
 				} // end of $item->type == "upload"
 			} // end of foreach
 
@@ -452,10 +417,20 @@ class InfusePageController extends BaseController {
 					if (!empty($item->value) && file_exists($uploadedFile)) {
 						unlink($uploadedFile);
 					}
+				} else if ($item->type == "group") {
+					foreach ($item->value as $groupItem) {
+						if (($groupItem->type == "upload" && isset($newImages[$groupItem->id]) && $newImages[$groupItem->id] == true) || 
+								($groupItem->type == "upload" && !isset($newImages[$groupItem->id]))) {
+
+							$uploadedFile = $infusePage->uploadPath("page_data").$groupItem->value;
+							if (!empty($groupItem->value) && file_exists($uploadedFile)) {
+								unlink($uploadedFile);
+							}
+						}
+					}
 				}
 			}
-
-
+			
 			$pageInstance->pageValues = $updatePageInstance->pageValues; 
 		
 			//  Update page instance
@@ -507,6 +482,80 @@ class InfusePageController extends BaseController {
 
 		return Redirect::route('admin.page.index');
 	}
+
+
+	
+	private static function processUploads(&$item, &$newImages, &$pageInstance, &$infusePage)
+	{
+		$newImages[$item->id] = false;
+		
+		if (isset($_FILES["{$item->id}"]) && !empty($_FILES["{$item->id}"]['name'])) { 
+			$transit = new Transit($_FILES["{$item->id}"]);
+
+			$transit->setDirectory($infusePage->uploadPath("page_data"));
+			
+			try { 
+
+				$success = $transit->upload();
+				
+				if ($success) {
+					$fileName = explode(DIRECTORY_SEPARATOR, $transit->getOriginalFile());
+          $fileName = end($fileName);
+					
+          if(strpos($fileName, "@2x.") !== FALSE) {
+            $uploadPath = $infusePage->uploadPath("page_data");
+            $halfRetinaSize = floor($transit->getOriginalFile()->width()/1.5);
+            $retinaFileName = $fileName;
+
+            $fileName = explode("@2x.", $fileName);
+            $fileName = $fileName[0].".".$fileName[1];
+            if (copy($uploadPath.$retinaFileName, $uploadPath.$fileName)) {
+
+              $transitRetina = new ResizeTransformer(array('width' => $halfRetinaSize));
+
+              if (!$transitRetina->transform(new File($uploadPath.$fileName), true)) {
+                throw new Exception("Failed to resize retina for non retina version.");
+              }
+            } else {
+              throw new Exception("Failed to copy retina image for processing.");
+            }
+          }
+
+          $item->value = $fileName;
+          $newImages[$item->id] = true;
+
+				} 
+			} catch (Exception $e) {
+				$fileErrors["{$item->id}"] = $e->getMessage();
+			}
+		} // end of isset($_FILES["{$item->id}"])
+
+		
+		// Add back original value (if exists) if no new image present
+		if (!$newImages[$item->id]) { 
+			foreach ($pageInstance->pageValues as &$OGItem) {
+				if ($OGItem->type == "upload") {
+					self::addBackOriginalInProcessUploads($OGItem, $item);
+				} else if ($OGItem->type == "group") {
+					foreach ($OGItem->value as $groupInOGItem) {
+						if ($groupInOGItem->type == "upload") {
+							self::addBackOriginalInProcessUploads($groupInOGItem, $item);
+						}
+					}
+				}
+			}
+			
+		}
+	}
+
+	// Add back original value (if exists) if no new image present
+	private static function addBackOriginalInProcessUploads(&$OGItem, &$item)
+	{
+		if ($OGItem->id == $item->id) {
+			$item->value =  $OGItem->value; 
+		}
+	}
+
 
 	/**
 	 * Remove the specified resource from storage.

@@ -133,6 +133,8 @@ $(document).ready(function() {
  ********************************************************/
 if ($(".InfuseController").length > 0) {
 
+	$(".infoPopOver").popover();
+
 
 	$('.infuseCkeditor').each(function() {
 		var self = $(this)
@@ -363,6 +365,89 @@ if ($(".InfuseController").length > 0) {
 				 
 				 if (data.success ) {
 					 	row.insertAfter(row.next());
+				 } else {
+				 	alert("Failed to reorder entries.");
+				 }
+				 
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+				  //console.log('AJAX call failed: ' + textStatus + ' ' + errorThrown);
+				}
+			}); // End of Ajax 
+		}
+		
+		return false;
+	});
+
+	$('.orderColumn').on('click', ".upOrder", function(event){
+		event.preventDefault();
+		var self   = $(this),
+				id 		 = self.data("id"),
+				url 	 = self.data("url"),
+				model  = self.data("model"),
+				column = self.data("column"),
+				cssClass = self.parent().parent().data("class"),
+				row = self.closest('tr'),
+				prevId = row.prev().find(".upOrder").data("id");
+			
+		
+		if ($("tr."+cssClass).index(self.parent().parent()) != 0) {
+			$.ajax({
+				type: 'POST',
+				url: url,
+				data: {
+					action: "swap_order",
+					column: column,
+					prevId: prevId, 
+					id: id, 
+					model: model, 
+					column: column
+				},
+				success: function (data) { 
+				 
+				 if (data.success ) {
+					 window.location.href = url;
+				 } else {
+				 	alert("Failed to reorder entries.");
+				 }
+				 
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+				  //console.log('AJAX call failed: ' + textStatus + ' ' + errorThrown);
+				}
+			}); // End of Ajax 
+		}
+
+		
+		return false;
+	});
+
+	$('.orderColumn').on('click', ".downOrder", function(event){
+		event.preventDefault();
+		var self   = $(this),
+				id 		 = self.data("id"),
+				url 	 = self.data("url"),
+				model  = self.data("model"),
+				column = self.data("column"),
+				row = self.closest('tr'),
+				prevId = row.next().find(".upOrder").data("id");
+				
+		if (row.next().length > 0) {
+			$.ajax({
+				type: 'POST',
+				url: url,
+				data: {
+					action: "swap_order",
+					column: column,
+					prevId: prevId, 
+					id: id, 
+					model: model, 
+					column: column
+				},
+				success: function (data) { 
+				 
+				 if (data.success ) {
+					 	window.location.href = url;
 				 } else {
 				 	alert("Failed to reorder entries.");
 				 }
