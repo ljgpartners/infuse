@@ -17,7 +17,7 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "4.2.*",
-        "bpez/transit": "infuse-patch",
+        "bpez/transit": "dev-master",
         "toddish/verify": "2.*",
         "clouddueling/mysqldump-php": "1.0.*",
         "intervention/image": "1.5.*",
@@ -27,12 +27,6 @@
         "bpez/munee": "1.5.*",
         "paquettg/php-html-parser": "1.6.3"
     },
-    "repositories": [
-    {
-        "type": "vcs",
-        "url": "https://bitbucket.org/perezjbryan/transit.git"
-    }
-    ],
     "autoload": {
         "classmap": [
             "src/migrations",
