@@ -51,10 +51,16 @@ Steps for installing
 
 > Add local and production environments
 >
-> $env = $app->detectEnvironment(array(
->		'local'   => array('imac.local'),
-> 	'production' => array('dev.domain.com')
->	));
+>$env = $app->detectEnvironment(function()	{
+>	$hosts = array(
+>		'livedomain.com' => 'production',
+>		'localhost' => 'local',
+>		'somelocal.local' => 'local',
+>		'stage.livedomain.com' => 'stage',
+>	);
+>
+>	return (isset($_SERVER['SERVER_NAME']) && isset($hosts[$_SERVER['SERVER_NAME']]))? $hosts[$_SERVER['SERVER_NAME']] : "production";
+>});
 >
 > add the following .htaccess rule for adding validate http cache to static assets
 

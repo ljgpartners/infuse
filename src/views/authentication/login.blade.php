@@ -3,7 +3,7 @@
 	@if (Config::get('infuse::company_logo') != "")
 		<img class="logo" src="{{Config::get('infuse::company_logo')}}">
 	@else
-		<div class="infuseTextLogo">Infuse</div>
+    <img class="logo" src="/packages/bpez/infuse/images/infuseLogo.png" alt="">
 	@endif
 
 	@if (Config::get('infuse::site_title') != "")

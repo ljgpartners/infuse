@@ -56,6 +56,7 @@ class InfusePageController extends BaseController {
 	public function index()
 	{
 		$infusePagesSection = Session::get('infuse_pages_section');
+		$this->layout->infusePagesSection = $infusePagesSection;
 		
 		try {
 			$infusePage = InfusePage::select(DB::raw("id, title, page_data->'page' as page_data"))
@@ -79,6 +80,7 @@ class InfusePageController extends BaseController {
 	{
 		$this->layout->title = "Create Infuse Page | Infuse";
 		$infusePagesSection = Session::get('infuse_pages_section');
+		$this->layout->infusePagesSection = $infusePagesSection;
 
 		$resource = array();
 		$resource['method'] = "POST";
@@ -258,6 +260,7 @@ class InfusePageController extends BaseController {
 	{	
 		$this->layout->title = "Edit Infuse Page | Infuse"; 
 		$infusePagesSection = Session::get('infuse_pages_section');
+		$this->layout->infusePagesSection = $infusePagesSection;
 		$nested = (Input::has("pip"))? true : false;
 
 		if (Input::has("pop")) {

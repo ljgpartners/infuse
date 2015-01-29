@@ -36,7 +36,7 @@ class InfuseController extends BaseController {
 
 
 
-	public function resource($resource) 
+	public function resource($firstNavLevel, $secondNavLevel, $resource) 
 	{
 		$this->layout->title = "Resource | Infuse"; 
 		View::share('manageActive', true);
@@ -54,11 +54,18 @@ class InfuseController extends BaseController {
 		$redirect = $scaffold->checkPermissions($uri);
 		if ($redirect)
 			return Redirect::to($redirect);
-			
+		
+
+		if ($resource != 'infuse_page') {
+			$this->layout->firstNavLevel = $firstNavLevel; 
+			$this->layout->secondNavLevel = $secondNavLevel;
+		}
+		$this->layout->resource = $resource;
+
 		$this->layout->content = $scaffold->process(); 
 	}
 
-	public function child($resource)
+	public function child($firstNavLevel, $secondNavLevel, $resource)
 	{
 		$this->layout->title = "Resource | Infuse";
 		View::share('manageActive', true);
@@ -77,6 +84,10 @@ class InfuseController extends BaseController {
 		$redirect = $scaffold->checkPermissions(Util::childBackLink());
 		if ($redirect)
 			return Redirect::to($redirect);
+
+		$this->layout->firstNavLevel = $firstNavLevel; 
+		$this->layout->secondNavLevel = $secondNavLevel;
+		$this->layout->resource = $resource;
 			
 		$this->layout->content = $scaffold->process();
 	}

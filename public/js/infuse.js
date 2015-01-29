@@ -70,8 +70,16 @@ $(document).ready(function() {
 
 	var animating = false;
 
+	$("nav.center").each(function() {
+		var activeClass = $(this).data("nav-level-active"); 
+		$('li.list-group-item[data-active="'+activeClass+'"]').addClass("active");
+	});
+
 	$(".infuseManage").bind("click", function(event) {
 		event.preventDefault();
+
+		$(".sideNavSlideOut").toggle();
+		/*
 		var self = $(this);
 		if (self.data("open") == true && !animating) {
 			self.removeClass("active");
@@ -87,7 +95,7 @@ $(document).ready(function() {
 				self.data("open", true);
 				animating = false;
 			})
-		}
+		} */
 	});
 
 	/*******************************************************
