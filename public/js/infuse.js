@@ -481,6 +481,10 @@ if ($(".InfuseController").length > 0) {
 				name = self.data("name"),
 				value = String(self.data("value"));
 
+		for (var i = 0; i < data.length; i++) {
+			data[i].id = parseInt(data[i].id);
+		}
+
 		if(value.indexOf(",") !== -1) {
 			var tempArray = new Array();
 			$.each(value.split(","), function(index, value) {
