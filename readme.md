@@ -33,9 +33,9 @@ Step 4: Add to middleware
 ```php
 // app\http\Kernel.php
 protected $middleware = [
-	...
-	'Bpez\Infuse\Middleware\InfuseBeforeMiddleware',
-	'Bpez\Infuse\Middleware\InfuseAfterMiddleware'
+  ...
+  'Bpez\Infuse\Middleware\InfuseBeforeMiddleware',
+  'Bpez\Infuse\Middleware\InfuseAfterMiddleware'
 ];
 ```
 
@@ -86,28 +86,27 @@ Step 9: Run infuse migrations
 
 ```
 
-
-
-####  Serve Retina Images .htaccess Code Start ####
+Step 10: Add support to server retina images
+```htaccess
 RewriteCond %{HTTP:Cookie} devicePixelRatio [NC]
 RewriteRule \.(?:jpe?g|gif|png|bmp)$ /packages/bpez/infuse/retinaimages.php [NC,L]
-### Serve Retina Images .htaccess Code End #
+```
+
+
+
 
 ### Possible future features 
 
-> add Throttling
->
+```
 > https://github.com/websoftwares/Throttle
 > http://laravel.com/docs/cache
 > https://github.com/frenzyapp/turbolinks
 > https://github.com/rails/turbolinks
 > https://github.com/kossnocorp/jquery.turbolinks
+```
 
-
-### artisan install 
+###  Install artisan on sterioids
+```cmd
 > sudo curl https://raw.github.com/villimagg/Artisan-on-Steroids/master/artisan -o /usr/local/bin/artisan && sudo chmod +x /usr/local/bin/artisan
-
-phpdoc.php -f src/Bpez/Infuse/Scaffold.php -t ./docs --template="responsive-twig"
-
-
+```
 
