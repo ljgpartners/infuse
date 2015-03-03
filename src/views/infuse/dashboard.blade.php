@@ -3,4 +3,4 @@
   <p>Click on manage <span class="glyphicon glyphicon-pencil"></span> to make updates.</p>
 </div>
 
-{{Util::fuseAlerts(Util::flash())}}
+{!!Util::fuseAlerts(Util::flash())!!}

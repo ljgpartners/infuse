@@ -26,8 +26,6 @@ Route::group(array('prefix' => "admin", 'before' => array('InfuseAuth', 'WebServ
 
 Route::controller('password', 'RemindersController');
 
-
-
 /*
 |--------------------------------------------------------------------------
 | Filters

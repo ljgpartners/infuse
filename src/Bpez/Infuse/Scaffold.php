@@ -398,10 +398,10 @@ class Scaffold
 		$this->event = $event;
     $this->session = $session;
 		self::$db = $db; 
-		$this->rolePermission = (\Config::get("infuse::role_permission"))? true : false;
-      $this->formatLaravelTimestamp = \Config::get("infuse::format_laravel_timestamp");
-      $this->beforeEdit = function() { return true; };
-      $this->databaseConnection = \Config::get('database.default');
+		$this->rolePermission = (\Config::get("infuse::config.role_permission"))? true : false;
+    $this->formatLaravelTimestamp = \Config::get("infuse::config.format_laravel_timestamp");
+    $this->beforeEdit = function() { return true; };
+    $this->databaseConnection = \Config::get('database.default');
 	}
 
 	/**
@@ -418,7 +418,7 @@ class Scaffold
 	public function model($model)
 	{
 		$this->model = $model;
-		if (is_subclass_of($this->model, 'Bpez\Infuse\InfuseEloquent') 
+		if (is_subclass_of($this->model, 'Bpez\Infuse\InfuseModel') 
 				|| is_subclass_of($this->model, 'Toddish\Verify\Models\User') 
 				|| is_subclass_of($this->model, 'Toddish\Verify\Models\Role')  
 				|| is_subclass_of($this->model, 'Toddish\Verify\Models\Permission') ) {
@@ -453,8 +453,8 @@ class Scaffold
 
 		$this->primaryKey = $this->model->getKeyName();
 
-    $typeString = ($this->databaseConnection == "pgsql")? "type" : "Type";
-    $fieldString = ($this->databaseConnection == "pgsql")? "field" : "Field";
+    $typeString = "type"; //($this->databaseConnection == "pgsql")? "type" : "Type";
+    $fieldString =  "field"; //($this->databaseConnection == "pgsql")? "field" : "Field";
 		
 		foreach ($columns as $column) {
       if ($column->{$fieldString} != $this->primaryKey ) {

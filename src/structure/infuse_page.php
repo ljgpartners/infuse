@@ -2,7 +2,7 @@
 
 $navigationSection = array();
 
-for ($x = 1; $x <= count(Config::get('infuse::navigation')); $x++) {
+for ($x = 1; $x <= count(Config::get('infuse::config.navigation')); $x++) {
   array_push($navigationSection, array("id" => $x, "name" => $x));
 } 
 

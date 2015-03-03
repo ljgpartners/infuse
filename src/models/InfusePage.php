@@ -2,9 +2,9 @@
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class InfusePage extends InfuseEloquent {
+class InfusePage extends Bpez\Infuse\InfuseModel {
 
-  use InfuseEloquentLibrary;
+  use Bpez\Infuse\InfuseModelLibrary;
 
   protected $table = 'pages';
 

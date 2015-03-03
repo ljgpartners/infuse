@@ -52,7 +52,7 @@ foreach ($columns as $column) {
 <div class="container-fluid">
 	<div class="row">
   	<div class="col-sm-12 col-xs-12">
-		{{Util::fuseAlerts(Util::flash())}} 
+		{!!Util::fuseAlerts(Util::flash())!!} 
 		</div>
 	</div>
 </div>

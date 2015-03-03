@@ -36,7 +36,7 @@ return array(
 	/*
 	| Link to main site
 	*/
-	'admin_site_link' => url('/'),
+	'admin_site_link' => "/",
 
 	/*
 	| Compnay logo
@@ -46,7 +46,7 @@ return array(
 	/*
 	| Compnay logo
 	*/
-	"site_title" => "",
+	"site_title" => "Admin",
 
 	/*
 	| Overide dashboard template a custom template from your views
@@ -58,13 +58,6 @@ return array(
 	*/
 	'add_javascript' => '', 
 
-
-	/*
-	| The "expire" time is the number of minutes that the reminder should be
-	| considered valid. This security feature keeps tokens short-lived so
-	| they have less time to be guessed. You may change this as needed.
-	*/
-	'reminder_expire' => 60,
 	
 		
 	/*
@@ -78,19 +71,39 @@ return array(
 
 	'navigation' => array(
 
-		'Section 1' => array(
-			'Model1' => 'model1_snake_case',
+		
+		'group_1' => array(
+			"name" => "Group 1",
+			
+			'sub_group_1' => array(
+				"name" => "Sub group 1",
+				"description" => "Aliquam facilisis leo et aliquam fermentum. Vestibulum mattis purus sed magna ullamcorper ornare. Morbi sit amet orci non nulla euismod facilisis. Aenean aliquet elit rhoncus quam iaculis, non feugiat urna posuere.",
+				'3rd Lvl sub section 1' => 'map_to_some_file',
+				'3rd Lvl sub section 2' => 'map_to_some_file_2',
+			),
+
+		), 
+
+		'group_2' => array(
+			"name" => "Group 2",
+		),
+		
+		'group_3' => array(
+			"name" => "Group 3",
 		),
 
-		'Section 2 ' => array(
-			'Model2' => 'model2_snake_case',
-			'Model3' => 'model3_snake_case',
-			'Model4' => 'model4_snake_case'
-		),
 
-		'Section 3' => array(
-			'Model5' => 'model5_snake_case'
+		'group_4' => array(
+			"name" => "Group 4",
 		),
+		
+
+		
+
+		
+
+		
+
 
 
 	),

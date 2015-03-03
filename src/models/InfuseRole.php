@@ -3,7 +3,7 @@ use Toddish\Verify\Models\Role as VerifyRole;
 
 class InfuseRole extends VerifyRole {
 
-  use InfuseEloquentLibrary;
+  use Bpez\Infuse\InfuseModelLibrary;
 
 	protected $table = 'roles';
 

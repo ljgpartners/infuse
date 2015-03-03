@@ -3,7 +3,7 @@
 // Provides validation rules for all models
  // Also adds functionailty for files
 
-class InfuseEloquent extends \Eloquent {
+class InfuseModel extends \Illuminate\Database\Eloquent\Model {
 
   protected $rules = array();
 

@@ -6,21 +6,25 @@
 	<title>{{$title}}</title>
 	<meta name="robots" content="noindex" />
 	<meta name="viewport" content="width=device-width">
-	 <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700|Nunito:400,300,700' rel='stylesheet' type='text/css'> 
 
-	<link href='/packages/bpez/infuse/css/infuse.css' rel='stylesheet' type='text/css'>
-	<script src="/packages/bpez/infuse/js/dependencies.min.js" type="text/javascript"></script>
-	<script src="/packages/bpez/infuse/js/ckeditor/ckeditor.js" type="text/javascript"></script>
-	<script src="/packages/bpez/infuse/js/ckeditor/adapters/jquery.js" type="text/javascript"></script>
-	@if (Config::get('infuse::add_javascript') != "")
-		<script src="{{Config::get('infuse::add_javascript')}}" type="text/javascript"></script>
+	<meta name="csrf-token" content="{!! csrf_token() !!}">
+
+	<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700|Nunito:400,300,700' rel='stylesheet' type='text/css'> 
+
+	<link href='/bpez/infuse/css/infuse.css' rel='stylesheet' type='text/css'>
+	<script src="/bpez/infuse/js/dependencies.min.js" type="text/javascript"></script>
+	<script src="/bpez/infuse/ckeditor/ckeditor.js" type="text/javascript"></script>
+	<script src="/bpez/infuse/ckeditor/adapters/jquery.js" type="text/javascript"></script>
+	@if (Config::get('infuse::config.add_javascript') != "")
+		<script src="{{Config::get('infuse::config.add_javascript')}}" type="text/javascript"></script>
 	@endif
-	<script src="/packages/bpez/infuse/js/infuse.min.js" type="text/javascript"></script>
-	{{Util::infuse()}}
+	<script src="/bpez/infuse/js/infuse.min.js" type="text/javascript"></script>
+
+	{!! Util::infuse() !!}
 	 
 </head>
-<body class="{{Util::getControllerClassName()}} {{Util::getControllerClassNameWithMethod()}} 
-	{{(isset($navigation))? "infuseWrapper" : ""}} {{($superAdmin)? "developer" : "" }}"  {{ (isset($user))? "data-user='{$user}'}" : ""}}>   
+<body class="{!! Util::getControllerClassName() !!} {!! Util::getControllerClassNameWithMethod() !!} 
+	{!!(isset($navigation))? "infuseWrapper" : "" !!} {!! ($superAdmin)? "developer" : "" !!}"  {!! (isset($user))? "data-user='{$user}'}" : "" !!}>   
 
 	
 
@@ -36,7 +40,7 @@
 			<div class="row"> 
 				<div class="contentPaddingWrapper">
 					<div class="contentWrapper">
-					{{$content}}
+					{!!$content!!}
 					</div>
 				</div>
 			</div>

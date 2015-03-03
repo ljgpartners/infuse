@@ -107,7 +107,7 @@ $model = get_class($entry);
 			  $count = count($allPossible);
 			  $perColumn = ceil($count/4);
 			  $count = 1;
-			  $oneRolePerUser = (\Config::get("infuse::one_role_per_user"))? "oneRolePerUser" : "";
+			  $oneRolePerUser = (\Config::get("infuse::config.one_role_per_user"))? "oneRolePerUser" : "";
 			  Debugbar::addMessage(convert(memory_get_usage(true)), 'mem after oneRolePerUser');
 
 

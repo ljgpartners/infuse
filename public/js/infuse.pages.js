@@ -520,9 +520,10 @@ window.InfusePages  = {
 		infusePageSerialize: function() {
 			var self = this,
 					pageItems = $(".formBlock:nth-child(1) .infusePageSerialize, .sectionInfo .infusePageSerialize");
-
+					//console.log(pageItems.length);
 			$.each(pageItems, function() {
 				var pageItem = $(this);
+				//console.log(pageItem);
 				switch(pageItem.data("serialize-tag")) {
 					case "pageTitle":
 						self.pageData.pageProperties.pageTitle = pageItem.text();
@@ -591,7 +592,7 @@ window.InfusePages  = {
 				tempPageObject = false;
 			}
 
-			
+			//console.log(tempPageObject);
 			return tempPageObject;
 		}
 

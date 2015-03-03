@@ -3,78 +3,90 @@ Infuse
 
 [![Latest Stable Version](https://poser.pugx.org/bpez/infuse/v/stable.png)](https://packagist.org/packages/bpez/infuse) [![Total Downloads](https://poser.pugx.org/bpez/infuse/downloads.png)](https://packagist.org/packages/bpez/infuse) [![Latest Unstable Version](https://poser.pugx.org/bpez/infuse/v/unstable.png)](https://packagist.org/packages/bpez/infuse) [![License](https://poser.pugx.org/bpez/infuse/license.png)](https://packagist.org/packages/bpez/infuse)
 
+## Setup
 
-Steps for installing 
----------------------
+Step 1: Add laravel5 path repo for toddish/verify package
+```json
+"repositories": [
+ {
+      "type": "vcs",
+      "url": "https://github.com/industrious-mouse/Verify-L4"
+  }
+],
+```
 
-### From a composer package
+Step 2: Install via composer
+```php
+> composer require bpez/infuse:5.*
+```
 
-> Install through composer package
->
-> $ composer require bpez/infuse:4.*
->
-> Add the Infuse Service Provider to your config in app/config/app.php: 
->
-> 'Bpez\Infuse\InfuseServiceProvider'
->
-> $ php artisan asset:publish bpez/infuse
->
-> $ php artisan config:publish bpez/infuse
-> 
-> $ php artisan migrate --package="bpez/infuse"
->
-> In app/config/auth.php set:
-> 'auth.driver' => 'verify'
-> 'auth.model' => 'InfuseUser'
->
->
-> add the following to post-update-cmd in composer.json
->
-> "php artisan asset:publish bpez/infuse"
+Step 3: Add the ServiceProvider
+```php
+// config/app.php
+'providers' => [
+    ...
+    'Bpez\Infuse\InfuseServiceProvider' ,
+] ,
+```
 
-### When working in workbench
-
-> $ php artisan migrate --bench="bpez/infuse"
->
-> $ php artisan asset:publish --bench="bpez/infuse"
->
-> $ php artisan config:publish --path="workbench/bpez/infuse/src/config" bpez/infuse
-> 
-> Add 'Bpez\Infuse\InfuseServiceProvider' to your laravel providers in /app/config/app.php
->
-> Adding another class run this in infuse root (composer dump-autoload )
->
+Step 4: Add to middleware
+```php
+// app\http\Kernel.php
+protected $middleware = [
+	...
+	'Bpez\Infuse\Middleware\InfuseBeforeMiddleware',
+	'Bpez\Infuse\Middleware\InfuseAfterMiddleware'
+];
+```
 
 
-### After installing
+Step 5: Configure auth file
+```php
+// config/auth.php
+...
+'driver' => 'verify',
+'model' => 'InfuseUser',
+...
+'password' => [
+    'email' => 'infuse::emails.password',
+    ...
+  ],
+...
+```
+
+Step 6: Publish Configurations & public assets
+```cmd
+> php artisan vendor:publish --provider="\Bpez\Infuse\InfuseServiceProvider" --tag=infuse_public --force
+> php artisan vendor:publish --provider="\Bpez\Infuse\InfuseServiceProvider" --tag=infuse_config
+> php artisan vendor:publish --provider="\Bpez\Infuse\InfuseServiceProvider" --tag=infuse_structure
+> php artisan vendor:publish --provider="\Bpez\Infuse\InfuseServiceProvider" --tag=infuse_migrations
+```
+
+Step 7: Add to composer.json
+```json
+"post-update-cmd": [
+    ...
+    "php artisan vendor:publish --provider="\Bpez\Infuse\InfuseServiceProvider" --tag=infuse_public --force"
+],
+```
 
 
-> Add local and production environments
->
->$env = $app->detectEnvironment(function()	{
->	$hosts = array(
->		'livedomain.com' => 'production',
->		'localhost' => 'local',
->		'somelocal.local' => 'local',
->		'stage.livedomain.com' => 'stage',
->	);
->
->	return (isset($_SERVER['SERVER_NAME']) && isset($hosts[$_SERVER['SERVER_NAME']]))? $hosts[$_SERVER['SERVER_NAME']] : "production";
->});
->
-> add the following .htaccess rule for adding validate http cache to static assets
+Step 8: Add to .htaccess
+```htacess
 
-### Munee Validate Cache .htaccess Code Start #
-RewriteRule ^(.*\.(?:css|less|scss|js|coffee|jpg|png|gif|jpeg))$ packages/bpez/infuse/munee.php?files=/$1 [L,QSA,NC]
+RewriteEngine On
+...
+    RewriteCond %{HTTP:Cookie} devicePixelRatio [NC]
+    RewriteRule \.(?:jpe?g|gif|png|bmp)$ bpez/infuse/other/retinaimages.php [NC,L]
+```
+
+Step 9: Run infuse migrations
+```cmd
+> php artisan migrate
+
+```
 
 
-#### Munee Validate Cache .htaccess Code Start ####
-RewriteCond %{REQUEST_URI} !^/packages/bpez/infuse/ckeditor/(.*)
-RewriteCond %{REQUEST_URI} !^/packages/maximebf/(.*)
-RewriteCond %{REQUEST_URI} !^/packages/barryvdh/(.*)
-# RewriteRule ^(.*.(?:css|less|scss|js|coffee))$ packages/bpez/infuse/munee.php?files=/$1 [L,QSA,NC]
-RewriteRule ^(.*.(?:css|less|scss|js|coffee|jpg|png|gif|jpeg))$ packages/bpez/infuse/munee.php?files=/$1 [L,QSA,NC]
-### Munee Validate Cache .htaccess Code End #
 
 ####  Serve Retina Images .htaccess Code Start ####
 RewriteCond %{HTTP:Cookie} devicePixelRatio [NC]
@@ -97,5 +109,5 @@ RewriteRule \.(?:jpe?g|gif|png|bmp)$ /packages/bpez/infuse/retinaimages.php [NC,
 
 phpdoc.php -f src/Bpez/Infuse/Scaffold.php -t ./docs --template="responsive-twig"
 
-implement request dependency
+
 

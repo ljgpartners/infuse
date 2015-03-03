@@ -8,9 +8,8 @@
 |
 */
 
-class AuthenticationController extends BaseController {
+class AuthenticationController extends Bpez\Infuse\BaseController {
 
-	public $layout = 'infuse::layouts.application'; 
 
 	public function __construct()
 	{
@@ -21,6 +20,7 @@ class AuthenticationController extends BaseController {
 
 	public function login()
 	{
+		$response = array();
 		$this->layout->title = "Login | Infuse";
 
 		if (Input::has('infuseLoginSubmit')) {
@@ -49,7 +49,7 @@ class AuthenticationController extends BaseController {
 			}
 
 			// auth failure! lets go back to the login
-	    $this->layout->content = View::make('infuse::authentication.login')->with("error", $error);
+	    $this->layout->content = view('infuse::authentication.login')->with("error", $error);
 
 	    // Check if migrations have been ran
 		} else if (Schema::hasTable('users') &&
@@ -60,9 +60,9 @@ class AuthenticationController extends BaseController {
 							 Schema::hasTable('users') ) {
 
 			if (Auth::check()) return Redirect::route('dashboard');
-			$this->layout->content = View::make('infuse::authentication.login');
+			$this->layout->content = view('infuse::authentication.login', $response);
 		} else {
-			$this->layout->content = View::make('infuse::authentication.install');
+			$this->layout->content = view('infuse::authentication.install', $response);
 		}
 		
 	}

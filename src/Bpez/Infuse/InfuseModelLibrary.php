@@ -1,6 +1,6 @@
 <?php namespace Bpez\Infuse;
 
-trait InfuseEloquentLibrary {
+trait InfuseModelLibrary {
 
   public function validate($data)
   {
@@ -57,7 +57,7 @@ trait InfuseEloquentLibrary {
     if (filter_var($this->{$column}, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
       return $processedColumn;
     } else { 
-      $baseUrlUploadedAssetsLocal = \Config::get("infuse::base_url_uploaded_assets_local");
+      $baseUrlUploadedAssetsLocal = \Config::get("infuse::config.base_url_uploaded_assets_local");
 
       if (\App::environment() != "production") { 
         return $baseUrlUploadedAssetsLocal.strtolower($this->uploadFolder.DIRECTORY_SEPARATOR

@@ -1,10 +1,12 @@
 <?php
 use Toddish\Verify\Models\User as VerifyUser;
+use Illuminate\Auth\Passwords\TokenRepositoryInterface;
+
 use Illuminate\Support\Facades\Password;
 
 class InfuseUser extends VerifyUser {
 
-  use Bpez\Infuse\InfuseEloquentLibrary, Bpez\Infuse\InfuseUserLibrary;
+  use Bpez\Infuse\InfuseModelLibrary, Bpez\Infuse\InfuseUserLibrary;
 
 	protected $table = 'users';
 
@@ -14,90 +16,31 @@ class InfuseUser extends VerifyUser {
   {
   	parent::boot();
 
-  	InfuseUser::created(function($user)
+  	self::created(function($user)
 		{
 			// Check if infuse super skip if inital create
 		  if ($user->id != 1) {
-		    $email = $user->email;
-		    $server = $_SERVER['SERVER_NAME'];
-		    $data = array("full_name" => $user->full_name, "username" => $user->username, "email" => $email, "create" => true);
-
 		    
-		    Config::set('auth.reminder.email', 'infuse::emails.reminder');
+        $server = $_SERVER['SERVER_NAME'];
 
-		    View::composer('infuse::emails.reminder', function($view) use ($data) {
-		      $view->with($data);
-		    });
+        $tempPass = str_random(10);
+        $user->setPasswordAttribute($tempPass);
+        $user->save();
 
-		    Password::remind(array("email" => $email), function($message)  use ($server)  {
-		      $message->subject('[Infuse] User Account Created');
-		      $message->from("no-reply@{$server}");
-		    });
+        $data = array("user" => $user, "password" => $tempPass);
+        $email = $user->email;
+
+        \Mail::send('infuse::emails.created_user', $data, function($message)  use ($email, $server) {
+          $message->from("no-reply@{$server}");
+          $message->subject('[Infuse] User Account Created');
+          $message->to($email); 
+        });
+       
 		  }
 
 		});
   }
 
 
-
-  /**
-   * Is the User a certain Level
-   *
-   * @param  integer $level
-   * @param  string $modifier [description]
-   * @return boolean
-   */ /*
-  public function level($level, $modifier = '>=')
-  {
-      $to_check = $this->getToCheck();
-
-      $max = -1;
-      $min = 100;
-      $levels = array();
-
-      foreach ($to_check->roles as $role)
-      {
-          $max = $role->level > $max
-              ? $role->level
-              : $max;
-
-          $min = $role->level < $min
-              ? $role->level
-              : $min;
-
-          $levels[] = $role->level;
-      }
-      
-      switch ($modifier)
-      {
-          case '=':
-              return in_array($level, $levels);
-              break;
-
-          case '>=':
-              return $max >= $level;
-              break;
-
-          case '>':
-              return $max > $level;
-              break;
-
-          case '<=':
-              return $min <= $level;
-              break;
-
-          case '<':
-              return $min < $level;
-              break;
-
-          case '!=':
-              return !in_array($level, $levels);
-              break;
-
-          default:
-              return false;
-              break;
-      }
-  } */
   
 }

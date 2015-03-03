@@ -1,8 +1,8 @@
 <nav class="side">
 
-	@if (isset($navigation) && Config::get('infuse::site_title') != "")
+	@if (isset($navigation) && Config::get('infuse::config.site_title') != "")
 	<div class="topNav">
-		<span class="adminTitle">{{Config::get('infuse::site_title')}}</span>
+		<span class="adminTitle">{{Config::get('infuse::config.site_title')}}</span>
 	</div>
 	@endif
 
@@ -84,8 +84,8 @@
 	@endif
 
 
-	@if (Config::get('infuse::admin_site_link') != "")
-	<a target="_BLANK" class="navLink siteLink" href="{{Config::get('infuse::admin_site_link')}}">
+	@if (Config::get('infuse::config.admin_site_link') != "")
+	<a target="_BLANK" class="navLink siteLink" href="{{Config::get('infuse::config.admin_site_link')}}">
 		<div class="inner">
 			<span class="glyphicon glyphicon-eye-open"></span> Website
 		</div>
@@ -123,7 +123,7 @@
 	@endif
 
 	<div class="logoSideNav">
-		<img src="/packages/bpez/infuse/images/infuseLogo.png" alt="">
+		<img src="/bpez/infuse/images/infuseLogo.png" alt="">
 	</div>
 	
 

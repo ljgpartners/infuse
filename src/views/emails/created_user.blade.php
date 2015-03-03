@@ -15,8 +15,17 @@
                 <div style="height: 25px; width: 100%;"><img src="{{URL::to("/")}}/packages/bpez/infuse/images/spacer.gif" width="1" height="25" alt="" border="0" /></div>
                 <div style="text-align: center; font-size: 16px; font-family: Arial; line-height: 22px; color: #073354; font-weight: bold;">
                     
-                    <div style="text-align: center; font-size: 16px; font-family: Arial; line-height: 18px; color: #242527;">[Infuse]  Request Password Reset</div>
-                    <a href="{{ URL::to('password/remind') }}" target="_blank" style="color:#428BCA; text-decoration:none; font-size: 15px;  font-weight: normal; tect-decoration:underline;">Request password reset</a>
+                    <div style="text-align: center; font-size: 16px; font-family: Arial; line-height: 18px; color: #242527;">[Infuse] User Account Created</div>
+                    <div style="text-align: center; font-size: 15px; font-family: Arial; font-weight: normal; line-height: 18px; color: #242527;">Username: {{$user->username}} </div>
+                    <div style="text-align: center; font-size: 15px; font-family: Arial; font-weight: normal; line-height: 18px; color: #242527;">Password: {{$password}} </div>
+                    <div style="text-align: center;">
+                      <a href="{{ URL::to('/admin') }}" target="_blank" style="color:#428BCA; text-decoration:none; font-size: 15px;  font-weight: normal; tect-decoration:underline;">Login here</a>
+                    </div>
+                    <div style="text-align: center;">
+                      <a href="{{ URL::to('/password/remind') }}" target="_blank" style="color:#428BCA; text-decoration:none; font-size: 15px;  font-weight: normal; tect-decoration:underline;">Change password</a>
+                    </div>
+                    
+                    
 
                 </div>
                 <div style="height: 25px; width: 100%;"><img src="{{URL::to("/")}}/packages/bpez/infuse/images/spacer.gif" width="1" height="25" alt="" border="0" /></div>

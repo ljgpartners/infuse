@@ -3,7 +3,7 @@ use Toddish\Verify\Models\Permission as VerifyPermission;
 
 class InfusePermission extends VerifyPermission {
 
-  use InfuseEloquentLibrary;
+  use Bpez\Infuse\InfuseModelLibrary;
 
   protected $table = 'permissions';
 

@@ -18,9 +18,8 @@ use Transit\File;
 |
 */
 
-class InfusePageController extends BaseController {
+class InfusePageController extends Bpez\Infuse\BaseController {
 
-	public $layout = 'infuse::layouts.application';
 
 	public function __construct(\InfuseUser $user, \Illuminate\Http\Request $request, \Illuminate\Session\Store $session)
 	{	
@@ -29,7 +28,7 @@ class InfusePageController extends BaseController {
 		$this->user = $user;
 		View::share("user", $this->user);
 		View::share("superAdmin", $this->user->is('Super Admin'));
-		View::share('navigation', Config::get('infuse::navigation'));
+		View::share('navigation', Config::get('infuse::config.navigation'));
 		$rolePermission = (\Config::get("infuse::role_permission"))? true : false;
 		View::share('rolePermission', $rolePermission);
 		View::share('manageActive', true);
@@ -94,7 +93,7 @@ class InfusePageController extends BaseController {
 		$resource['infusePage'] = new InfusePage;
 		$path = Config::get('view.paths');
 		$path = $path[0];
-		$resource['infusePage']->page_data = \File::get(public_path().'/packages/bpez/infuse/page_template.json');
+		$resource['infusePage']->page_data = \File::get(public_path('bpez/infuse').'/other/page_template.json');
 
 
 		if (!$nested) { 
@@ -107,7 +106,7 @@ class InfusePageController extends BaseController {
 			$resource['pip'] = Input::get("pip");
 		}
 
-		$this->layout->content = View::make('infuse::page.create_edit', $resource);
+		$this->layout->content =  view('infuse::page.create_edit', $resource);
 	}
 
 	/**
@@ -133,7 +132,7 @@ class InfusePageController extends BaseController {
 				$infusePage->navigation_section = $infusePagesSection;
 				$path = Config::get('view.paths');
 				$path = $path[0];
-				$infusePage->page_data = \File::get(public_path().'/packages/bpez/infuse/page_template.json');
+				$infusePage->page_data = \File::get(public_path('bpez/infuse').'/other/page_template.json');
 				$fullJsonColumn = json_decode($infusePage->page_data);
 
 				$infusePage->title = $updatePageInstance->pageProperties->pageTitle;
@@ -183,7 +182,7 @@ class InfusePageController extends BaseController {
 
 				$path = Config::get('view.paths');
 				$path = $path[0];
-				$infusePage->page_data = \File::get(public_path().'/packages/bpez/infuse/page_template.json');
+				$infusePage->page_data = \File::get(public_path('bpez/infuse').'/other/page_template.json');
 				$newPageTemplate = json_decode($infusePage->page_data);
 				$newPageTemplate = $newPageTemplate->page;
 
@@ -330,7 +329,7 @@ class InfusePageController extends BaseController {
 
 		$resource['breadcrumbs'] = $this->breadcrumbs;
 
-		$this->layout->content = View::make('infuse::page.create_edit', $resource);
+		$this->layout->content =  view('infuse::page.create_edit', $resource);
 	}
 
 	/**

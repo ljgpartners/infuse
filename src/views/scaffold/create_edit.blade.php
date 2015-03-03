@@ -21,7 +21,7 @@
 		<div class="col-sm-12 col-xs-12">
 			<?php $errors = Util::flashArray("errors"); ?>
 			<?php $fileErrors = Util::flashArray("file_errors"); ?>
-			{{Util::fuseAlerts(Util::flash())}} 
+			{!!Util::fuseAlerts(Util::flash())!!} 
 		</div>
 	</div>
 
@@ -37,6 +37,9 @@
 		
 
 		<form method="post" action="?" enctype="multipart/form-data"  class="form-horizontal" role="form">
+
+		{{-- Laravel csrf token --}}
+		<input type="hidden" name="_token" value="{!! csrf_token() !!}" />
 
 		{{-- Tells infuse what type of save (save, save & return, save & create another)--}}
 		<input type="hidden" id="typeSubmit" name="typeSubmit" value="save">

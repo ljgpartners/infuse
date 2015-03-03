@@ -97,6 +97,7 @@
 
   		<form action="/admin/page{{(isset($infusePage->id))? "/".$infusePage->id : ""}}" class="form-horizontal infusePageForm" method="POST" role="form" enctype="multipart/form-data">
 
+
   			<div class="formBlock sortable">
 
   				<?php $groups = array(); ?>
@@ -181,6 +182,9 @@
 				@if ($method == "PUT")
 				<input type="hidden" name="_method" value="{{$method}}">
 				@endif
+				
+				{{-- Laravel csrf token --}}
+				<input type="hidden" name="_token" value="{!! csrf_token() !!}" />
   		</form>
 
   	</div>
@@ -195,7 +199,7 @@ unset($pageInstance->pages);
 unset($pageInstance->pagesKeys); 
 ?>
 <div class="hide">
-	<div class="pageDataPassToJs" data-page-data='{{json_encode($pageInstance)}}'></div>
+	<div class="pageDataPassToJs" data-page-data='{!! json_encode($pageInstance) !!}'></div>
 </div>
 
 <script type="text/javascript">

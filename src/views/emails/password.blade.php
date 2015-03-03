@@ -15,8 +15,8 @@
                 <div style="height: 25px; width: 100%;"><img src="{{URL::to("/")}}/packages/bpez/infuse/images/spacer.gif" width="1" height="25" alt="" border="0" /></div>
                 <div style="text-align: center; font-size: 16px; font-family: Arial; line-height: 22px; color: #073354; font-weight: bold;">
                     
-                    <div style="text-align: center; font-size: 16px; font-family: Arial; line-height: 18px; color: #242527;">[Infuse]  Request Password Reset</div>
-                    <a href="{{ URL::to('password/remind') }}" target="_blank" style="color:#428BCA; text-decoration:none; font-size: 15px;  font-weight: normal; tect-decoration:underline;">Request password reset</a>
+                    <div style="text-align: center; font-size: 16px; font-family: Arial; line-height: 18px; color: #242527;">[Infuse] Password Reset</div>
+                    <a href="{{ URL::to('password/reset', array($token)) }}" target="_blank" style="color:#428BCA; text-decoration:none; font-size: 15px;  font-weight: normal; tect-decoration:underline;">Reset password</a>
 
                 </div>
                 <div style="height: 25px; width: 100%;"><img src="{{URL::to("/")}}/packages/bpez/infuse/images/spacer.gif" width="1" height="25" alt="" border="0" /></div>
@@ -30,3 +30,7 @@
   <td style="background-color: #fff;"><img src="{{URL::to("/")}}/packages/bpez/infuse/images/spacer.gif" width="5" height="1" border="0" /></td>
 </tr>
 </table>
+
+
+
+

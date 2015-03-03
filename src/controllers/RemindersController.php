@@ -1,5 +1,10 @@
 <?php
+
 use Illuminate\Support\Facades\Password;
+
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Contracts\Auth\PasswordBroker;
+use Illuminate\Foundation\Auth\ResetsPasswords;
 
 /*
 |--------------------------------------------------------------------------
@@ -7,16 +12,35 @@ use Illuminate\Support\Facades\Password;
 |--------------------------------------------------------------------------
 */
 
-class RemindersController extends BaseController {
+class RemindersController extends Bpez\Infuse\BaseController {
 
-	public $layout = 'infuse::layouts.application'; 
+	/*
+	|--------------------------------------------------------------------------
+	| Password Reset Controller
+	|--------------------------------------------------------------------------
+	|
+	| This controller is responsible for handling password reset requests
+	| and uses a simple trait to include this behavior. You're free to
+	| explore this trait and override any methods you wish to tweak.
+	|
+	*/
 
-	public function __construct()
+	use ResetsPasswords;
+
+	/**
+	 * Create a new password controller instance.
+	 *
+	 * @param  \Illuminate\Contracts\Auth\Guard  $auth
+	 * @param  \Illuminate\Contracts\Auth\PasswordBroker  $passwords
+	 * @return void
+	 */
+	public function __construct(Guard $auth, PasswordBroker $passwords)
 	{
+		$this->auth = $auth;
+		$this->passwords = $passwords;
+
 		Config::set('auth.driver', 'verify');
 		Config::set('auth.model', 'InfuseUser');
-		Config::set('auth.reminder.email', 'infuse::emails.reminder');
-		Config::set('auth.reminder.expire', Config::get('infuse::reminder_expire'));
 		View::share("superAdmin", false);
 	}
 
@@ -40,7 +64,7 @@ class RemindersController extends BaseController {
 		if (Session::has('status')) 
 			$response['success'] = Session::get('status');
 
-		$this->layout->content = View::make('infuse::password.remind', $response);
+		$this->layout->content = view('infuse::password.remind', $response);
 	}
 
 	/**
@@ -50,14 +74,15 @@ class RemindersController extends BaseController {
 	 */
 	public function postRemind()
 	{
-		$server = $_SERVER['SERVER_NAME'];
 
 		try {
-
-			$response = Password::remind(Input::only('email'), function($message)  use ($server)	{
-		    $message->subject('[Infuse] Password Reset');
-		    $message->from("no-reply@{$server}");
-			});
+			$server = $_SERVER['SERVER_NAME'];
+			
+			$response = $this->passwords->sendResetLink(array('email' => Input::get('email')), function($message) use ($server) {
+	    	$message->sender("no-reply@{$server}", "no-reply");
+	    	$message->from("no-reply@{$server}", "no-reply");
+	      $message->subject('[Infuse] Password Reset');
+	    });
 
 	  } catch (Toddish\Verify\UserNotFoundException $e)	{
 			$error = "User can't be found";
@@ -76,6 +101,7 @@ class RemindersController extends BaseController {
 			return Redirect::back()->with('error', $error);
 		}
 
+		/*
 		switch ($response)
 		{
 			case Password::INVALID_USER:
@@ -83,7 +109,9 @@ class RemindersController extends BaseController {
 
 			case Password::REMINDER_SENT:
 				return Redirect::back()->with('status', Lang::get($response));
-		}
+		}*/
+
+		return Redirect::back()->with('status', Lang::get($response));
 	}
 
 	/**
@@ -102,7 +130,7 @@ class RemindersController extends BaseController {
 		if (Session::has('error'))
 			$response['error'] = Session::get('error');
 
-		$reset = DB::table('password_reminders')->where('token', '=', $token)->first();
+		$reset = DB::table('password_resets')->where('token', '=', $token)->first();
 		
 		$response['token'] = $token;
 
@@ -118,7 +146,7 @@ class RemindersController extends BaseController {
 		}
 		
 
-		$this->layout->content = View::make('infuse::password.reset', $response);
+		$this->layout->content =  view('infuse::password.reset', $response);
 	}
 
 	/**

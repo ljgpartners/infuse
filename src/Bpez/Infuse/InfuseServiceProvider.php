@@ -12,17 +12,46 @@ class InfuseServiceProvider extends ServiceProvider {
 	protected $defer = false;
 
 	/**
-	 * Bootstrap the application events.
+	 * Perform post-registration booting of services.
 	 *
 	 * @return void
 	 */
 	public function boot()
 	{
-		$this->package('bpez/infuse');
+    
 
-		// Register namespace for config resources
-		\Config::addNamespace('infuse', app_path().'/config/packages/bpez/infuse');
-		\Config::addNamespace('infuse_deploy', app_path().'/config/packages/bpez/infuse/deploy');
+    $this->loadViewsFrom(__DIR__.'/../../views', "infuse");
+
+
+    // artisan vendor:publish --tag=infuse_public --force
+
+    $this->publishes([
+      __DIR__.'/../../../public/css' => public_path('bpez/infuse')."/css",
+      __DIR__.'/../../../public/js' => public_path('bpez/infuse')."/js",
+      __DIR__.'/../../../public/fonts' => public_path('bpez/infuse')."/fonts",
+      __DIR__.'/../../../public/images' => public_path('bpez/infuse')."/images",
+      __DIR__.'/../../../public/ckeditor' => public_path('bpez/infuse')."/ckeditor",
+      __DIR__.'/../../../public/other' => public_path('bpez/infuse')."/other",
+    ], 'infuse_public');
+
+    // artisan vendor:publish --tag=infuse_config
+
+    $this->publishes([
+      __DIR__.'/../../config/config.php' => config_path('infuse/config.php')
+    ], 'infuse_config');
+
+    // artisan vendor:publish --tag=infuse_structure
+
+    $this->publishes([
+      __DIR__.'/../../structure/' =>  app_path().'/Infuse'
+    ], 'infuse_structure');
+
+     // artisan vendor:publish --tag=infuse_migrations
+
+    // Publish your migrations
+    $this->publishes([
+        __DIR__.'/../../migrations/' => base_path('/database/migrations')
+    ], 'infuse_migrations');
 		
 		require __DIR__.'/../../routes.php';
 		require __DIR__.'/../../events.php';
@@ -35,35 +64,46 @@ class InfuseServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+
+    $this->registerResources();
+
+
 		$this->app->register('Toddish\Verify\VerifyServiceProvider');
-		$this->app->register('Intervention\Image\ImageServiceProvider');
-		$this->app->register('Way\Generators\GeneratorsServiceProvider');
+		//$this->app->register('Intervention\Image\ImageServiceProvider');
+		//$this->app->register('Way\Generators\GeneratorsServiceProvider');
 		$this->app->register('Barryvdh\Debugbar\ServiceProvider');
 
-
+    
+    
 
 		$this->app->bind('InfuseController', function($app)
     {
+        $user = $app->make("auth")->user();
+        $user = ($user == null)? new \InfuseUser : $user;
         return new \InfuseController(
-        	$app->make("auth")->user()
+        	$user
         );
     });
 
 		$this->app->bind('InfusePageController', function($app)
     {
+        $user = $app->make("auth")->user();
+        $user = ($user == null)? new \InfuseUser : $user;
         return new \InfusePageController(
-        	$app->make("auth")->user(),
-            $app['request'],
-            $app['session.store']
+        	$user,
+          $app['request'],
+          $app['session.store']
         );
     });
     
 
 		$this->app['scaffold'] = $this->app->share(function($app)
     {
+        $user = $app->make("auth")->user();
+        $user = ($user == null)? new \InfuseUser : $user;
         return new  Scaffold(
         	$app['view'],
-        	$app->make("auth")->user(),
+        	$user,
         	$app->make("DB"),
         	$app['request'],
         	new \Event,
@@ -81,49 +121,52 @@ class InfuseServiceProvider extends ServiceProvider {
         return new WebService($app->make("DB"));
     });
 
-		$this->app['command.infuse.dump'] = $this->app->share(function($app)
-    {
-        return new Commands\InfuseDump();
-    });
-
 		$this->app['command.infuse.deploy'] = $this->app->share(function($app)
     {
         return new Commands\InfuseDeploy();
     });
 
-		$this->app['command.infuse.publish'] = $this->app->share(function($app)
-    {
-        return new Commands\InfusePublish();
-    });
+		
 
+    
 
-    $this->commands(array('command.infuse.deploy', 'command.infuse.dump', 'command.infuse.publish'));
+    $this->commands(array('command.infuse.deploy'));
 
-
-    // Shortcut so developers don't need to add an Alias in app/config/app.php
-    $this->app->booting(function()
-    {
-        $loader = \Illuminate\Foundation\AliasLoader::getInstance();
-        $loader->alias('Util', 'Bpez\Infuse\Facades\Util');
-        $loader->alias('Scaffold', 'Bpez\Infuse\Facades\Scaffold');
-        $loader->alias('WebService', 'Bpez\Infuse\Facades\WebService');
-        $loader->alias('Image', 'Intervention\Image\Facades\Image');
-        $loader->alias('Debugbar', 'Barryvdh\Debugbar\Facade');
-        $loader->alias('Carbon', 'Carbon\Carbon');
-
-        $loader->alias('InfuseEloquent', 'Bpez\Infuse\InfuseEloquent');
-        $loader->alias('InfuseEloquentLibrary', 'Bpez\Infuse\InfuseEloquentLibrary');
-        $loader->alias('InfuseUserLibrary', 'Bpez\Infuse\InfuseUserLibrary');
-    });
-
-    $this->app->after(function($request, $response)
-    { 
-      if (\Session::has('infuse_page_values')) {
-        \Session::forget('infuse_page_values');
-        \Session::forget('infuse_page_extract_current');
-      }
-    });
+    $loader = \Illuminate\Foundation\AliasLoader::getInstance();
+    $loader->alias('Util', 'Bpez\Infuse\Facades\Util');
+    $loader->alias('Scaffold', 'Bpez\Infuse\Facades\Scaffold');
+    $loader->alias('WebService', 'Bpez\Infuse\Facades\WebService');
+    //$loader->alias('Image', 'Intervention\Image\Facades\Image');
+    $loader->alias('Debugbar', 'Barryvdh\Debugbar\Facade');
+    $loader->alias('Carbon', 'Carbon\Carbon');
+    $loader->alias('InfuseModel', 'Bpez\Infuse\InfuseModel');
+    $loader->alias('InfuseModelLibrary', 'Bpez\Infuse\InfuseModelLibrary');
+    $loader->alias('InfuseUserLibrary', 'Bpez\Infuse\InfuseUserLibrary'); 
+    
+    
 	}
+
+  /**
+ * Register the package resources.
+ *
+ * @return void
+ */
+  protected function registerResources()
+  {
+    $userConfigFile    = config_path('infuse').'/config.php';
+    $packageConfigFile = __DIR__.'/../../config/config.php';
+    $config            = $this->app['files']->getRequire($packageConfigFile);
+
+    if (file_exists($userConfigFile)) {
+      $userConfig = $this->app['files']->getRequire($userConfigFile);
+      // Uncomment to merge down configs
+      // $config     = array_replace_recursive($config, $userConfig);
+      $config = $userConfig;
+    }
+
+    $this->app['config']->set('infuse::config', $config);
+  }
+
 
 	/**
 	 * Get the services provided by the provider.
@@ -132,7 +175,7 @@ class InfuseServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('scaffold', 'util', 'web.service', 'infuse.eloquent', 'infuse.eloquent.library', 'infuse.user.library');
+		return array('scaffold', 'util', 'web.service', 'infuse.model', 'infuse.model.library', 'infuse.user.library');
 	}
 
 }
