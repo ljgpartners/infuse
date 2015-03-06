@@ -500,10 +500,11 @@ if ($(".InfuseController").length > 0) {
 		} else {
 			var tempArray = new Array();
 			tempArray[0] = parseInt(value);
+			if (isNaN(tempArray[0])) {
+				tempArray = new Array();
+			}
 			value = tempArray;
 		}
-
-		value = (isNaN(value))? null : value;
 				
 		multiSelects[name] = self.magicSuggest({
 				allowFreeEntries: false,
