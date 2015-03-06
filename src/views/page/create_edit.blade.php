@@ -199,7 +199,7 @@ unset($pageInstance->pages);
 unset($pageInstance->pagesKeys); 
 ?>
 <div class="hide">
-	<div class="pageDataPassToJs" data-page-data='{!! json_encode($pageInstance) !!}'></div>
+	<div class="pageDataPassToJs" data-page-data='{!! Util::arrayToJsonWithSingleQuoteFilter($pageInstance) !!}'></div>
 </div>
 
 <script type="text/javascript">

@@ -612,6 +612,11 @@ STRING;
 		return $infusePage;
 	}
 
+	public static function arrayToJsonWithSingleQuoteFilter($data)
+	{
+		return str_replace("'", "\u0027", json_encode($data));
+	}
+
 
 }
 
