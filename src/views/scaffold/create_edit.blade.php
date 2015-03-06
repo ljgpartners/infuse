@@ -217,7 +217,7 @@
 						$(document).ready(function() {
 							$("#{{$selectNextID}}").remoteChained({
 							  parents : "#{{$selectID}}",
-							  url : "?action=nested_select_batch&model={{$nextModel}}&foreign_key={{$foreignKey}}{{$nestColumn}}{{$overideForeignKey}}{{$notColumn}}",
+							  url : "?action=nested_select_batch&model={!! $nextModel !!}&foreign_key={!! $foreignKey !!}{!! $nestColumn !!}{!! $overideForeignKey !!}{!! $notColumn !!}",
 							  clear : true,
   							loading : "Loading..."
 							});
@@ -252,7 +252,7 @@
 			{{-- display order  --}}
 			@elseif (array_key_exists("display_order", $column))
 
-				<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}}" pattern="\d+" value="{{$entries->{$column['field']} }}" readonly="readonly" />
+				<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" pattern="\d+" value="{{$entries->{$column['field']} }}" readonly="readonly" />
 
 			{{-- upload  --}}
 			@elseif (array_key_exists("upload", $column))
