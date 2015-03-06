@@ -502,6 +502,8 @@ if ($(".InfuseController").length > 0) {
 			tempArray[0] = parseInt(value);
 			value = tempArray;
 		}
+
+		value = (isNaN(value))? null : value;
 				
 		multiSelects[name] = self.magicSuggest({
 				allowFreeEntries: false,
