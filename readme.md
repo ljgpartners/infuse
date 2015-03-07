@@ -92,7 +92,8 @@ RewriteCond %{HTTP:Cookie} devicePixelRatio [NC]
 RewriteRule \.(?:jpe?g|gif|png|bmp)$ /packages/bpez/infuse/retinaimages.php [NC,L]
 ```
 
-
+### API Documentation
+[Documentation](infuse_api_doc.md)
 
 
 ### Possible future features 
