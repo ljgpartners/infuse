@@ -39,7 +39,7 @@
 		        </a>
 			    </div>
 
-			    <div id="collapse{{$count}}" class="panel-collapse collapse <?php echo ($count == 0)? "in" : ""; ?>" role="tabpanel" aria-labelledby="heading{{$count}}">
+			    <div id="collapse{{$count}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{$count}}">
 			    	<div class="panel-body">
 			        <ul class="list-group">
 

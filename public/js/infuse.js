@@ -77,8 +77,13 @@ $(document).ready(function() {
 	var animating = false;
 
 	$("nav.center").each(function() {
-		var activeClass = $(this).data("nav-level-active"); 
-		$('li.list-group-item[data-active="'+activeClass+'"]').addClass("active");
+		var activeClass = $(this).data("nav-level-active");
+		if (activeClass != "") {
+			var bootstrapCollapse = $('li.list-group-item[data-active="'+activeClass+'"]');
+			bootstrapCollapse.addClass("active");
+			bootstrapCollapse.parent().parent().parent().addClass("in");
+			$(".sideNavSlideOut").toggle();
+		} 
 	});
 
 	$(".infuseManage").bind("click", function(event) {
