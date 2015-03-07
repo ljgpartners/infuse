@@ -357,12 +357,12 @@
 									<input type="text" name="{{$column['field']}}" value="{{$entries->{$column['field']}->tz(\Config::get('app.timezone'))->format($header['formatLaravelTimestamp'])}}" disabled="disabled"  class="form-control"/>
 								@endif
 							@else
-								<input type="text" class="selectedDateTime form-control" name="{{$column['field']}}" value="{{ (empty($entries->{$column['field']}))? "0001-01-01 01:01:01" : $entries->{$column['field']} }}" {{Util::readOnly($column)}} />
+								<input type="text" class="selectedDateTime form-control" name="{{$column['field']}}" value="{{ (empty($entries->{$column['field']}))? (new \DateTime())->format('Y-m-d H:i:s') : $entries->{$column['field']} }}" {{Util::readOnly($column)}} />
 							@endif <!-- (empty($entries->{$column['field']}))? "0000-00-00 00:00:00" : $entries->{$column['field']} -->
 							
 				<?php 	break; 
 						case 'date': ?>
-							<input type="text" class="selectedDate form-control" name="{{$column['field']}}" value="{{ (empty($entries->{$column['field']}))? "0001-01-01" : $entries->{$column['field']} }}" {{Util::readOnly($column)}} />
+							<input type="text" class="selectedDate form-control" name="{{$column['field']}}" value="{{ (empty($entries->{$column['field']}))? (new \DateTime())->format('Y-m-d') : $entries->{$column['field']} }}" {{Util::readOnly($column)}} />
 				<?php 	break;
 						case 'int': ?> 
 							<input type="number" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" pattern="\d+" value="{{ (empty($entries->{$column['field']}))? 0 : $entries->{$column['field']}  }}" {{Util::readOnly($column)}} />
