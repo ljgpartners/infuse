@@ -1,4 +1,4 @@
-<table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 0px; padding: 0px; line-height: 1px; font-size: 1px;">
+<table width="100%" cellspacing="0" align="center" cellpadding="0" border="0" style="text-align:center; margin: 0px; padding: 0px; line-height: 1px; font-size: 1px;">
   <tr>
     <td style="background-color: #fff;"><img src="{{URL::to("/")}}/packages/bpez/infuse/images/spacer.gif" width="5" height="1" alt="" border="0" /></td>
     <td width="400" align="center" valign="top" style="width: 400px; background-color: #fff;">
@@ -30,7 +30,3 @@
   <td style="background-color: #fff;"><img src="{{URL::to("/")}}/packages/bpez/infuse/images/spacer.gif" width="5" height="1" border="0" /></td>
 </tr>
 </table>
-
-
-
-
