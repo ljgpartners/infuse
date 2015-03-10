@@ -2006,17 +2006,12 @@ class Scaffold
 			$entryBackUp = clone $entry;
 
 			if ($entry->delete()) {
+        
+        $fileUploadManage = new FileUpload($this->request);
+
 				foreach ($this->columns as $column) {
-					if (array_key_exists("upload", $column) && !empty($entryBackUp->{$column['field']}) && file_exists($_SERVER['DOCUMENT_ROOT']."/".$entryBackUp->url($column['field']))) {
-            $currentFile = $_SERVER['DOCUMENT_ROOT']."/".$entryBackUp->url($column['field']);
-            unlink($currentFile);
-            $name = pathinfo($currentFile, PATHINFO_FILENAME);
-            $ext  = pathinfo($currentFile, PATHINFO_EXTENSION);
-            $retinaImage = $entryBackUp->uploadPath($column['field']).$name."@2x.".$ext;
-            if (file_exists($retinaImage)) {
-              unlink($retinaImage);
-            }
-						$entryBackUp->{$column['field']} = ""; // Set to blank so nested unlinks can work in model
+					if (array_key_exists("upload", $column)) {
+            $fileUploadManage->delete($column['field'], $entryBackUp);
 					}
 				}
 
