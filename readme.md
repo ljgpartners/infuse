@@ -280,7 +280,14 @@ fileUpload(
 ###### Parameters
 - column - (Required) [string] Database table field name
 
-
-
+##### addCkeditor
+Turns a text field to a addCkeditor.
+```php
+addCkeditor(
+    array("column_name_1", "column_name_2", ...)
+) 
+```
+###### Parameters
+- Database table field names
 
 Created with [http://dillinger.io](http://dillinger.io/)
