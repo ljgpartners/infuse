@@ -8,7 +8,7 @@ class InfusePage extends Bpez\Infuse\InfuseModel {
 
   protected $table = 'pages';
 
-  protected $uploadFolder = "/uploads";
+  public $uploadFolder = "/uploads";
 
   protected $pageValues;
 

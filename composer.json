@@ -20,6 +20,8 @@
         "toddish/verify": "dev-laravel5",
         "nesbot/Carbon": "1.*",
         "barryvdh/laravel-debugbar": "2.*",
+        "intervention/image": "2.1.2",
+        "league/flysystem-aws-s3-v2": "~1.0",
         "paquettg/php-html-parser": "1.6.3"
     },
     "autoload": {

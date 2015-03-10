@@ -9,7 +9,7 @@ class InfuseModel extends \Illuminate\Database\Eloquent\Model {
 
   protected $errors;
   
-  protected $uploadFolder = "/uploads";
+  public $uploadFolder = "/uploads";
 
   public $timestamps = true;
 

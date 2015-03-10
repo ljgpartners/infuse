@@ -11,7 +11,7 @@ class InfuseRole extends VerifyRole {
 
   protected $errors;
   
-  protected $uploadFolder = "/uploads";
+  public $uploadFolder = "/uploads";
 
 	public function users()
   {

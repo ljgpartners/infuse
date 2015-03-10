@@ -17,7 +17,7 @@ trait InfuseUserLibrary {
   protected $errors;
 
   // Added functionailty for files
-  protected $uploadFolder = "/uploads";
+  public $uploadFolder = "/uploads";
 
   public function roles()
   {

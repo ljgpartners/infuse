@@ -69,8 +69,6 @@ class InfuseServiceProvider extends ServiceProvider {
 
 
 		$this->app->register('Toddish\Verify\VerifyServiceProvider');
-		//$this->app->register('Intervention\Image\ImageServiceProvider');
-		//$this->app->register('Way\Generators\GeneratorsServiceProvider');
 		$this->app->register('Barryvdh\Debugbar\ServiceProvider');
 
     
@@ -111,6 +109,11 @@ class InfuseServiceProvider extends ServiceProvider {
         );
     });
 
+    $this->app['file.upload'] = $this->app->share(function($app)
+    {
+        return new FileUpload($app['request']);
+    });
+
     $this->app['util'] = $this->app->share(function($app)
     {
         return new Util($app['request']);
@@ -136,7 +139,7 @@ class InfuseServiceProvider extends ServiceProvider {
     $loader->alias('Util', 'Bpez\Infuse\Facades\Util');
     $loader->alias('Scaffold', 'Bpez\Infuse\Facades\Scaffold');
     $loader->alias('WebService', 'Bpez\Infuse\Facades\WebService');
-    //$loader->alias('Image', 'Intervention\Image\Facades\Image');
+    $loader->alias('FileUpload', 'Bpez\Infuse\Facades\FileUpload');
     $loader->alias('Debugbar', 'Barryvdh\Debugbar\Facade');
     $loader->alias('Carbon', 'Carbon\Carbon');
     $loader->alias('InfuseModel', 'Bpez\Infuse\InfuseModel');
@@ -175,7 +178,7 @@ class InfuseServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('scaffold', 'util', 'web.service', 'infuse.model', 'infuse.model.library', 'infuse.user.library');
+		return array('file.upload', 'scaffold', 'util', 'web.service', 'infuse.model', 'infuse.model.library', 'infuse.user.library');
 	}
 
 }

@@ -10,10 +10,6 @@
 namespace Bpez\Infuse;
 
 use Exception;
-use Transit\Transit;
-use Transit\Validator\ImageValidator;
-use Transit\Transformer\Image\ResizeTransformer;
-use Transit\File;
 use Illuminate\Support\Facades\Log;
 use Bpez\Infuse\Exceptions\ScaffoldConfigurationException;
 use Bpez\Infuse\Exceptions\ScaffoldModelNotRecognizedException;
@@ -2222,122 +2218,18 @@ class Scaffold
 			$message = array("message" => "Created {$this->name}.", "type" => "success");
 		}
 
-		$fileErrors = array(); 
+		$fileUploadManage = new FileUpload($this->request);
 		
 		foreach ($this->columns as $column) {
 
 			if (array_key_exists("upload", $column)) {
 		
 
-				// If column in files array or if uploaded already by cropping tool
-				$checkIfInFiles = (array_key_exists($column['field'], $_FILES) && !empty($_FILES["{$column['field']}"]['name']));
-				$checkIfAlreadyUploaded = (Util::get($column['field']) && !filter_var(Util::get($column['field']), FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED));
-				$checkIfExternalFile = (Util::get($column['field']) && filter_var(Util::get($column['field']), FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED));
+				$fileUploadManage->add($column['field'], $entry);
 
-				// Only process if file present
-				if ($checkIfInFiles || $checkIfAlreadyUploaded || $checkIfExternalFile) {
-					
-					if ($checkIfInFiles) {
-						$passFileTotransit = $_FILES["{$column['field']}"];
-					} else if ($checkIfAlreadyUploaded) {
-						$passFileTotransit = $_SERVER['DOCUMENT_ROOT'].Util::get($column['field']);
-					} else if ($checkIfExternalFile) {
-						$passFileTotransit  = Util::get($column['field']);
-					}
-
-
-					$transit = new Transit($passFileTotransit);
-
-					$validations = $column['upload']['validations'];
-					if (count($validations) > 0) {
-						$validator = new ImageValidator();
-						foreach ($validations as $val) {
-							$validator->addRule($val[0], $val[1], $val[2]);
-						}
-
-						$transit->setDirectory($model->uploadPath($column['field'])) 
-									->setValidator($validator);
-					} else {
-						$transit->setDirectory($model->uploadPath($column['field']));
-					}
-					
-					try { 
-
-						if ($checkIfInFiles) {
-							$success = $transit->upload();
-						} else if ($checkIfAlreadyUploaded) {
-							$overwrite = false;
-							$delete = true;
-							$success = $transit->importFromLocal($overwrite, $delete);
-						} else if ($checkIfExternalFile) {
-							$overwrite = false;
-							$options = array(
-		            CURLOPT_RETURNTRANSFER => true,
-		            CURLOPT_FOLLOWLOCATION => false,
-		            CURLOPT_FAILONERROR => true,
-		            CURLOPT_SSL_VERIFYPEER => false
-			        );
-							$success = $transit->importFromRemote($overwrite, $options);
-						}
-						
-						if ($success) {
-							$fileName = explode(DIRECTORY_SEPARATOR, $transit->getOriginalFile());
-              $fileName = end($fileName);
-							
-							if (!empty($entry->{$column['field']}) && file_exists($_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']))) {
-                $currentFile = $_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']);
-                unlink($currentFile);
-                $name = pathinfo($currentFile, PATHINFO_FILENAME);
-                $ext  = pathinfo($currentFile, PATHINFO_EXTENSION);
-                $retinaImage = $entry->uploadPath($column['field']).$name."@2x.".$ext;
-                if (file_exists($retinaImage)) {
-                  unlink($retinaImage);
-                }
-              }
-								
-							
-              if(strpos($fileName, "@2x.") !== FALSE) {
-                $uploadPath = $model->uploadPath($column['field']);
-                // 1.5 instead of 2. Almost same quality but saves more space and bandwidth.
-                $halfRetinaSize = floor($transit->getOriginalFile()->width()/1.5);
-                $retinaFileName = $fileName;
-
-                $fileName = explode("@2x.", $fileName);
-                $fileName = $fileName[0].".".$fileName[1];
-                if (copy($uploadPath.$retinaFileName, $uploadPath.$fileName)) {
-
-                  $transitRetina = new ResizeTransformer(array('width' => $halfRetinaSize));
-
-                  if (!$transitRetina->transform(new File($uploadPath.$fileName), true)) {
-                    throw new Exception("Failed to resize retina for non retina version.");
-                  }
-                } else {
-                  throw new Exception("Failed to copy retina image for processing.");
-                }
-              }
-
-              $entry->{$column['field']} = $fileName;
-
-						} 
-					} catch (Exception $e) {
-						$fileErrors["{$column['field']}"] = $e->getMessage();
-					}
-				}
-				
-				if (Util::get($column['field']."_delete")) {
-          $currentFile = $_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']);
-          if (file_exists($currentFile)) {
-            unlink($currentFile);
-          }
-          $name = pathinfo($currentFile, PATHINFO_FILENAME);
-          $ext  = pathinfo($currentFile, PATHINFO_EXTENSION);
-          $retinaImage = $entry->uploadPath($column['field']).$name."@2x.".$ext;
-          if (file_exists($retinaImage)) {
-            unlink($retinaImage);
-          }
-
-					$entry->{$column['field']} = "";
-				}
+        if (Util::get($column['field']."_delete")) {
+          $fileUploadManage->addToDeleteQueue($column['field'], $entry);
+        }
 					
 
 			} else {
@@ -2379,7 +2271,9 @@ class Scaffold
       
 		
 		
-		if ($entry->validate($data) && count($fileErrors) == 0) {
+		if ($entry->validate($data) && empty($fileUploadManage->fileErrors())) {
+
+      $fileUploadManage->processUploads();
 
 			// Check if brand new user
 			if ($this->infuseLogin && !Util::get("id")) { 
@@ -2514,7 +2408,10 @@ class Scaffold
 				)
 			);
 			Util::flashArray("errors", $entry->errors());
-			Util::flashArray("file_errors", $fileErrors);
+
+      $fileUploadManage->resetUploads();
+      
+			Util::flashArray("file_errors", $fileUploadManage->fileErrors());
 			Util::flashArray("post", Util::getAll());
 
 			if (Util::get("stack")) {

@@ -41,35 +41,6 @@ trait InfuseModelLibrary {
   {
       return $this->errors;
   }
-  
-
-  public function uploadPath($column)
-  {
-      return strtolower($_SERVER['DOCUMENT_ROOT'].$this->uploadFolder.DIRECTORY_SEPARATOR
-                  .get_class($this).DIRECTORY_SEPARATOR
-                  .$column.DIRECTORY_SEPARATOR);
-  }
-
-  public function url($column)
-  { 
-    $processedColumn = $this->{$column};
-
-    if (filter_var($this->{$column}, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
-      return $processedColumn;
-    } else { 
-      $baseUrlUploadedAssetsLocal = \Config::get("infuse::config.base_url_uploaded_assets_local");
-
-      if (\App::environment() != "production") { 
-        return $baseUrlUploadedAssetsLocal.strtolower($this->uploadFolder.DIRECTORY_SEPARATOR
-                  .get_class($this).DIRECTORY_SEPARATOR
-                  .$column.DIRECTORY_SEPARATOR).$processedColumn;
-      } else {
-        return strtolower($this->uploadFolder.DIRECTORY_SEPARATOR
-                  .get_class($this).DIRECTORY_SEPARATOR
-                  .$column.DIRECTORY_SEPARATOR).$processedColumn;
-      }
-    }
-  }
 
 
   public function generateThumbnail($thumbnailToColumn, $thumbnailFromColumn, $width, $height)
@@ -168,6 +139,25 @@ trait InfuseModelLibrary {
           return die($e->getMessage());
         }
       }
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | FileUpload Related Methods
+  |--------------------------------------------------------------------------
+  | This class contains helper uploading methods used by infuse
+  |
+  */
+
+
+  public function uploadPath($column)
+  {
+    return \FileUpload::uploadPath($this, $column);
+  }
+
+  public function url($column)
+  { 
+    return \FileUpload::url($this, $column);
   }
 
   

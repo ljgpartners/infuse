@@ -11,7 +11,7 @@ class InfusePermission extends VerifyPermission {
 
   protected $errors;
   
-  protected $uploadFolder = "/uploads";
+  public $uploadFolder = "/uploads";
 
   public function roles()
   {
