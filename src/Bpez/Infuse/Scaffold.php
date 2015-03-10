@@ -2264,9 +2264,9 @@ class Scaffold
       }
 
       
+		$fileErrors = $fileUploadManage->fileErrors();
 		
-		
-		if ($entry->validate($data) && empty($fileUploadManage->fileErrors())) {
+		if ($entry->validate($data) && empty($fileErrors)) {
 
       $fileUploadManage->processUploads();
 
