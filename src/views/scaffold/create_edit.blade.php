@@ -74,6 +74,10 @@
 		
 		@foreach ($columns as $column)
 
+		{{-- 	Check if column is actually an hstore column	--}}
+
+		<?php $columnValue = Util::getColumnValue($entries, $column); ?>
+
 		{{-- 	If foreign key is select reveal on top	--}}
 
 		@if (Util::isForeignKey($column['field']) && array_key_exists("select", $column))
@@ -87,7 +91,7 @@
 						@endif
 						@foreach ($column['select'] as $value)
 								<?php $columnName = end($value); ?>
-								@if ($entries->{$column['field']} == $value["id"])
+								@if ($columnValue == $value["id"])
 									<option value="{{$value["id"]}}" selected="selected">{{$columnName}}</option>
 								@else
 									<option value="{{$value["id"]}}">{{$columnName}}</option>
@@ -103,7 +107,7 @@
 		{{-- 	Added foreign keys to the form for top level parent --}}
 
 		@if (!Util::get("stack") && Util::isForeignKey($column['field']) && !array_key_exists("select", $column))
-			<input type="hidden" name="{{$column['field']}}" value="{{$entries->{$column['field']} }}">
+			<input type="hidden" name="{{$column['field']}}" value="{{$columnValue }}">
 		@endif
 
 		{{-- Hide certain fields. Laravel create and updated flags. Foreign keys. Infuse logins fields.  --}}
@@ -126,7 +130,7 @@
 			
 			{{-- ckeditor  --}}
 			@if (array_key_exists("ckeditor", $column)) 
-				<textarea class="infuseCkeditor" data-config="{{Util::classToString($entries)."_".$column['field']}}" name="{{$column['field']}}">{{$entries->{$column['field']} }}</textarea>
+				<textarea class="infuseCkeditor" data-config="{{Util::classToString($entries)."_".$column['field']}}" name="{{$column['field']}}">{{$columnValue }}</textarea>
 
 			{{-- select  --}}
 			@elseif (array_key_exists("select", $column))
@@ -141,7 +145,7 @@
 					@endif
 					@foreach ($column['select'] as $value)
 							<?php $columnName = end($value); ?>
-							@if ($entries->{$column['field']} == $value["id"])
+							@if ($columnValue == $value["id"])
 								<option value="{{$value["id"]}}" selected="selected">{{$columnName}}</option>
 							@else
 								<option value="{{$value["id"]}}">{{$columnName}}</option>
@@ -201,11 +205,11 @@
 								@endforeach
 						  @endif
 
-						  @if (isset($column['nested_last_array']) && !empty($entries->{$column['field']}) && $nestedCount == $totalNested)
+						  @if (isset($column['nested_last_array']) && !empty($columnValue) && $nestedCount == $totalNested)
 						  	<?php $nestedLastArray = $column['nested_last_array']; ?>
 						  	@foreach ($nestedLastArray as $value)
 									<?php $columnName = end($value); ?>
-									@if ($value['id'] == $entries->{$column['field']})
+									@if ($value['id'] == $columnValue)
 										<option selected='selected' value="{{$value["id"]}}">{{$columnName}}</option>
 									@endif
 								@endforeach
@@ -244,15 +248,15 @@
 					endforeach;
 				?>
 				
-				<div class="multiSelect"  data-name="{{$column['field']}}" data-data='{{json_encode($dataMultiSelect)}}' data-value="{{$entries->{$column['field']} }}"></div>
-				<input class="multiSelect{{$column['field']}}" name="{{$column['field']}}" type="hidden" value="{{$entries->{$column['field']} }}">
+				<div class="multiSelect"  data-name="{{$column['field']}}" data-data='{{json_encode($dataMultiSelect)}}' data-value="{{$columnValue }}"></div>
+				<input class="multiSelect{{$column['field']}}" name="{{$column['field']}}" type="hidden" value="{{$columnValue }}">
 
 
 
 			{{-- display order  --}}
 			@elseif (array_key_exists("display_order", $column))
 
-				<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" pattern="\d+" value="{{$entries->{$column['field']} }}" readonly="readonly" />
+				<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" pattern="\d+" value="{{$columnValue }}" readonly="readonly" />
 
 			{{-- upload  --}}
 			@elseif (array_key_exists("upload", $column))
@@ -261,13 +265,13 @@
 
 				<div class="input-group-btn">
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{$masterColumnName}} <span class="caret"></span></button>
-          @if (!empty($entries->{$column['field']}))
+          @if (!empty($columnValue))
 	        <ul class="dropdown-menu dropdown-menu-form" role="menu">
 	        	<li>
-	        		@if (preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $entries->{$column['field']} ))
+	        		@if (preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $columnValue ))
 	        			<a href="" data-toggle="modal" data-target="#{{"Modal".$column['field'].$entries->id}}">Preview current</a>
 	        		@else
-								<a href="<?php echo $entries->url($column['field']); ?>" >Current {{$entries->{$column['field']} }}</a>
+								<a href="<?php echo $entries->uploadPath($column['field']).$columnValue; ?>" >Current {{$columnValue}}</a>
 							@endif
 	        	</li>
 	          <li>
@@ -279,7 +283,7 @@
 	        </ul>
 	        @endif 
         </div>
-        <input class="form-control" type="text" readonly="readonly" value="{{ (!empty($entries->{$column['field']}))? $entries->{$column['field']} : "" }}">
+        <input class="form-control" type="text" readonly="readonly" value="{{ (!empty($columnValue))? $columnValue : "" }}">
         <div class="input-group-btn">
         	<span class="btn btn-default btn-file"  tabindex="-1">
               Browse… <input multiple="" type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "imagePreviewCropOn": "" )}}  importReplace{{$column['field']}}" id="upload{{$column['field']}}">
@@ -288,17 +292,17 @@
         
 				
 				
-				@if (!empty($entries->{$column['field']}))
-					@if (preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $entries->{$column['field']} ))
+				@if (!empty($columnValue))
+					@if (preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $columnValue ))
 						<div id="{{"Modal".$column['field'].$entries->id}}" class="modal fade previewModal"  tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
 						  <div class="modal-dialog modal-lg">
 						    <div class="modal-content">
 						      <div class="modal-header">
 						        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-						        <h4 class="modal-title">{{$entries->{$column['field']} }}</h4>
+						        <h4 class="modal-title">{{$columnValue }}</h4>
 						      </div>
 						      <div class="modal-body">
-						        <img class="uploadAreaPreviewImage" src="{{$entries->url($column['field'])}}">
+						        <img class="uploadAreaPreviewImage" src="{{$entries->uploadPath($column['field']).$columnValue}}">
 						      </div>
 						      <div class="modal-footer">
 						        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -343,10 +347,10 @@
 			
 				<?php switch ($column['type']):
 						case 'varchar': ?>
-							<input type="text" maxlength="{{preg_replace("/[^0-9]/", "", $column['type_original'])}}" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" value="{{htmlspecialchars($entries->{$column['field']}) }}" {{Util::readOnly($column)}}>
+							<input type="text" maxlength="{{preg_replace("/[^0-9]/", "", $column['type_original'])}}" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" value="{{htmlspecialchars($columnValue) }}" {{Util::readOnly($column)}}>
 				<?php 	break;
 						case 'text': ?>
-							<textarea name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" {{Util::readOnly($column)}} >{{$entries->{$column['field']} }}</textarea>
+							<textarea name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" {{Util::readOnly($column)}} >{{$columnValue }}</textarea>
 				<?php 	break;
 						case 'datetime':
 						case 'timestamp': ?>
@@ -354,34 +358,34 @@
 								@if (Util::get("action") == 'c')
 									<input type="text" name="{{$column['field']}}" value="" disabled="disabled" class="form-control" />
 								@else
-									<input type="text" name="{{$column['field']}}" value="{{$entries->{$column['field']}->tz(\Config::get('app.timezone'))->format($header['formatLaravelTimestamp'])}}" disabled="disabled"  class="form-control"/>
+									<input type="text" name="{{$column['field']}}" value="{{$columnValue->tz(\Config::get('app.timezone'))->format($header['formatLaravelTimestamp'])}}" disabled="disabled"  class="form-control"/>
 								@endif
 							@else
-								<input type="text" class="selectedDateTime form-control" name="{{$column['field']}}" value="{{ (empty($entries->{$column['field']}))? (new \DateTime())->format('Y-m-d H:i:s') : $entries->{$column['field']} }}" {{Util::readOnly($column)}} />
-							@endif <!-- (empty($entries->{$column['field']}))? "0000-00-00 00:00:00" : $entries->{$column['field']} -->
+								<input type="text" class="selectedDateTime form-control" name="{{$column['field']}}" value="{{ (empty($columnValue))? (new \DateTime())->format('Y-m-d H:i:s') : $columnValue }}" {{Util::readOnly($column)}} />
+							@endif <!-- (empty($columnValue))? "0000-00-00 00:00:00" : $columnValue -->
 							
 				<?php 	break; 
 						case 'date': ?>
-							<input type="text" class="selectedDate form-control" name="{{$column['field']}}" value="{{ (empty($entries->{$column['field']}))? (new \DateTime())->format('Y-m-d') : $entries->{$column['field']} }}" {{Util::readOnly($column)}} />
+							<input type="text" class="selectedDate form-control" name="{{$column['field']}}" value="{{ (empty($columnValue))? (new \DateTime())->format('Y-m-d') : $columnValue }}" {{Util::readOnly($column)}} />
 				<?php 	break;
 						case 'int': ?> 
-							<input type="number" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" pattern="\d+" value="{{ (empty($entries->{$column['field']}))? 0 : $entries->{$column['field']}  }}" {{Util::readOnly($column)}} />
+							<input type="number" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" pattern="\d+" value="{{ (empty($columnValue))? 0 : $columnValue  }}" {{Util::readOnly($column)}} />
 				<?php 	break;
 						case 'float': ?> 
-									<input type="number" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" step="any" value="{{ (empty($entries->{$column['field']}))? 0 : $entries->{$column['field']}  }}" {{Util::readOnly($column)}} />
+									<input type="number" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" step="any" value="{{ (empty($columnValue))? 0 : $columnValue  }}" {{Util::readOnly($column)}} />
 				<?php 	break;
 						case 'tinyint': ?> 
 							<select name="{{$column['field']}}" {{Util::readOnlyWithDisabled($column)}} class="form-control">
-								<option value="0" {{($entries->{$column['field']} == 0)? 'selected="selected"' : ""}} >No</option>
-								<option value="1" {{($entries->{$column['field']} == 1)? 'selected="selected"' : ""}} >Yes</option>
+								<option value="0" {{($columnValue == 0)? 'selected="selected"' : ""}} >No</option>
+								<option value="1" {{($columnValue == 1)? 'selected="selected"' : ""}} >Yes</option>
 							</select>
 						@if (isset($column['readOnly']))
-							<input type="hidden" value="{{$entries->{$column['field']} }}" name="{{$column['field']}}">
+							<input type="hidden" value="{{$columnValue }}" name="{{$column['field']}}">
 						@endif
 				<?php break;
 						default: ?>
 
-							<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" value="{{htmlspecialchars($entries->{$column['field']}) }}" {{Util::readOnly($column)}} />
+							<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" value="{{htmlspecialchars($columnValue) }}" {{Util::readOnly($column)}} />
 				<?php		
 					endswitch;
 				?>

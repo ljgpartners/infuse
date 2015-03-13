@@ -155,9 +155,111 @@ trait InfuseModelLibrary {
     return \FileUpload::uploadPath($this, $column);
   }
 
-  public function url($column)
+  public function url($column, $hstoreColumn = false)
   { 
-    return \FileUpload::url($this, $column);
+    return \FileUpload::url($this, $column, $hstoreColumn);
+  }
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | PGSQL Helper Methods
+  |--------------------------------------------------------------------------
+  | This class contains helper uploading methods used by infuse
+  |
+  */
+
+  private function hstoreToArray($value)
+  {
+    return PGUtil::hstoreToPhp($value);
+  }
+
+  private function arrayTohstore($value)
+  {
+    return PGUtil::hstoreFromPhp($value);
+  }
+
+  public function infuseSaveHstoreValuesStart()
+  {
+    foreach ($this->hstore as $key => $value) { 
+      if (isset($value['modified']) && isset($value['cache'])) {
+        $this->setAttribute($key, $this->arrayTohstore($value['cache']));
+      }
+    }
+  }
+
+  public function infuseSaveHstoreValuesEnd()
+  {
+    foreach ($this->hstore as $key => $value) {
+      if (isset($value['modified']) && isset($value['cache'])) {
+        unset($this->hstore[$key]['cache']);
+        unset($this->hstore[$key]['modified']);
+      }
+    }
+  }
+
+
+
+  public function setHstore($hstoreColumn, Array $hstoreKeyPairs)
+  {
+    if (!isset($this->hstore[$hstoreColumn])) {
+      throw new \Exception("{$hstoreColumn} is not an hstore column.", 1);
+    }
+
+    if (!isset($this->hstore[$hstoreColumn]['cache'])) {
+      $this->hstore[$hstoreColumn]['cache'] = $this->{$hstoreColumn};
+    }
+
+    foreach ($hstoreKeyPairs as $key => $value) {
+      $type = gettype($value);
+
+      if ($type != "string" && $type != "integer" && $type != "double")  {
+        throw new \Exception("Value type {$type} not accepted for {$key}.", 1);
+      }
+
+      $this->hstore[$hstoreColumn]['cache'] = array_merge($this->hstore[$hstoreColumn]['cache'], array($key => $value));
+      $this->hstore[$hstoreColumn]['modified'] = true;
+      return true;
+    }
+
+
+  }
+  
+
+  public function getHstore($hstoreColumn, $key)
+  {
+    $this->{$hstoreColumn};
+    return (isset($this->hstore[$hstoreColumn]['cache'][$key]))? $this->hstore[$hstoreColumn]['cache'][$key] : null;
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Overide Illuminate/Database/Eloquent/Model Methods
+  |--------------------------------------------------------------------------
+  | Extend functionality Model
+  |
+  */
+ 
+
+  public function getAttributeValue($key)
+  {
+    if (isset($this->hstore) && array_key_exists($key, $this->hstore)) {
+      if (!isset($this->hstore[$key]['cache'])) {
+        $value = $this->getAttributeFromArray($key);
+        $this->hstore[$key]['cache'] = PGUtil::hstoreToPhp($value);
+      }
+      return $this->hstore[$key]['cache'];
+    }
+
+    return parent::getAttributeValue($key);
+  }
+
+  public function save(array $options = array())
+  {
+    $this->infuseSaveHstoreValuesStart();
+    $saved = parent::save($options);
+    $this->infuseSaveHstoreValuesEnd();
+    return $saved;
   }
 
   

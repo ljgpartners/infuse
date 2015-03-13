@@ -49,6 +49,7 @@ class InfuseController extends Bpez\Infuse\BaseController {
 		
 			$scaffold = Scaffold::mapConfig($config);
 
+
 		$redirect = $scaffold->checkPermissions($uri);
 		if ($redirect)
 			return Redirect::to($redirect);

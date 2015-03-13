@@ -81,9 +81,14 @@ class FileUpload {
 	} 
 
 
-	public function url($instance, $column)
+	public function url($instance, $column, $hstoreColumn = false)
 	{
-		$value = $instance->{$column};
+		$columnConfig = array(
+      "field" => $column,
+      'hstore_column' => $hstoreColumn
+    );
+
+		$value = Util::getColumnValue($instance, $columnConfig);
 
     if (filter_var($value, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
       return $value;
@@ -102,8 +107,9 @@ class FileUpload {
 
 	      if (\App::environment() != "production" && !empty($baseUrlUploadedAssetsLocal)) { 
 	        return $baseUrlUploadedAssetsLocal.$url;
-	      } else {
-	        return $this->request->server("HTTP_HOST").$url;
+	      } else { 
+	      	$httpHOST = (strpos($this->request->server("HTTP_HOST"), 'http://') !== false)? $this->request->server("HTTP_HOST") : "http://".$this->request->server("HTTP_HOST");
+	        return $httpHOST.$url; 
 	      }
     	}
     }
@@ -134,9 +140,11 @@ class FileUpload {
     return $newname;
 	}
 
-	public function delete($column, &$entry)
+	public function delete($column, &$entry, $columnConfig)
 	{
-		$value = $entry->{$column};
+		$value = Util::getColumnValue($entry, $columnConfig);
+
+
 		$uploadPath = $entry->uploadPath($column);
 		$originalFile = $uploadPath.$value;
 
@@ -157,7 +165,7 @@ class FileUpload {
 	       $this->disk->delete($retinaImage);
 	    }
 
-	    $entry->{$column} = "";
+	    Util::setColumnValue($entry, $columnConfig, "");
 	  }
 	}
 
@@ -169,9 +177,9 @@ class FileUpload {
 		}
 	}
 
-	public function addToDeleteQueue($column, &$entry)
+	public function addToDeleteQueue($column, &$entry, $columnConfig)
 	{
-		$this->deleteQueue[$column] = $entry;
+		$this->deleteQueue[$column] = array($entry, $columnConfig);
 	}
 
 	public function  addToSavedQueue($fileSaved)
@@ -226,6 +234,9 @@ class FileUpload {
 
 	public function add($column, &$entry)
 	{
+		$columnConfig = $column;
+		$column = $column['field'];
+
 		// If column in files array or if uploaded already by cropping tool
 		$checkIfInFiles = (array_key_exists($column, $_FILES) && !empty($_FILES["{$column}"]['name']));
 		$checkIfAlreadyUploaded = (Util::get($column) && !filter_var(Util::get($column), FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED));
@@ -287,27 +298,30 @@ class FileUpload {
 			$this->fileErrors[$column] = "File failed uploading.";
 		}
 
+
+		$columnValue = Util::getColumnValue($entry, $columnConfig);
+
 		// If old present queue removal
-		if (!empty($entry->{$column})) {
-			$this->addToDeleteQueue($column, $entry); 
+		if (!empty($columnValue)) {
+			$this->addToDeleteQueue($column, $entry, $columnConfig); 
 		}
 		
 		
-	  $entry->{$column} = $newFilename;
+	  Util::setColumnValue($entry, $columnConfig, $newFilename);
 
 	  // process retina
-  	$url = $this->url($entry, $column);
+  	$url = $this->url($entry, $column, $columnConfig['hstore_column']);
 		$processRetinaImage = $this->processRetina($uploadPath, $newFilename, $url);
 		if ($processRetinaImage) {
-			$entry->{$column} = $processRetinaImage;
+			Util::setColumnValue($entry, $columnConfig, $processRetinaImage);
 		}
 
 	} // END OF ADD
 
 	public function allowDeletion()
 	{
-		foreach ($this->deleteQueue as $column => $entry) {
-			$this->delete($column, $entry);
+		foreach ($this->deleteQueue as $column => $both) {
+			$this->delete($column, $both[0], $both[1]);
 		}
 	}
 

@@ -24,12 +24,15 @@
 
 	<table class="table table-striped table-bordered">
 			@foreach ($columns as $column)
+
+			<?php $columnValue = Util::getColumnValue($entries, $column); ?>
+
 			<tr>
 
 				@if (array_key_exists("select", $column))
 					<?php $selectArray = (array_key_exists("nested", $column) && isset($column['nested_last_array']))? $column['nested_last_array'] : $column['select'] ; ?>
 					@foreach ($selectArray as $value)
-							@if ($entries->{$column['field']} == $value["id"])
+							@if ($columnValue == $value["id"])
 								<?php $columnName = end($value); ?>
 								<th>{{Util::cleanName($column['field'])}}</th>
 								<td>{{$columnName}}</td>
@@ -39,10 +42,10 @@
 				@elseif (array_key_exists("upload", $column))
 					<th>{{Util::cleanName($column['field'])}}</th>
 					<td>
-						@if ($entries->{$column['field']} != "" && preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $entries->{$column['field']} ))
-							<img class="" src="{{$entries->url($column['field'])}}">
-						@elseif ($entries->{$column['field']} != "")
-							<a href="<?php echo $entries->url($column['field']); ?>">{{$entries->{$column['field']} }}</a>
+						@if ($columnValue != "" && preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $columnValue ))
+							<img class="" src="{{$entries->uploadPath($column['field']).$columnValue}}">
+						@elseif ($columnValue != "")
+							<a href="{{$entries->uploadPath($column['field']).$columnValue}}">{{$columnValue }}</a>
 						@endif
 					</td>
 
@@ -57,18 +60,18 @@
 				@endif
 
 				@if ($column['field'] == "created_at" || $column['field'] == "updated_at")
-					<td>{{$entries->{$column['field']}->tz(\Config::get('app.timezone'))->format($header['formatLaravelTimestamp']) }}</td>
+					<td>{{$columnValue->tz(\Config::get('app.timezone'))->format($header['formatLaravelTimestamp']) }}</td>
 				@elseif ($column['field'] == "infuse_user_id")
 					<?php 
 						try {
-							$name = InfuseUser::findOrFail($entries->{$column['field']})->full_name;
+							$name = InfuseUser::findOrFail($columnValue)->full_name;
 						} catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
 							$name = "User not found";
 						}
 					?>
 					<td>{{$name}}</td>
 				@else
-					<td>{{$entries->{$column['field']} }}</td>
+					<td>{!! $columnValue !!}</td>
 				@endif
 
 				

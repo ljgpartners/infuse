@@ -4,20 +4,20 @@ use Illuminate\Support\ServiceProvider;
 
 class InfuseServiceProvider extends ServiceProvider {
 
-	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
-	protected $defer = false;
+  /**
+   * Indicates if loading of the provider is deferred.
+   *
+   * @var bool
+   */
+  protected $defer = false;
 
-	/**
-	 * Perform post-registration booting of services.
-	 *
-	 * @return void
-	 */
-	public function boot()
-	{
+  /**
+   * Perform post-registration booting of services.
+   *
+   * @return void
+   */
+  public function boot()
+  {
     
 
     $this->loadViewsFrom(__DIR__.'/../../views', "infuse");
@@ -37,7 +37,7 @@ class InfuseServiceProvider extends ServiceProvider {
     // artisan vendor:publish --tag=infuse_config
 
     $this->publishes([
-      __DIR__.'/../../config/config.php' => config_path('infuse/config.php')
+      __DIR__.'/../../config/config.php' => config_path('infuse/config.php'),
     ], 'infuse_config');
 
     // artisan vendor:publish --tag=infuse_structure
@@ -52,60 +52,60 @@ class InfuseServiceProvider extends ServiceProvider {
     $this->publishes([
         __DIR__.'/../../migrations/' => base_path('/database/migrations')
     ], 'infuse_migrations');
-		
-		require __DIR__.'/../../routes.php';
-		require __DIR__.'/../../events.php';
-	}
+    
+    require __DIR__.'/../../routes.php';
+    require __DIR__.'/../../events.php';
+  }
 
-	/**
-	 * Register the service provider.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
+  /**
+   * Register the service provider.
+   *
+   * @return void
+   */
+  public function register()
+  {
 
     $this->registerResources();
 
 
-		$this->app->register('Toddish\Verify\VerifyServiceProvider');
-		$this->app->register('Barryvdh\Debugbar\ServiceProvider');
+    $this->app->register('Toddish\Verify\VerifyServiceProvider');
+    $this->app->register('Barryvdh\Debugbar\ServiceProvider');
 
     
     
 
-		$this->app->bind('InfuseController', function($app)
+    $this->app->bind('InfuseController', function($app)
     {
         $user = $app->make("auth")->user();
         $user = ($user == null)? new \InfuseUser : $user;
         return new \InfuseController(
-        	$user
+          $user
         );
     });
 
-		$this->app->bind('InfusePageController', function($app)
+    $this->app->bind('InfusePageController', function($app)
     {
         $user = $app->make("auth")->user();
         $user = ($user == null)? new \InfuseUser : $user;
         return new \InfusePageController(
-        	$user,
+          $user,
           $app['request'],
           $app['session.store']
         );
     });
     
 
-		$this->app['scaffold'] = $this->app->share(function($app)
+    $this->app['scaffold'] = $this->app->share(function($app)
     {
         $user = $app->make("auth")->user();
         $user = ($user == null)? new \InfuseUser : $user;
         return new  Scaffold(
-        	$app['view'],
-        	$user,
-        	$app->make("DB"),
-        	$app['request'],
-        	new \Event,
-        	$this->app->session
+          $app['view'],
+          $user,
+          $app->make("DB"),
+          $app['request'],
+          new \Event,
+          $this->app->session
         );
     });
 
@@ -124,12 +124,12 @@ class InfuseServiceProvider extends ServiceProvider {
         return new WebService($app->make("DB"));
     });
 
-		$this->app['command.infuse.deploy'] = $this->app->share(function($app)
+    $this->app['command.infuse.deploy'] = $this->app->share(function($app)
     {
         return new Commands\InfuseDeploy();
     });
 
-		
+    
 
     
 
@@ -147,7 +147,7 @@ class InfuseServiceProvider extends ServiceProvider {
     $loader->alias('InfuseUserLibrary', 'Bpez\Infuse\InfuseUserLibrary'); 
     
     
-	}
+  }
 
   /**
  * Register the package resources.
@@ -168,17 +168,18 @@ class InfuseServiceProvider extends ServiceProvider {
     }
 
     $this->app['config']->set('infuse::config', $config);
+
   }
 
 
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides()
-	{
-		return array('file.upload', 'scaffold', 'util', 'web.service', 'infuse.model', 'infuse.model.library', 'infuse.user.library');
-	}
+  /**
+   * Get the services provided by the provider.
+   *
+   * @return array
+   */
+  public function provides()
+  {
+    return array('file.upload', 'scaffold', 'util', 'web.service', 'infuse.model', 'infuse.model.library', 'infuse.user.library');
+  }
 
 }

@@ -13,8 +13,7 @@ class InfuseModel extends \Illuminate\Database\Eloquent\Model {
 
   public $timestamps = true;
 
-  
+  public $hstore = array();
+
   
 }
-
-?>

@@ -12,6 +12,11 @@ return array(
 	*/
 
 	/*
+	| Hstore allow key removal when hstore schema. 
+	*/
+	'hstore_allow_key_removal' => false,
+
+	/*
 	| Toggles role/permission authentication. 
 	*/
 	'role_permission' => false,

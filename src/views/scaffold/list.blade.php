@@ -181,12 +181,15 @@ foreach ($columns as $column) {
 				@foreach ($entries as $entry)
 				<tr data-class="{{get_class($entry)}}" class="{{get_class($entry)}}">
 					@foreach ($columns as $column)
+
+						<?php $columnValue = Util::getColumnValue($entry, $column); ?>
+
 						@if (in_array($column['field'], $header['list']))
 							<td>
 							@if (array_key_exists("select", $column)) 
 								<?php $selectArray = (array_key_exists("nested", $column) && isset($column['nested_last_array']))? $column['nested_last_array'] : $column['select'] ; ?>
 								@foreach ($selectArray as $value)
-										@if ($entry->{$column['field']} == $value["id"])
+										@if ($columnValue == $value["id"])
 											<?php $columnName = end($value); ?>
 											{{$columnName}}
 										@endif
@@ -205,9 +208,9 @@ foreach ($columns as $column) {
 
 							@else 
 								@if ($column['field'] == "updated_at")
-									{{$entry->{$column['field']}->tz(\Config::get('app.timezone'))->format($header['formatLaravelTimestamp'])}} 
+									{{$columnValue->tz(\Config::get('app.timezone'))->format($header['formatLaravelTimestamp'])}} 
 								@else
-									{{(($column['type'] == "text"))? Util::truncateText($entry->{$column['field']}, "25") : $entry->{$column['field']} }}
+									{{(($column['type'] == "text"))? Util::truncateText($columnValue, "25") : $columnValue }}
 								@endif
 										
 							@endif

@@ -617,6 +617,22 @@ STRING;
 		return str_replace("'", "\u0027", json_encode($data));
 	}
 
+	public static function getColumnValue($instance, $column)
+	{
+		$columnValue = $instance->{$column['field']};
+		if ($column['hstore_column'] == true && isset($instance->hstore[$column['hstore_column']])) {
+			$columnValue = $instance->getHstore($column['hstore_column'], $column['field']);
+		}
+		return $columnValue;
+	}
+
+	public static function setColumnValue(&$instance, $column, $value)
+	{
+		if ($column['hstore_column'] == true && isset($instance->hstore[$column['hstore_column']])) {
+			$instance->setHstore($column['hstore_column'], array($column['field'] => $value));;
+		}
+	}
+
 
 }
 
