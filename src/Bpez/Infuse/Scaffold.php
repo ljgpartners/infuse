@@ -1130,8 +1130,11 @@ class Scaffold
 	
 	public function mapConfig($config)
 	{
-		if ($this->columns == null)
-			throw new ScaffoldConfigurationException("Model must be loaded before mapConfig method is called.");
+		if (!isset($config['model'])) {
+      throw new ScaffoldConfigurationException("Model not declared");
+    }
+
+    $this->model($config['model']);
 
 		foreach ($config as $key => $f) {
 			

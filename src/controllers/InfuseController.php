@@ -47,9 +47,7 @@ class InfuseController extends Bpez\Infuse\BaseController {
 		$this->loadResource($resource);
 		$config = Config::get("infuse::{$resource}");
 		
-			$scaffold = Scaffold::model($config['model'])
-									->mapConfig($config);
-
+			$scaffold = Scaffold::mapConfig($config);
 
 		$redirect = $scaffold->checkPermissions($uri);
 		if ($redirect)
@@ -78,8 +76,7 @@ class InfuseController extends Bpez\Infuse\BaseController {
 		
 		$this->loadResource($resource);
 		$config = Config::get("infuse::{$resource}.children.{$child}");
-		$scaffold = Scaffold::model($config['model'])
-									->mapConfig($config);
+		$scaffold = Scaffold::mapConfig($config);
 
 		$redirect = $scaffold->checkPermissions(Util::childBackLink());
 		if ($redirect)
@@ -100,8 +97,7 @@ class InfuseController extends Bpez\Infuse\BaseController {
 		
 		$this->loadResource("infuse_user");
 		$config = Config::get('infuse::infuse_user');
-		$scaffold = Scaffold::model($config['model'])
-									->mapConfig($config);
+		$scaffold = Scaffold::mapConfig($config);
 
 		$redirect = $scaffold->checkPermissions($uri);
 		if ($redirect)
@@ -126,8 +122,7 @@ class InfuseController extends Bpez\Infuse\BaseController {
 
 		$this->loadResource("permission");
 		$config = Config::get('infuse::permission');
-		$scaffold = Scaffold::model($config['model'])
-									->mapConfig($config);
+		$scaffold = Scaffold::mapConfig($config);
 			
 		$this->layout->content =  $scaffold->process();
 	}
@@ -146,8 +141,7 @@ class InfuseController extends Bpez\Infuse\BaseController {
 		$this->layout->title =  "Roles | Infuse";
 		$this->loadResource("role");
 		$config = Config::get('infuse::role');
-		$scaffold = Scaffold::model($config['model'])
-									->mapConfig($config);
+		$scaffold = Scaffold::mapConfig($config);
 			
 		$this->layout->content =  $scaffold->process();
 	}

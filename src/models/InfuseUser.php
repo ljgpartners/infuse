@@ -21,7 +21,7 @@ class InfuseUser extends VerifyUser {
 			// Check if infuse super skip if inital create
 		  if ($user->id != 1) {
 		    
-        $server = $_SERVER['SERVER_NAME'];
+        $server = (isset($_SERVER['SERVER_NAME']))? $_SERVER['SERVER_NAME'] : "localhost";
 
         $tempPass = str_random(10);
         $user->setPasswordAttribute($tempPass);
