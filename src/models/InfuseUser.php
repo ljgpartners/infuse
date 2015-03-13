@@ -25,9 +25,14 @@ class InfuseUser extends VerifyUser {
 		    
         $server = (isset($_SERVER['SERVER_NAME']))? $_SERVER['SERVER_NAME'] : "localhost";
 
-        $tempPass = str_random(10);
-        $user->setPasswordAttribute($tempPass);
-        $user->save();
+        $tempPass = "";
+        
+        if (empty($user->password)) {
+          $tempPass = str_random(10);
+          $user->setPasswordAttribute($tempPass);
+          $user->save();
+        }
+        
 
         $data = array("user" => $user, "password" => $tempPass);
         $email = $user->email;

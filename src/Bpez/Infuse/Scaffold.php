@@ -308,7 +308,7 @@ class Scaffold
         }
 
         foreach ($columns as $column) {
-            // Check for hstore
+            
             if (isset($hstoreColumns) && isset($hstoreColumns[$column->field])) {
 
                 $hstoreColumn = $hstoreColumns[$column->field];
