@@ -54,7 +54,6 @@ class InfuseServiceProvider extends ServiceProvider {
     ], 'infuse_migrations');
     
     require __DIR__.'/../../routes.php';
-    require __DIR__.'/../../events.php';
   }
 
   /**

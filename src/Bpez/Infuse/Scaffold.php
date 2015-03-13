@@ -17,695 +17,550 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class Scaffold
 {
 
-  use ScaffoldAPI;
+    use ScaffoldAPI;
 
-  /**
-   * Toggles role/permission authentication.
-   *
-   * @access private
-   * @var bool
-   */
-  private $rolePermission = false; 
-  
-  /**
-   * Allows unit testing to work.
-   *
-   * @access private
-   * @var bool
-   */
-  private $testing = false;
+    /**
+    * Toggles role/permission authentication.
+    */
+    private $rolePermission = false; 
 
-  /**
-   * Contains the ORM model.
-   *
-   * @access private
-   * @var object
-   */
-  private $model;
+    /**
+    * Allows unit testing to work.
+    */
+    private $testing = false;
 
-  /**
-   * Contains the ORM model primary key.
-   *
-   * @access private
-   * @var object
-   */
-  private $primaryKey = null;
+    /**
+    * Contains the ORM model.
+    */
+    private $model;
 
-  /**
-   * Contains database table columns from the Model.
-   *
-   * @access private
-   * @var array|null
-   */
-  private $columns = null;
+    /**
+    * Contains the ORM model primary key.
+    */
+    private $primaryKey = null;
 
-  /**
-   * Contains flag to determine how to proccess data.
-   *
-   * @access private
-   * @var string
-   */
-  private $action;
+    /**
+    * Contains database table columns from the Model.
+    */
+    private $columns = null;
 
-  /**
-   * Contains current instance of model that scaffold is working with or 
-   * a collection of models represented by the laravel Collection Class or
-   * can be model(s) representing in pure php array form.
-   *
-   * @access private
-   * @var object|array
-   */
-  private $entries = array();
+    /**
+    * Contains flag to determine how to proccess data.
+    */
+    private $action;
 
-  /**
-   * An array containing various configuration information for the templates.
-   * (pagination, name, list, edit, onlyOne, columnNames, associations, manyToManyAssociations, 
-   * hasOneAssociation, onlyOne, filters, description, deleteAction)
-   *
-   * @access private 
-   * @var array
-   */ 
-  private $header = array();
+    /**
+    * Contains current instance of model that scaffold is working with or 
+    * a collection of models represented by the laravel Collection Class or
+    * can be model(s) representing in pure php array form.
+    */
+    private $entries = array();
 
-  /**
-   * Contains name of the model in string form.
-   *
-   * @access private
-   * @var string
-   */
-  private $name;
+    /**
+    * An array containing various configuration information for the templates.
+    * (pagination, name, list, edit, onlyOne, columnNames, associations, manyToManyAssociations, 
+    * hasOneAssociation, onlyOne, filters, description, deleteAction)
+    */ 
+    private $header = array();
 
-  /**
-   * Array contains new column names to overide ones gathered from the model table.
-   *
-   * @access private
-   * @var array
-   */
-  private $columnNames = array();
+    /**
+    * Contains name of the model in string form.
+    */
+    private $name;
 
-  /**
-   * Declares how instances of the model can be displayed on the listing page.
-   *
-   * @access private
-   * @var integer
-   */
-  private $limit = 10;
+    /**
+    * Array contains new column names to overide ones gathered from the model table.
+    */
+    private $columnNames = array();
 
-  /**
-   * Contains the display ordering on the listing page.
-   *
-   * @access private
-   * @var array
-   */
-  private $order = array(
-    "order" => "desc",
-    "column" => "id"
+    /**
+    * Declares how instances of the model can be displayed on the listing page.
+    */
+    private $limit = 10;
+
+    /**
+    * Contains the display ordering on the listing page.
+    */
+    private $order = array(
+        "order" => "desc",
+        "column" => "id"
     );
 
-  /**
-   * Contains the has many relationship configuration(s) for the model.
-   *
-   * @access private
-   * @var array
-   */
-  private $hasMany = array();
+    /**
+    * Contains the has many relationship configuration(s) for the model.
+    */
+    private $hasMany = array();
 
-  /**
-   * Contains the has one relationship configuration(s) for the model.
-   *
-   * @access private
-   * @var array|boolean
-   */
-  private $hasOne = false;
+    /**
+    * Contains the has one relationship configuration(s) for the model.
+    */
+    private $hasOne = false;
 
-  /**
-   * Contains the many to many relationship configuration(s) for the model.
-   *
-   * @access private
-   * @var array
-   */
-  private $manyToMany = array();
+    /**
+    * Contains the many to many relationship configuration(s) for the model.
+    */
+    private $manyToMany = array();
 
-  /**
-   * Contains the description for the model.
-   *
-   * @access private
-   * @var string
-   */
-  private $description = "";
+    /**
+    * Contains the description for the model.
+    */
+    private $description = "";
 
-  /**
-   * Contains the list of columns to only display on listing page. If empty all shown.
-   *
-   * @access private
-   * @var array
-   */
-  private $list = array();
+    /**
+    * Contains the list of columns to only display on listing page. If empty all shown.
+    */
+    private $list = array();
 
-  /**
-   * Contains the list of columns to be allowed to filter through 
-   *
-   * @access private
-   * @var array
-   */
-  private $filterList = array();
+    /**
+    * Contains the list of columns to be allowed to filter through 
+    */
+    private $filterList = array();
 
-  /**
-   * Contains the list query scopes. Index as the display name and value as the function name.
-   *
-   * @access private
-   * @var array
-   */
-  private $queryScopes = array();
+    /**
+    * Contains the list query scopes. Index as the display name and value as the function name.
+    */
+    private $queryScopes = array();
 
-  /**
-   * Boolean for setting special rules for processing InfuseUser model.
-   *
-   * @access private
-   * @var boolean
-   */
-  private $infuseLogin = false;
+    /**
+    * Boolean for setting special rules for processing InfuseUser model.
+    */
+    private $infuseLogin = false;
 
-  /**
-   * Flag for letting scaffold only allowing one instance of the model to be created.
-   *
-   * @access private
-   * @var boolean
-   */
-  private $onlyOne = false;
+    /**
+    * Flag for letting scaffold only allowing one instance of the model to be created.
+    */
+    private $onlyOne = false;
 
-  /**
-   * Set a column default value when saved and load only load item that match that value.
-   * array("column" => "value", ...)
-   *
-   * @access private
-   * @var boolean
-   */
-  private $defaultColumnValues = array();
+    /**
+    * Set a column default value when saved and load only load item that match that value.
+    * array("column" => "value", ...)
+    */
+    private $defaultColumnValues = array();
 
 
-  /**
-   * Associates model to current user when a new instance is created and only load ones that belong to user.
-   *
-   * @access private
-   * @var boolean
-   */
-  private $belongsToUser = false;
+    /**
+    * Associates model to current user when a new instance is created and only load ones that belong to user.
+    */
+    private $belongsToUser = false;
 
-  /**
-   * Associates model to current user when a new instance is created and only load ones that belong to user with the many to many relationship.
-   *
-   * @access private
-   * @var boolean
-   */
-  private $belongsToUserManyToMany = false;
+    /**
+    * Associates model to current user when a new instance is created and only load ones that belong to user with the many to many relationship.
+    */
+    private $belongsToUserManyToMany = false;
 
-  /**
-   * On the listing page only loads model instances that are siblings of the user
-   * of the foriegn key provided.
-   *
-   * @access private
-   * @var boolean|string
-   */
-  private $onlyLoadSiblingsOfUserRelatedBy = false;
+    /**
+    * On the listing page only loads model instances that are siblings of the user
+    * of the foriegn key provided.
+    */
+    private $onlyLoadSiblingsOfUserRelatedBy = false;
 
-  /**
-   * Associates model to the same parent of the user by the foreign key given. 
-   *
-   * @access private
-   * @var boolean|string
-   */
-  private $associateToSameParentOfUserRelatedBy = false;
+    /**
+    * Associates model to the same parent of the user by the foreign key given. 
+    */
+    private $associateToSameParentOfUserRelatedBy = false;
 
-  /**
-   * Only load model if sibling of user's parent. Specify parent 
-   * foreign id and current model  foreign id.
-   *
-   * @access private
-   * @var boolean|array
-   */
-  private $siblingOfUserParentOnly = false;
+    /**
+    * Only load model if sibling of user's parent. Specify parent 
+    * foreign id and current model  foreign id.
+    */
+    private $siblingOfUserParentOnly = false;
 
-  /**
-   * Disables the action delete action on an instance of the model. 
-   *
-   * @access private
-   * @var boolean
-   */
-  private $deleteAction = true;
+    /**
+    * Disables the action delete action on an instance of the model. 
+    */
+    private $deleteAction = true;
 
-  /**
-   * Adds elequent function calls list as an action on the listing page under Edit, Show, Delete
-   *
-   * @access private
-   * @var array
-   */
-  private $callFunctions = array();
+    /**
+    * Adds elequent function calls list as an action on the listing page under Edit, Show, Delete
+    */
+    private $callFunctions = array();
 
-  /**
-   * Adds other function calls to the model in the Other Action dropdown on the listing page. static function call to the model.
-   *
-   * @access private
-   * @var array
-   */
-  private $addOtherActions = array();
+    /**
+    * Adds other function calls to the model in the Other Action dropdown on the listing page. static function call to the model.
+    */
+    private $addOtherActions = array();
 
-   /**
-   * Call function before edit page.
-   *
-   * @access private
-   * @var array
-   */
-   private $beforeEdit;
+    /**
+    * Call function before edit page.
+    */
+    private $beforeEdit;
 
-  /**
-   * Attach elequent where method calls to the main filter
-   *
-   * @access private
-   * @var array
-   */
-  private $permanentFilters = array();
+    /**
+    * Attach elequent where method calls to the main filter
+    */
+    private $permanentFilters = array();
 
-  /**
-   * Contains the model configuration to what models to import from. 
-   *
-   * @access private
-   * @var boolean|array
-   */
-  private $importFromModel = false;
+    /**
+    * Contains the model configuration to what models to import from. 
+    */
+    private $importFromModel = false;
 
 
-  /**
-   * \Illuminate\View\Environment instance for proccessing blade templates
-   *
-   * @access protected
-   * @var object
-   */
-  protected $view;
+    /**
+    * \Illuminate\View\Environment instance for proccessing blade templates
+    */
+    protected $view;
 
-  /**
-   * \InfuseUser current instance of user logged into infuse
-   *
-   * @access protected
-   * @var object
-   */
-  protected $user = false;
+    /**
+    * \InfuseUser current instance of user logged into infuse
+    */
+    protected $user = false;
 
-  /**
-   * \Illuminate\Support\Facades\DB instance of current request
-   *
-   * @access protected
-   * @var object
-   */
-  protected static $db;
+    /**
+    * \Illuminate\Support\Facades\DB instance of current request
+    */
+    protected static $db;
 
-  /**
-   * \Illuminate\Http\Request instance of current request
-   *
-   * @access protected
-   * @var object
-   */
-  protected $request;
+    /**
+    * \Illuminate\Http\Request instance of current request
+    */
+    protected $request;
 
-  /**
-   * \Illuminate\Events\Dispatchet instance of current event
-   *
-   * @access protected
-   * @var object
-   */
-  protected $event;
+    /**
+    * \Illuminate\Events\Dispatchet instance of current event
+    */
+    protected $event;
 
-   /**
-   *  \Illuminate\Session\Store instance of current session
-   *
-   * @access protected
-   * @var object
-   */
-   protected $session;
+    /**
+    *  \Illuminate\Session\Store instance of current session
+    */
+    protected $session;
 
-   /**
-   * Date format for laravel timestamps (updated_at, created_at) displayed infuse
-   *
-   * @access private
-   * @var string
-   */
-   private $formatLaravelTimestamp;
-   
-   /**
-   * Type of database (pgsql or mysql)
-   *
-   * @access private
-   * @var string
-   */
-   private $databaseConnection; 
+    /**
+    * Date format for laravel timestamps (updated_at, created_at) displayed infuse
+    */
+    private $formatLaravelTimestamp;
 
-   /**
-   * Allow hstore keys to be removed via hstore model schema
-   *
-   * @access private
-   * @var boolean
-   */
-   private $hstoreAllowKeyRemoval = false;
-   
-  
+    /**
+    * Type of database (pgsql or mysql)
+    */
+    private $databaseConnection; 
 
-  /**
-   * Constructor
-   *
-   * @param \Illuminate\View\Environment $view An Environment instance
-   * @param \InfuseUser $user A InfuseUser instance
-   * @param \Illuminate\Support\Facades\DB $db An DB instance
-   * @param \Illuminate\Http\Request $request A Request instance
-   *
-   * @api
-   */
+    /**
+    * Allow hstore keys to be removed via hstore model schema
+    */
+    private $hstoreAllowKeyRemoval = false;
 
-  public function __construct(\Illuminate\View\Factory $view, \InfuseUser $user, \Illuminate\Support\Facades\DB $db, \Illuminate\Http\Request $request, \Event $event, \Illuminate\Session\SessionManager $session)
-  { 
-    $this->view = $view;
-    $this->user = $user;
-    $this->request = $request;
-    $this->event = $event;
-    $this->session = $session;
-    self::$db = $db; 
-    $this->rolePermission = (\Config::get("infuse::config.role_permission"))? true : false;
-    $this->formatLaravelTimestamp = \Config::get("infuse::config.format_laravel_timestamp");
-    $this->beforeEdit = function() { return true; };
-    $this->databaseConnection = \Config::get('database.default');
-    $this->hstoreAllowKeyRemoval = \Config::get('infuse::config.hstore_allow_key_removal');
-  }
-
-  /**
-   * Loads model.
-   *
-   * Loads in external model to be processed by the scaffold class.
-   *
-   * @api
-   *
-   * @uses $this->boot().
-   *
-   * @return void
-   */
-  public function model($model)
-  {
-    $this->model = $model;
-    if (is_subclass_of($this->model, 'Bpez\Infuse\InfuseModel') 
-        || is_subclass_of($this->model, 'Toddish\Verify\Models\User') 
-        || is_subclass_of($this->model, 'Toddish\Verify\Models\Role')  
-        || is_subclass_of($this->model, 'Toddish\Verify\Models\Permission') ) {
-
-      $this->name = get_class($this->model);
-
-      $this->boot();
-
-      return $this;
-    } else {
-      throw new ScaffoldModelNotRecognizedException(get_parent_class($this->model)." is the wrong model to inherit from. Extend from InfuseEloquent.");
+    public function __construct(
+        \Illuminate\View\Factory $view, 
+        \InfuseUser $user, 
+        \Illuminate\Support\Facades\DB $db, 
+        \Illuminate\Http\Request $request, 
+        \Event $event, \Illuminate\Session\SessionManager $session
+    ) { 
+        $this->view = $view;
+        $this->user = $user;
+        $this->request = $request;
+        $this->event = $event;
+        $this->session = $session;
+        self::$db = $db; 
+        $this->rolePermission = (\Config::get("infuse::config.role_permission"))? true : false;
+        $this->formatLaravelTimestamp = \Config::get("infuse::config.format_laravel_timestamp");
+        $this->beforeEdit = function() { return true; };
+        $this->databaseConnection = \Config::get('database.default');
+        $this->hstoreAllowKeyRemoval = \Config::get('infuse::config.hstore_allow_key_removal');
     }
-  }
 
-
-  /**
-   * Boot sets up base configuration for model right after model is loaded into the instance.
-   *
-   * @uses self::checkIfOverUploadLimit().
-   *
-   * @return void
-   */
-  protected function boot()
-  { 
-    $this->checkIfOverUploadLimit();
-    
-    $this->action = Util::get("action");
-    $db = self::$db;
-    $table = $this->model->getTable();
-    $columns =  $db::select("select column_name as field, data_type as type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name = '".$table."'");
-    $atLeastOneExist = ($db::table($table)->count() > 0)? true : false;
-    
-    
-    $this->order['column'] = $this->model->getKeyName();
-
-    $this->primaryKey = $this->model->getKeyName();
-
-    if ($this->databaseConnection == "pgsql" && count($this->model->hstore) > 0) {
-      $hstoreColumns = $this->model->hstore;
-      $hstoreEmulationColumnTypes = array("string", "text");
-    }
-    
-    foreach ($columns as $column) {
-      
-      // Check for hstore
-      if (isset($hstoreColumns) && isset($hstoreColumns[$column->field])) { 
-
-        $hstoreColumn = $hstoreColumns[$column->field];
-
-        $this->hstoreColumnStructureCheck($column->field, $hstoreColumns[$column->field], $atLeastOneExist, $table);
-
-        foreach ($hstoreColumn['types'] as $hstoreKey => $columnType) {
-          if (in_array($columnType, $hstoreEmulationColumnTypes)) {
-            $hstore = $column->field;
-            $this->processColumn($hstoreKey, $columnType, $hstore);
-          }
+    /**
+    * Loads in external model to be processed by the scaffold class.
+    */
+    public function model($model)
+    {
+        $this->model = $model;
+        if (is_subclass_of($this->model, 'Bpez\Infuse\InfuseModel') 
+            || is_subclass_of($this->model, 'Toddish\Verify\Models\User') 
+            || is_subclass_of($this->model, 'Toddish\Verify\Models\Role')  
+            || is_subclass_of($this->model, 'Toddish\Verify\Models\Permission') 
+        ) {
+            $this->name = get_class($this->model);
+            $this->boot();
+            return $this;
         }
 
-      } else {
-
-        $this->processColumn($column->field, $column->type);
-      }
-
-      
+        throw new ScaffoldModelNotRecognizedException(
+            get_parent_class($this->model)." is the wrong model to inherit from. Extend from InfuseEloquent."
+        );
     }
-  }
 
-  private function hstoreColumnStructureCheck($column, $hstoreColumn, $atLeastOneExist, $table)
-  {
 
-    if ($atLeastOneExist) {
-      $db = self::$db;
-      $model = $this->model;
+    /**
+    * Boot sets up base configuration for model right after model is loaded into the instance.
+    */
+    protected function boot()
+    { 
+        $db = self::$db;
 
-      // Check if any keys need to be added
-      $actualKeys = $model::select(\DB::raw("akeys({$column})"))->first();
+        $this->checkIfOverUploadLimit();
+        $this->action = Util::get("action");
+        $table = $this->model->getTable();
 
-      $keys = $actualKeys->akeys;
+        $columns = $db::select("select column_name as field, data_type as type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name = '".$table."'");
 
-      if ($keys[0] === '{') {
-        $keys = str_replace('{', '', $keys);
-      }
-      
-      if (substr($keys, -1) === '}') {
-       $keys = str_replace('}', '', $keys);
-      }
+        $atLeastOneExist = ($db::table($table)->count() > 0)? true : false;
 
-      $currentKeySet = explode(",", $keys);
-      $masterKeySet = array_keys($hstoreColumn['columns']);
+        $this->order['column'] = $this->model->getKeyName();
 
-      // Check what keys current are missing 
-      $addKeys = array_diff($masterKeySet, $currentKeySet);
+        $this->primaryKey = $this->model->getKeyName();
 
-      foreach ($addKeys as $key) {
-        $db::update("update {$table} set {$column} = {$column} || hstore('{$key}', '{$hstoreColumn['columns'][$key]}')");
-      }
-
-      if ($this->hstoreAllowKeyRemoval) {
-        // check if any keys need to be removed
-        $removeKeys = array_diff($currentKeySet, $masterKeySet);
-
-        foreach ($removeKeys as $key) {
-          $db::update("update {$table} set {$column} = delete({$column}, '{$key}')");
+        if ($this->databaseConnection == "pgsql" && count($this->model->hstore) > 0) {
+            $hstoreColumns = $this->model->hstore;
+            $hstoreEmulationColumnTypes = array("string", "text");
         }
-      }
-      
-    }
-    
-  }
 
+        foreach ($columns as $column) {
+            // Check for hstore
+            if (isset($hstoreColumns) && isset($hstoreColumns[$column->field])) {
 
-  private function processColumn($columnName, $columnType, $hstore = false)
-  {
-    if ($columnName != $this->primaryKey ) { 
+                $hstoreColumn = $hstoreColumns[$column->field];
+                $this->hstoreColumnStructureCheck(
+                    $column->field, 
+                    $hstoreColumns[$column->field], 
+                    $atLeastOneExist, 
+                    $table
+                );
 
-        if (strlen(strstr($columnType, "varchar")) > 0 || strlen(strstr($columnType, "character varying")) > 0) {
-          $type = "varchar";
-        } else if (strlen(strstr($columnType, "tinyint")) > 0 || strlen(strstr($columnType, "boolean")) > 0) {
-          $type = "tinyint";
-        } else if (strlen(strstr($columnType, "int")) > 0) { 
-          $type = "int";
-        } else if (strlen(strstr($columnType, "timestamp")) > 0) {
-           $type = "timestamp";
-        } else if (strlen(strstr($columnType, "json")) > 0) {
-           $type = "text";
-        } else if (strlen(strstr($columnType, "float")) > 0 || strlen(strstr($columnType, "double precision")) > 0) {
-           $type = "float";
-        }else {
-          $type = $columnType;
+                foreach ($hstoreColumn['types'] as $hstoreKey => $columnType) {
+                    if (in_array($columnType, $hstoreEmulationColumnTypes)) {
+                        $hstore = $column->field;
+                        $this->processColumn($hstoreKey, $columnType, $hstore);
+                    }
+                }
+
+            } else {
+
+                $this->processColumn($column->field, $column->type);
+
+            }
         }
-       
-        array_push($this->list, $columnName);
-        $this->columns["{$columnName}"] = array(
-            "field" => $columnName,
-            "type"  => $type,
-            "type_original" => $columnType,
-            'hstore_column' => $hstore
-          );
-      }
-  }
-
-  /**
-   * Checks if post request overflowed limit and so exits class and redirects. (post_max_size and/or upload_max_filesize)
-   *
-   * @return void
-   */
-  protected function checkIfOverUploadLimit()
-  {
-    if(empty($_FILES) && empty($_POST) && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) == 'post')  { 
-      $postMax = ini_get('post_max_size'); 
-      Util::flash(array(
-        "message" => "Maximum upload size exceeded on server. Please note files or total combined size of files larger than {$postMax} will result in this error!", 
-        "type" => "error"
-        )
-      );
-
-      header("Location: http://".$_SERVER['HTTP_HOST']."/admin/dashboard");
-      exit();
     }
-  }
 
-  /**
-   * Set testing flag.
-   *
-   * Set testing to true so that redirects stop within class so that unit testing can take place.
-   *
-   * @api
-   *
-   * @return $this
-   */
-  public function testing()
-  {
-    $this->testing = true;
-    return $this;
-  }
+    private function hstoreColumnStructureCheck($column, $hstoreColumn, $atLeastOneExist, $table)
+    {
+        if (!$atLeastOneExist) {
+            return;
+        }
+
+        $db = self::$db;
+        $model = $this->model;
+
+        // Check if any keys need to be added
+        $actualKeys = $model::select(\DB::raw("akeys({$column})"))->first();
+
+        $keys = $actualKeys->akeys;
+
+        if ($keys[0] === '{') {
+            $keys = str_replace('{', '', $keys);
+        }
+
+        if (substr($keys, -1) === '}') {
+            $keys = str_replace('}', '', $keys);
+        }
+
+        $currentKeySet = explode(",", $keys);
+        $masterKeySet = array_keys($hstoreColumn['columns']);
+
+        // Check what keys current are missing 
+        $addKeys = array_diff($masterKeySet, $currentKeySet);
+
+        foreach ($addKeys as $key) {
+            $db::update("update {$table} set {$column} = {$column} || hstore('{$key}', '{$hstoreColumn['columns'][$key]}')");
+        }
+
+        if ($this->hstoreAllowKeyRemoval) {
+            // check if any keys need to be removed
+            $removeKeys = array_diff($currentKeySet, $masterKeySet);
+
+            foreach ($removeKeys as $key) {
+                $db::update("update {$table} set {$column} = delete({$column}, '{$key}')");
+            }
+        }
 
 
-  public function route()
-  {
-    switch ($this->action) {
-      case 'l':
-        $this->listAll();
-        break;
-      case 'e':
-        $this->edit();
-        break;
-      case 's':
-        $this->show();
-        break;
-      case 'd':
-        $this->delete();
-        break;
-      case 'c':
-        $this->create();
-        break;
-      case 'cd':
-        $this->createDuplicate();
-        break;
-      case 'u':
-      case 'cu':
-        $this->update();
-        break;
-      case 'f':
-        $this->listAllFilter();
-        break;
-      case 'rrpp':
-        $this->sendRequestResetPasswordPage();
-        break;
-      case 'icsv':
-        $this->importCSV();
-        break;
-      case 'icsvc':
-        $this->importCSVCustom();
-        break;
-         case 'ecsvc':
-            $this->exportCSVCustom();
+    }
+
+
+    private function processColumn($columnName, $columnType, $hstore = false)
+    {
+        if ($columnName != $this->primaryKey) { 
+
+            if (strlen(strstr($columnType, "varchar")) > 0 || strlen(strstr($columnType, "character varying")) > 0) {
+                $type = "varchar";
+            } else if (strlen(strstr($columnType, "tinyint")) > 0 || strlen(strstr($columnType, "boolean")) > 0) {
+                $type = "tinyint";
+            } else if (strlen(strstr($columnType, "int")) > 0) { 
+                $type = "int";
+            } else if (strlen(strstr($columnType, "timestamp")) > 0) {
+                $type = "timestamp";
+            } else if (strlen(strstr($columnType, "json")) > 0) {
+                $type = "text";
+            } else if (strlen(strstr($columnType, "float")) > 0 || strlen(strstr($columnType, "double precision")) > 0) {
+                $type = "float";
+            } else {
+                $type = $columnType;
+            }
+
+            array_push($this->list, $columnName);
+
+            $this->columns["{$columnName}"] = array(
+                "field" => $columnName,
+                "type"  => $type,
+                "type_original" => $columnType,
+                'hstore_column' => $hstore
+            );
+
+        }
+    }
+
+    /**
+    * Checks if post request overflowed limit and so exits class and redirects. (post_max_size and/or upload_max_filesize)
+    */
+    protected function checkIfOverUploadLimit()
+    {
+        if (empty($_FILES) && empty($_POST) && 
+            isset($_SERVER['REQUEST_METHOD']) && 
+            strtolower($_SERVER['REQUEST_METHOD']) == 'post'
+        ) { 
+            $postMax = ini_get('post_max_size');
+
+            Util::flash(array(
+                "message" => "Maximum upload size exceeded on server. Please note files or total combined size of files larger than {$postMax} will result in this error!", 
+                "type" => "error"
+            ));
+
+            header("Location: http://".$_SERVER['HTTP_HOST']."/admin/dashboard");
+            exit();
+        }
+    }
+
+    /**
+    * Set testing to true so that redirects stop within class so that unit testing can take place.
+    */
+    public function testing()
+    {
+        $this->testing = true;
+        return $this;
+    }
+
+
+    public function route()
+    {
+        switch ($this->action) {
+            case 'l':
+                $this->listAll();
+                break;
+            case 'e':
+                $this->edit();
+                break;
+            case 's':
+                $this->show();
+                break;
+            case 'd':
+                $this->delete();
+                break;
+            case 'c':
+                $this->create();
+                break;
+            case 'cd':
+                $this->createDuplicate();
+                break;
+            case 'u':
+            case 'cu':
+                $this->update();
+                break;
+            case 'f':
+                $this->listAllFilter();
+                break;
+            case 'rrpp':
+                $this->sendRequestResetPasswordPage();
+                break;
+            case 'icsv':
+                $this->importCSV();
+                break;
+            case 'icsvc':
+                $this->importCSVCustom();
+                break;
+            case 'ecsvc':
+                $this->exportCSVCustom();
+                break;
+            case 'cf':
+                $this->callActionFunction();
+                break;
+            case 'oa':
+                $this->callOtherAction();
+                break;
+
+            default:
+                $this->listAll();
+                break;
+        } 
+    }
+
+
+    public function checkPermissions($redirectBack)
+    { 
+        // Check if role/permission authentication is on otherwise return false and check no permissions.
+        if (!$this->rolePermission) {
+            return false;
+        }
+        
+
+        switch ($this->action) {
+            case 'l':
+            case 's':
+            case 'f':
+            case 'ecsvc':
+                $action = "view";
+                $redirect = "/admin/dashboard";
+                break;
+            case 'e':
+            case 'u':
+            case 'cf':
+            case 'oa':
+                $action = "update";
+                $redirect = $redirectBack;
             break;
-      case 'cf':
-        $this->callActionFunction();
-        break;
-      case 'oa':
-        $this->callOtherAction();
-        break;
+            case 'd':
+                $action = "delete";
+                $redirect = $redirectBack;
+            break;
+            case 'c':
+            case 'cd':
+            case 'cu':
+            case 'icsv':
+            case 'icsvc':
+                $action = "create";
+                $redirect = $redirectBack;
+            break;
 
-      default:
-        $this->listAll();
-        break;
-    } 
-  }
+            default:
+                $action = "view";
+                $redirect = "/admin/dashboard";
+            break;
+        }
 
+        $resource = Util::camel2under(get_class($this->model)); 
 
-  public function checkPermissions($redirectBack)
-  { 
-    // Check if role/permission authentication is on otherwise return false and check no permissions.
-    if (!$this->rolePermission)
-      return false;
+        if ($this->user->can($resource."_".$action)) {
 
-    switch ($this->action) {
-      case 'l':
-      case 's':
-      case 'f':
-         case 'ecsvc':
-        $action = "view";
-        $redirect = "/admin/dashboard";
-        break;
-      case 'e':
-      case 'u':
-      case 'cf':
-      case 'oa':
-        $action = "update";
-        $redirect = $redirectBack;
-        break;
-      case 'd':
-        $action = "delete";
-        $redirect = $redirectBack;
-        break;
-      case 'c':
-      case 'cd':
-      case 'cu':
-      case 'icsv':
-         case 'icsvc':
-        $action = "create";
-        $redirect = $redirectBack;
-        break;
+            // User has permission let user continue action
+            return false;
 
-      default:
-        $action = "view";
-        $redirect = "/admin/dashboard";
-        break;
+        } else {
+
+            if ($this->user->is('Super Admin')) {
+                return false;
+            }
+            
+            $name = Util::cleanName($this->name);
+            Util::flash(array(
+                "message" => "{$this->user->username} is not authorized to {$action} {$name}.", 
+                "type" => "warning"
+            ));
+            // User does not have permission don't let user continue action
+            return $redirect;
+
+        }
     }
-
-    $resource = Util::camel2under(get_class($this->model)); 
-    
-    if ($this->user->can($resource."_".$action)) {
-      // User has permission let user continue action
-      return false;
-
-    } else {
-
-      if ($this->user->is('Super Admin'))
-        return false;
-
-      $name = Util::cleanName($this->name);
-      Util::flash(array(
-        "message" => "{$this->user->username} is not authorized to {$action} {$name}.", 
-        "type" => "warning"
-        )
-      );
-
-      // User does not have permission don't let user continue action
-      return $redirect;
-    }
-
-    
-    
-  }
 
   private function filterQueryForListings($count = false, &$pagination)
   {
