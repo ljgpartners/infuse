@@ -13,6 +13,8 @@ class InfuseRole extends VerifyRole {
   
   public $uploadFolder = "/uploads";
 
+  public $hstore = array();
+
 	public function users()
   {
     return $this->belongsToMany('InfuseUser', 'role_user', 'role_id', 'user_id');

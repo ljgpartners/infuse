@@ -13,6 +13,8 @@ class InfusePermission extends VerifyPermission {
   
   public $uploadFolder = "/uploads";
 
+  public $hstore = array();
+
   public function roles()
   {
     return $this->belongsToMany('InfuseRole', 'permission_role', 'permission_id', 'role_id');

@@ -12,6 +12,8 @@ class InfuseUser extends VerifyUser {
 
 	public $timestamps = true;
 
+  public $hstore = array();
+
 	public static function boot()
   {
   	parent::boot();
