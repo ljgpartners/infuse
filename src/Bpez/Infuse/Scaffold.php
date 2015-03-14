@@ -562,1215 +562,1349 @@ class Scaffold
         }
     }
 
-  private function filterQueryForListings($count = false, &$pagination)
-  {
-    $model = $this->model;
-    $modelInstance = null;
+    private function filterQueryForListings($count = false, &$pagination)
+    {
+        $model = $this->model;
+        $modelInstance = null;
 
-    $order = Util::get("order");
+        $order = Util::get("order");
 
-    $offset = 0;
-    $page = Util::get("pg");
-    if ($page && $page != 1 && $page != 'a') {
-      $offset =  ($page-1) * $pagination['limit'];
-      $pagination['active_page'] = $page;
-    }
+        $offset = 0;
+        $page = Util::get("pg");
 
-    if ($this->siblingOfUserParentOnly) { 
-      $foreign_id = $this->user 
-                      ->belongsTo($this->siblingOfUserParentOnly['parent_model'], Util::createForeignKeyString($this->siblingOfUserParentOnly['parent_model']))
-                      ->firstOrFail()
-                      ->{$this->siblingOfUserParentOnly['parent_foriegn_id']};
-    }
-
-    if ($this->belongsToUserManyToMany && !$this->user->is('Super Admin')) {
-      $modelInstance = $this->user->belongsToMany($this->belongsToUserManyToMany[0], $this->belongsToUserManyToMany[1], $this->belongsToUserManyToMany[2], $this->belongsToUserManyToMany[3]);
-    } else {
-      $modelInstance = new $model;
-    }
-    
-    if (!$count) { 
-      $modelNameString = get_class($model);
-
-      if ($order) { 
-        if ($this->session->has("infuse_order_column") && $this->session->has("infuse_order") && $this->session->has("infuse_order_model") && $this->session->get("infuse_order_column") == $order && $this->session->get("infuse_order_model") == $modelNameString) {
-          $direction = ($this->session->get("infuse_order") == "asc")? "desc" : "asc";
-          $this->session->put("infuse_order", $direction);
-        } else {
-          $this->session->put("infuse_order_model", $modelNameString);
-          $this->session->put("infuse_order", "asc");
-          $this->session->put("infuse_order_column", $order);
+        if ($page && $page != 1 && $page != 'a') {
+            $offset =  ($page-1) * $pagination['limit'];
+            $pagination['active_page'] = $page;
         }
-      }
 
-      $orderSessionCheck = ($this->session->has("infuse_order_column") && $this->session->has("infuse_order") && $this->session->has("infuse_order_model") && $this->session->get("infuse_order_model") == $modelNameString);
-      $orderByColumn = ($orderSessionCheck)? $this->session->get("infuse_order_column") : $this->order["column"];
-      $orderByDirection = ($orderSessionCheck)? $this->session->get("infuse_order") : $this->order["order"];
-      
-      if ($page == "a") { 
-        $modelInstance = $modelInstance->orderBy($orderByColumn, $orderByDirection);
-      } else { 
-        $modelInstance = $modelInstance->orderBy($orderByColumn, $orderByDirection)->take($pagination['limit'])->skip($offset);
-      }
-    }
-    
-    if ($this->infuseLogin && !$this->user->is('Super Admin'))
-      $modelInstance = $modelInstance->where("id", "!=", 1)->where("username", "!=", 'super');
+        if ($this->siblingOfUserParentOnly) { 
+            $foreign_id = $this->user 
+                ->belongsTo($this->siblingOfUserParentOnly['parent_model'], Util::createForeignKeyString($this->siblingOfUserParentOnly['parent_model']))
+                ->firstOrFail()
+                ->{$this->siblingOfUserParentOnly['parent_foriegn_id']};
+        }
 
-    if ($this->belongsToUser && !$this->user->is('Super Admin'))
-      $modelInstance = $modelInstance->where("infuse_user_id", "=", $this->user->id);
+        if ($this->belongsToUserManyToMany && !$this->user->is('Super Admin')) {
 
-    if ($this->onlyLoadSiblingsOfUserRelatedBy)
-      $modelInstance = $modelInstance->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
+            $modelInstance = $this->user->belongsToMany(
+                $this->belongsToUserManyToMany[0], 
+                $this->belongsToUserManyToMany[1], 
+                $this->belongsToUserManyToMany[2], 
+                $this->belongsToUserManyToMany[3]
+            );
 
-    if ($this->siblingOfUserParentOnly)
-      $modelInstance = $modelInstance->where($this->siblingOfUserParentOnly['foreign_id'], "=", $foreign_id);
-
-    if ($this->rolePermission && $model instanceof \InfuseUser && !$this->user->is('Super Admin')) { 
-      $user = $this->user;
-
-      if ($user->can("infuse_user_load_level_comparison_or_equal_zero")) { 
-        $db = self::$db;
-        $originalIds = $db::table('users')->lists("id");
-        $newIds = $db::table('role_user')->distinct("user_id")->lists("user_id");
-        $usersWithNoRole = array_diff($originalIds, $newIds);
-        if (!empty($usersWithNoRole))
-          $modelInstance = $modelInstance->orWhereIn('id', $usersWithNoRole);
-      }
-
-      $role = $this->user->roles()->orderBy("level", "asc")->limit(1)->first();
-      $level = (count($role) == 1)? $role->level : 0;
-      
-      $modelInstance = $modelInstance->with('roles')->whereHas('roles', function($q) use ($level, $user) {
-        if ($user->can("infuse_user_load_level_comparison_greater_or_equal")) {
-          $q->where('level', '>=', $level);
         } else {
-          $q->where('level', '>', $level);
+
+            $modelInstance = new $model;
+
+        }
+
+        if (!$count) { 
+            $modelNameString = get_class($model);
+
+            if ($order) { 
+                if ($this->session->has("infuse_order_column") && 
+                    $this->session->has("infuse_order") && 
+                    $this->session->has("infuse_order_model") && 
+                    $this->session->get("infuse_order_column") == $order && 
+                    $this->session->get("infuse_order_model") == $modelNameString
+                ) {
+
+                    $direction = ($this->session->get("infuse_order") == "asc")? "desc" : "asc";
+                    $this->session->put("infuse_order", $direction);
+
+                } else {
+
+                    $this->session->put("infuse_order_model", $modelNameString);
+                    $this->session->put("infuse_order", "asc");
+                    $this->session->put("infuse_order_column", $order);
+
+                }
+            }
+
+            $orderSessionCheck = ($this->session->has("infuse_order_column") && 
+                $this->session->has("infuse_order") && 
+                $this->session->has("infuse_order_model") && 
+                $this->session->get("infuse_order_model") == $modelNameString
+            );
+            $orderByColumn = ($orderSessionCheck)? $this->session->get("infuse_order_column") : $this->order["column"];
+            $orderByDirection = ($orderSessionCheck)? $this->session->get("infuse_order") : $this->order["order"];
+
+            if ($page == "a") { 
+                $modelInstance = $modelInstance->orderBy($orderByColumn, $orderByDirection);
+            } else { 
+                $modelInstance = $modelInstance->orderBy($orderByColumn, $orderByDirection)
+                    ->take($pagination['limit'])
+                    ->skip($offset);
+            }
+        }
+
+        if ($this->infuseLogin && !$this->user->is('Super Admin')) {
+            $modelInstance = $modelInstance->where("id", "!=", 1)->where("username", "!=", 'super');
+        }
+
+        if ($this->belongsToUser && !$this->user->is('Super Admin')) {
+            $modelInstance = $modelInstance->where("infuse_user_id", "=", $this->user->id);
+        }
+
+        if ($this->onlyLoadSiblingsOfUserRelatedBy) {
+             $modelInstance = $modelInstance->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
+        }
+       
+
+        if ($this->siblingOfUserParentOnly) {
+            $modelInstance = $modelInstance->where($this->siblingOfUserParentOnly['foreign_id'], "=", $foreign_id);
+        }
+        
+
+        if ($this->rolePermission && $model instanceof \InfuseUser && !$this->user->is('Super Admin')) { 
+            user = $this->user;
+
+            if ($user->can("infuse_user_load_level_comparison_or_equal_zero")) { 
+                $db = self::$db;
+                $originalIds = $db::table('users')->lists("id");
+                $newIds = $db::table('role_user')->distinct("user_id")->lists("user_id");
+                $usersWithNoRole = array_diff($originalIds, $newIds);
+
+                if (!empty($usersWithNoRole)) {
+                    $modelInstance = $modelInstance->orWhereIn('id', $usersWithNoRole);
+                }
+            }
+
+            $role = $this->user
+                ->roles()
+                ->orderBy("level", "asc")
+                ->limit(1)
+                ->first();
+
+            $level = (count($role) == 1)? $role->level : 0;
+
+            $modelInstance = $modelInstance->with('roles')->whereHas('roles', function($q) use ($level, $user) {
+                if ($user->can("infuse_user_load_level_comparison_greater_or_equal")) {
+                    $q->where('level', '>=', $level);
+                } else {
+                    $q->where('level', '>', $level);
+                } 
+            }); 
+        }
+
+        foreach ($this->permanentFilters as $where) {
+            $modelInstance = $modelInstance->where($where['column'], $where['operator'], $where['value']);
+        }
+
+        foreach ($this->defaultColumnValues as $index => $value) {
+            $modelInstance = $modelInstance->where($index, "=", $value);
+        }
+
+        $scope = Util::get("scope");
+
+        foreach ($this->queryScopes as $key => $functionName) {
+            if ($scope == $functionName) {
+                $modelInstance = $modelInstance->{$functionName}();
+            }
+        }
+
+        return $modelInstance;
+    }
+
+
+    private function listAll()
+    { 
+        $pagination = array(
+            "limit" => $this->limit,
+            "active_page" => 1,
+            "count" => 0
+        );
+
+
+        $pagination['count'] = $this->filterQueryForListings(true, $pagination)->count();
+
+        $prepareModel = $this->filterQueryForListings(false, $pagination);
+
+        if (Util::get("toCSV")) {
+            $this->toCSV($prepareModel);
+        }
+
+        $this->entries = $prepareModel->get();
+
+        $this->header = array( 
+            "pagination" => $pagination,
+            "name" => $this->name,
+            "list" => $this->list,
+            "filterList" => $this->filterList,
+            "queryScopes" => $this->queryScopes,
+            "onlyOne" => $this->onlyOne,
+            "addOtherActions" => $this->addOtherActions,
+            "columnNames" => $this->columnNames
+        );
+    }
+
+    private function listAllFilter()
+    {
+        $pagination = array(
+            "limit" => $this->limit,
+            "active_page" => 1,
+            "count" => 0
+        );
+
+
+        $filterCount = Util::get("filter_count");
+        $filters = array();
+
+        for ($x=1; $x <= $filterCount; $x++) {
+            $filter = json_decode(Util::get("filter_".$x));
+
+            if (count($filter) == 3) {
+
+                if (!isset($filter[0]) && !in_array($filter[0], $columnNames)) {
+                    continue;
+                }
+
+                if (!isset($filter[1]) && !array_key_exists($filter[1], $comparisons)) {
+                    continue;
+                }
+
+                if (!isset($filter[2])) {
+                    continue;
+                }
+
+                array_push($filters, $filter);
+            }
         } 
-      }); 
 
+        $prepareModel = $this->filterQueryForListings(false, $pagination);
+
+        $columnNames = array_keys($this->columns);
+
+        $comparisons = array(
+            "equals" => "=", 
+            "less than" => "<", 
+            "greater than" => ">", 
+            "not equal to" => "!=", 
+            "contains" => "like"
+        );
+
+        foreach ($filters as $filter) {
+
+            if (isset($comparisons[$filter[1]]) && 
+                $comparisons[$filter[1]] == "like" && 
+                in_array($filter[0], $columnNames)
+            ) {
+                $prepareModel = $prepareModel->whereRaw("{$filter[0]} LIKE ?", array("%".$filter[2]."%"));
+            } else if (isset($comparisons[$filter[1]])) {
+                $prepareModel = $prepareModel->where($filter[0], $comparisons[$filter[1]], $filter[2]);
+            }
+
+        }
+
+
+        if (Util::get("toCSV")) {
+            $this->toCSV($prepareModel);
+        }
+
+        $this->entries = $prepareModel->get();
+
+        $prepareModelForCount = $this->filterQueryForListings(true, $pagination);
+
+        foreach($filters as $filter) {
+
+            if (isset($comparisons[$filter[1]]) && 
+                $comparisons[$filter[1]] == "like" && 
+                in_array($filter[0], $columnNames)
+            ) {
+                $prepareModelForCount = $prepareModelForCount->whereRaw("{$filter[0]} LIKE ?", array("%".$filter[2]."%"));
+            } else if (isset($comparisons[$filter[1]])) {
+                $prepareModelForCount = $prepareModelForCount->where($filter[0], $comparisons[$filter[1]], $filter[2]);
+            }
+
+        }
+
+        $pagination['count'] = $prepareModelForCount->count();
+
+        $this->header = array(
+            "pagination" => $pagination,
+            "name" => $this->name,
+            "list" => $this->list,
+            "filterList" => $this->filterList,
+            "queryScopes" => $this->queryScopes,
+            "filters" => $filters,
+            "onlyOne" => $this->onlyOne,
+            "addOtherActions" => $this->addOtherActions,
+            "columnNames" => $this->columnNames
+        );
     }
-
-    foreach($this->permanentFilters as $where) {
-      $modelInstance = $modelInstance->where($where['column'], $where['operator'], $where['value']);
-    }
-
-    foreach($this->defaultColumnValues as $index => $value) {
-      $modelInstance = $modelInstance->where($index, "=", $value);
-    }
-
-    $scope = Util::get("scope");
-
-    foreach($this->queryScopes as $key => $functionName) {
-      if ($scope == $functionName) {
-        $modelInstance = $modelInstance->{$functionName}();
-      }
-    }
-
-    return $modelInstance;
-  }
-
-
-  private function listAll()
-  { 
-    $pagination = array(
-      "limit" => $this->limit,
-      "active_page" => 1,
-      "count" => 0
-    );
-
-    
-    $pagination['count'] = $this->filterQueryForListings(true, $pagination)->count();
-
-    $prepareModel = $this->filterQueryForListings(false, $pagination);
-
-    if (Util::get("toCSV"))
-      $this->toCSV($prepareModel);
-
-    $this->entries = $prepareModel->get();
-    
-    $this->header = array( 
-        "pagination" => $pagination,
-        "name" => $this->name,
-        "list" => $this->list,
-        "filterList" => $this->filterList,
-        "queryScopes" => $this->queryScopes,
-        "onlyOne" => $this->onlyOne,
-        "addOtherActions" => $this->addOtherActions,
-        "columnNames" => $this->columnNames
-    );
-  }
-
-  private function listAllFilter()
-  {
-    $pagination = array(
-      "limit" => $this->limit,
-      "active_page" => 1,
-      "count" => 0
-    );
-    
-
-    $filterCount = Util::get("filter_count");
-    $filters = array();
-
-    for ($x=1; $x <= $filterCount; $x++)  {
-      $filter = json_decode(Util::get("filter_".$x));
-
-      if (count($filter) == 3) {
-        if (!isset($filter[0]) && !in_array($filter[0], $columnNames))
-          continue;
-        if (!isset($filter[1]) && !array_key_exists($filter[1], $comparisons))
-          continue;
-        if (!isset($filter[2]))
-          continue;
-        array_push($filters, $filter);
-      }
-    } 
-
-    $prepareModel = $this->filterQueryForListings(false, $pagination);
-
-    $columnNames = array_keys($this->columns);
-    $comparisons = array("equals" => "=", "less than" => "<", "greater than" => ">", "not equal to" => "!=", "contains" => "like");
-
-    foreach($filters as $filter) {
-         if (isset($comparisons[$filter[1]]) && $comparisons[$filter[1]] == "like" && in_array($filter[0], $columnNames)) {
-            $prepareModel = $prepareModel->whereRaw("{$filter[0]} LIKE ?", array("%".$filter[2]."%"));
-         } else if (isset($comparisons[$filter[1]])) {
-            $prepareModel = $prepareModel->where($filter[0], $comparisons[$filter[1]], $filter[2]);
-         }
-    }
-
-
-    if (Util::get("toCSV")) {
-      $this->toCSV($prepareModel);
-    }
-
-    $this->entries = $prepareModel->get();
-
-    $prepareModelForCount = $this->filterQueryForListings(true, $pagination);
-
-    foreach($filters as $filter) {
-         if (isset($comparisons[$filter[1]]) && $comparisons[$filter[1]] == "like" && in_array($filter[0], $columnNames)) {
-            $prepareModelForCount = $prepareModelForCount->whereRaw("{$filter[0]} LIKE ?", array("%".$filter[2]."%"));
-         } else if (isset($comparisons[$filter[1]])) {
-            $prepareModelForCount = $prepareModelForCount->where($filter[0], $comparisons[$filter[1]], $filter[2]);
-         }
-    }
-
-    $pagination['count'] = $prepareModelForCount->count();
-    
-    $this->header = array(
-        "pagination" => $pagination,
-        "name" => $this->name,
-        "list" => $this->list,
-        "filterList" => $this->filterList,
-        "queryScopes" => $this->queryScopes,
-        "filters" => $filters,
-        "onlyOne" => $this->onlyOne,
-        "addOtherActions" => $this->addOtherActions,
-        "columnNames" => $this->columnNames
-      );
-  }
 
   
 
-  public function search($search = null, $columns)
-  {
-    $pagination = array(
-      "limit" => $this->limit,
-      "active_page" => 1,
-      "count" => 0
-    );
+    public function search($search = null, $columns)
+    {
+        $pagination = array(
+            "limit" => $this->limit,
+            "active_page" => 1,
+            "count" => 0
+        );
 
-    
-    $prepareModel = $this->filterQueryForListings(false, $pagination);
-    
-    foreach ($columns as $column) {
-      if ($columns[0] == $column) 
-        $prepareModel =  $prepareModel->where($column, "LIKE", "%".$search."%");
-      else
-        $prepareModel = $prepareModel->orWhere($column, "LIKE", "%".$search."%");
+
+        $prepareModel = $this->filterQueryForListings(false, $pagination);
+
+        foreach ($columns as $column) {
+            if ($columns[0] == $column) {
+                $prepareModel =  $prepareModel->where($column, "LIKE", "%".$search."%");
+            }  else {
+                $prepareModel = $prepareModel->orWhere($column, "LIKE", "%".$search."%");
+            }
+        }
+
+
+        if (Util::get("toCSV")) {
+            $this->toCSV($prepareModel);
+        }
+
+        $this->entries = $prepareModel->get();
+
+        $prepareModelForCount = $this->filterQueryForListings(true, $pagination);
+
+        foreach ($columns as $column) {
+            if ($columns[0] == $column) {
+                $prepareModelForCount = $prepareModelForCount->where($column, "LIKE", "%".$search."%");
+            } else {
+                $prepareModelForCount = $prepareModelForCount->orWhere($column, "LIKE", "%".$search."%");
+            }
+        }
+
+        $pagination['count'] = $prepareModelForCount->count();
+
+        $this->header = array(
+            "pagination" => $pagination,
+            "name" => $this->name,
+            "list" => $this->list,
+            "filterList" => $this->filterList,
+            "queryScopes" => $this->queryScopes,
+            "onlyOne" => $this->onlyOne,
+            "addOtherActions" => $this->addOtherActions,
+            "columnNames" => $this->columnNames
+        );
     }
 
 
-    if (Util::get("toCSV")) {
-      $this->toCSV($prepareModel);
+    public function closestLocationsWithinRadius($search, $columns, $latitude, $longitude, $distance)
+    {
+        $pagination = array(
+            "limit" => $this->limit,
+            "active_page" => 1,
+            "count" => 0
+        );
+
+        $page = Util::get("pg");
+        if ($page && $page != 1 && $page != 'a') {
+            $pagination['active_page'] = $page;
+        }
+
+
+        $prepareModel = $this->filterQueryForListings(false, $pagination);
+
+        if (!empty($search)) {
+            foreach ($columns as $column) {
+                if ($columns[0] == $column) {
+                    $prepareModel = $prepareModel->where($column, "LIKE", "%".$search."%");
+                } else {
+                    $prepareModel = $prepareModel->orWhere($column, "LIKE", "%".$search."%");
+                }
+            }
+        }
+
+
+        /*
+            Implemented Haversine formula
+            ------------------------------
+            Will find the closest locations that are within a radius of X miles to the latitude, longitude coordinate.
+            reference: https://developers.google.com/maps/articles/phpsqlsearch_v3?csw=1
+        */
+
+        $db = self::$db;
+        $prepareModel = $prepareModel->select($db::raw("*, ( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) ) AS distance "))
+            ->having('distance', '<', $distance);
+
+
+        if (Util::get("toCSV")) {
+            $this->toCSV($prepareModel);
+        }
+
+
+
+        $this->entries = $prepareModel->get();
+
+        $prepareModelForCount = $this->filterQueryForListings(true, $pagination);
+
+        if (!empty($search)) { 
+            foreach ($columns as $column) {
+                if ($columns[0] == $column) {
+                    $prepareModelForCount = $prepareModelForCount->where($column, "LIKE", "%".$search."%");
+                } else {
+                     $prepareModelForCount = $prepareModelForCount->orWhere($column, "LIKE", "%".$search."%");
+                }
+            }
+        }
+
+        $prepareModelForCount = $prepareModelForCount->select($db::raw("( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) ) AS distance "))
+            ->having('distance', '<', $distance);
+
+
+        $pagination['count'] = count($prepareModelForCount->get()->toArray());
+
+        $this->header = array(
+            "pagination" => $pagination,
+            "name" => $this->name,
+            "list" => $this->list,
+            "filterList" => $this->filterList,
+            "queryScopes" => $this->queryScopes,
+            "onlyOne" => $this->onlyOne,
+            "addOtherActions" => $this->addOtherActions,
+            "columnNames" => $this->columnNames
+        );
     }
 
-    $this->entries = $prepareModel->get();
 
-    $prepareModelForCount = $this->filterQueryForListings(true, $pagination);
+    private function show()
+    { 
+        $model = $this->model;
+        $this->header = array(
+            "pagination" => array(),
+            "name" => $this->name,
+            "columnNames" => $this->columnNames,
+            "onlyOne" => $this->onlyOne
+        );
 
-    foreach ($columns as $column) {
-      if ($columns[0] == $column) 
-        $prepareModelForCount = $prepareModelForCount->where($column, "LIKE", "%".$search."%");
-      else
-        $prepareModelForCount = $prepareModelForCount->orWhere($column, "LIKE", "%".$search."%");
+        if ($this->belongsToUser) {
+
+            try {
+
+                $this->entries = $model->where("infuse_user_id", "=", $this->user->id)
+                    ->where("id", "=", Util::get("id"))
+                    ->firstOrFail();
+
+            } catch (ModelNotFoundException $e) {
+
+                if (Util::get("stack")) {
+                    $redirect_path = Util::childBackLink();
+                } else {
+                    $redirect_path = Util::redirectUrl();
+                }
+
+                Util::flash(array(
+                    "message" => "Can not see this entry.", 
+                    "type" => "error"
+                ));
+
+                if (!$this->testing) {
+                    header("Location: {$redirect_path}");
+                    exit();
+                }
+            }
+
+
+        } else if ($this->belongsToUserManyToMany) {
+
+            try {
+
+                $this->entries = $this->user
+                    ->belongsToMany($this->belongsToUserManyToMany[0], $this->belongsToUserManyToMany[1], $this->belongsToUserManyToMany[2], $this->belongsToUserManyToMany[3])
+                    ->findOrFail(Util::get("id"));
+
+            } catch (ModelNotFoundException $e) {
+
+                if (Util::get("stack")) {
+                    $redirect_path = Util::childBackLink();
+                } else {
+                    $redirect_path = Util::redirectUrl();
+                }
+
+                Util::flash(array(
+                    "message" => "Can not see this entry.", 
+                    "type" => "error"
+                ));
+
+                if (!$this->testing) {
+                    header("Location: {$redirect_path}");
+                    exit();
+                }
+            }
+
+        } else {
+
+            $this->entries = $model::find(Util::get("id"));
+
+        }
     }
 
-    $pagination['count'] = $prepareModelForCount->count();
-    
-    $this->header = array(
-        "pagination" => $pagination,
-        "name" => $this->name,
-        "list" => $this->list,
-        "filterList" => $this->filterList,
-        "queryScopes" => $this->queryScopes,
-        "onlyOne" => $this->onlyOne,
-        "addOtherActions" => $this->addOtherActions,
-        "columnNames" => $this->columnNames
-      );
-  }
+    private function edit()
+    { 
+        if ($this->infuseLogin && Util::get("id") == 1 && !$this->user->is('Super Admin')) {
+            if (Util::get("stack")) {
+                $redirect_path = Util::childBackLink();
+            } else {
+                $redirect_path = Util::redirectUrl();
+            }
+
+            Util::flash(array(
+                "message" => "Can not edit this entry.", 
+                "type" => "error"
+            ));
+
+            if (!$this->testing) {
+                header("Location: {$redirect_path}");
+                exit();
+            }
+        }
 
 
-  public function closestLocationsWithinRadius($search, $columns, $latitude, $longitude, $distance)
-  {
-    $pagination = array(
-      "limit" => $this->limit,
-      "active_page" => 1,
-      "count" => 0
-    );
+        $model = $this->model;
+        $this->header = array(
+            "edit" => true, 
+            "name" => $this->name,
+            "associations" => $this->hasMany,
+            "manyToManyAssociations" => $this->manyToMany,
+            "hasOneAssociation" => $this->hasOne,
+            "onlyOne" => $this->onlyOne,
+            "columnNames" => $this->columnNames,
+            "importFromModel" => $this->importFromModel
+        );
 
-    $page = Util::get("pg");
-    if ($page && $page != 1 && $page != 'a') {
-      $pagination['active_page'] = $page;
+        $beforeEdit = $this->beforeEdit;
+
+        $post = Util::flashArray("post");
+
+        if (!$post) {
+
+            if ($this->belongsToUser) {
+
+                try {
+
+                $this->entries = $model->where("infuse_user_id", "=", $this->user->id)
+                ->where("id", "=", Util::get("id"))
+                ->firstOrFail();
+
+                } catch (ModelNotFoundException $e) {
+
+                    if (Util::get("stack")) {
+                        $redirect_path = Util::childBackLink();
+                    } else {
+                        $redirect_path = Util::redirectUrl();
+                    }
+
+                    Util::flash(array(
+                        "message" => "Can not edit this entry.", 
+                        "type" => "error"
+                    ));
+
+                    if (!$this->testing) {
+                        header("Location: {$redirect_path}");
+                        exit();
+                    }
+                }
+
+
+            } else if ($this->belongsToUserManyToMany) {
+
+                try {
+
+                    $this->user
+                    ->belongsToMany(
+                        $this->belongsToUserManyToMany[0], 
+                        $this->belongsToUserManyToMany[1], 
+                        $this->belongsToUserManyToMany[2], 
+                        $this->belongsToUserManyToMany[3]
+                    )
+                    ->findOrFail(Util::get("id"));
+                    // laravel many to many bug. Call by it self to get updated_at and created_at times stamps returned
+                    $this->entries = $model::find(Util::get("id"));
+
+                } catch (ModelNotFoundException $e) {
+
+                    if (Util::get("stack")) {
+                        $redirect_path = Util::childBackLink();
+                    } else {
+                        $redirect_path = Util::redirectUrl();
+                    }
+
+                    Util::flash(array(
+                        "message" => "Can not edit this entry.", 
+                        "type" => "error"
+                    ));
+
+                    if (!$this->testing) {
+                        header("Location: {$redirect_path}");
+                        exit();
+                    }
+                }
+
+            } else {
+
+                $this->entries = $model::find(Util::get("id"));
+
+            }
+
+        } else {
+
+            $this->entries = $model::find($post["id"]);
+            foreach ($this->columns as $column) {
+                if (isset($post[$column['field']])) {
+                    $this->entries->{$column['field']} = $post[$column['field']];
+                }
+            }
+
+        }
+
+        // Check if beforeEdit function returns false then exit and redirect
+        $exitCheck = $beforeEdit($this->entries);
+        if (!$exitCheck) {
+            if (Util::get("stack")) {
+                $redirect_path = Util::childBackLink();
+            } else {
+                $redirect_path = Util::redirectUrl();
+            }
+
+            Util::flash(array(
+                "message" => "Can not edit this entry.", 
+                "type" => "error"
+            ));
+
+            if (!$this->testing) {
+                header("Location: {$redirect_path}");
+                exit();
+            }
+        }
     }
-    
 
-    $prepareModel = $this->filterQueryForListings(false, $pagination);
+    private function create()
+    {
+        $model = $this->model;
+        $this->header = array(
+            "name" => $this->name,
+            "associations" => $this->hasMany,
+            "manyToManyAssociations" => $this->manyToMany,
+            "hasOneAssociation" => $this->hasOne,
+            "columnNames" => $this->columnNames,
+            "importFromModel" => $this->importFromModel
+        );
+        $post = Util::flashArray("post");
 
-    if (!empty($search)) {
-      foreach ($columns as $column) {
-        if ($columns[0] == $column) 
-          $prepareModel = $prepareModel->where($column, "LIKE", "%".$search."%");
-        else
-          $prepareModel = $prepareModel->orWhere($column, "LIKE", "%".$search."%");
-      }
-    }
-    
-    
-    /*
-      Implemented Haversine formula
-      ------------------------------
-      Will find the closest locations that are within a radius of X miles to the latitude, longitude coordinate.
-      reference: https://developers.google.com/maps/articles/phpsqlsearch_v3?csw=1
-    */
+        if (!$post) {
 
-    $db = self::$db;
-    $prepareModel = $prepareModel
-      ->select($db::raw("*, ( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) ) AS distance "))
-      ->having('distance', '<', $distance);
+            $this->entries = $model;
 
+        } else {
 
-    if (Util::get("toCSV")) {
-      $this->toCSV($prepareModel);
-    }
+            $this->entries = new $model;
+            foreach ($this->columns as $column) {
+                if (isset($post[$column['field']])) {
+                    $this->entries->{$column['field']} = $post[$column['field']];
+                }
+            }
 
-    
-
-    $this->entries = $prepareModel->get();
-
-    $prepareModelForCount = $this->filterQueryForListings(true, $pagination);
-    
-    if (!empty($search)) { 
-      foreach ($columns as $column) {
-        if ($columns[0] == $column) 
-          $prepareModelForCount = $prepareModelForCount->where($column, "LIKE", "%".$search."%");
-        else
-          $prepareModelForCount = $prepareModelForCount->orWhere($column, "LIKE", "%".$search."%");
-      }
+        }
     }
 
-    $prepareModelForCount = $prepareModelForCount
-      ->select($db::raw("( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) ) AS distance "))
-      ->having('distance', '<', $distance);
+    private function createDuplicate()
+    {
+        $model = $this->model;
+        $this->header = array(
+            "name" => $this->name,
+            "associations" => $this->hasMany,
+            "manyToManyAssociations" => $this->manyToMany,
+            "columnNames" => $this->columnNames
+        );
+        $post = Util::flashArray("post");
+
+        if (!$post) {
+            $this->entries = $model::find(Util::get("id"));
+        } else {
+            $this->entries = Util::arrayToObject($post);
+        }
+    }
+
+    private function delete() 
+    {
+        $model = $this->model;
+
+        if ($this->belongsToUser) {
+
+            try {
+
+                $entry = $model->where("infuse_user_id", "=", $this->user->id)
+                    ->where("id", "=", Util::get("id"))
+                    ->firstOrFail();
+
+            } catch (ModelNotFoundException $e) {
+
+                if (Util::get("stack")) {
+                    $redirect_path = Util::childBackLink();
+                } else {
+                    $redirect_path = Util::redirectUrl();
+                }
+
+                Util::flash(array(
+                    "message" => "Can not delete this entry.", 
+                    "type" => "error"
+                ));
+
+                if (!$this->testing) {
+                    header("Location: {$redirect_path}");
+                    exit();
+                }
+
+            }
 
 
-    $pagination['count'] = count($prepareModelForCount->get()->toArray());
+        } else {
 
-    $this->header = array(
-        "pagination" => $pagination,
-        "name" => $this->name,
-        "list" => $this->list,
-        "filterList" => $this->filterList,
-        "queryScopes" => $this->queryScopes,
-        "onlyOne" => $this->onlyOne,
-        "addOtherActions" => $this->addOtherActions,
-        "columnNames" => $this->columnNames
-      );
-  }
+            $entry = $model::find(Util::get("id"));
+
+        }
 
 
-  private function show()
-  { 
-    $model = $this->model;
-    $this->header = array(
-        "pagination" => array(),
-        "name" => $this->name,
-        "columnNames" => $this->columnNames,
-        "onlyOne" => $this->onlyOne
-      );
 
-    if ($this->belongsToUser) {
-      try {
+        if ($this->infuseLogin && $entry->id == 1 && $entry->username == 'super' ) {
 
-        $this->entries = $model->where("infuse_user_id", "=", $this->user->id)
-        ->where("id", "=", Util::get("id"))
-        ->firstOrFail();
+            Util::flash(array(
+                "message" => "Can't delete super.", 
+                "type" => "error"
+            ));
 
-      } catch (ModelNotFoundException $e) {
+        } else {
+
+            $entryBackUp = clone $entry;
+
+            if ($entry->delete()) {
+
+                $fileUploadManage = new FileUpload($this->request);
+
+                foreach ($this->columns as $column) {
+                    if (array_key_exists("upload", $column)) {
+                        $fileUploadManage->delete($column['field'], $entryBackUp, $column);
+                    }
+                }
+
+                Util::flash(array(
+                    "message" => "Deleted {$this->name}.", 
+                    "type" => "success"
+                ));
+
+            } else {
+
+                Util::flash(array(
+                    "message" => "Failed to delete {$this->name}.", 
+                    "type" => "error"
+                ));
+
+            }
+
+        }
+
 
         if (Util::get("stack")) {
-          $redirect_path = Util::childBackLink();
+            $redirect_path = Util::childBackLink();
         } else {
-          $redirect_path = Util::redirectUrl();
+            $redirect_path = Util::redirectUrl();
+        }
+
+        if (!$this->testing) {
+            header("Location: {$redirect_path}");
+            exit();
+        }
+    }
+
+    private function importCSV()
+    {
+        $model = $this->model;
+        $entry = $model::find(Util::get("parent_id"));
+        $redirect_path = Util::get("back");
+        $error = false;
+
+        if (\Input::hasFile('csv_file')) {
+            $rule = array('csv_file' => 'mimes:csv');
+            $validator = \Validator::make(array('csv_file' => \Input::get('csv_file')), $rule);
+
+            if ($validator->fails()) {
+
+                $error = true;
+                $message = "File uploaded not valid.";
+
+            } else {
+
+                $file            = \Input::file('csv_file');
+                $destinationPath = $_SERVER['DOCUMENT_ROOT'].'/uploads/tmp/';
+                $filename        = time().'_'.$file->getClientOriginalName();
+                $uploadSuccess   = $file->move($destinationPath, $filename);
+
+                if (Util::get("child")) { 
+                    $child = Util::get("child");
+                    $childInstance = new $child;
+                    $db = self::$db;
+                    $columns = $db::select("SHOW COLUMNS FROM ".$childInstance->getTable());
+                    unset($db);
+
+                    $columns = array_map(function($n) {
+                        return $n->Field;
+                    }, $columns);
+
+                    $header = Util::importCSV($destinationPath.$filename, true);
+
+
+
+                    foreach ($header as $h) {
+                        if (!in_array($h, $columns)) {
+                            $error = true;
+                            $message = "Fields not correct in csv file.";
+                        }
+                    }
+
+                    unset($columns);
+
+                    if (!$error) {
+                        $data = Util::importCSV($destinationPath.$filename);
+                        $foreignKey = Util::getForeignKeyString($entry);
+                        foreach ($data as $row) {
+                            $childInstance = new $child;
+                            foreach($row as $key => $value) {
+                                $childInstance->{$key} = $value;
+                            }
+                            $childInstance->{$foreignKey} = $entry->id;
+                            $entry->hasMany($child)->save($childInstance);
+                        }
+
+                        $message = "Succesfully imported csv data.";
+                    }
+
+                    unlink($destinationPath.$filename);
+                }
+            }
+
+        } else {
+
+            $error = true;
+            $message = "No file uploaded.";
+
         }
 
         Util::flash(array(
-          "message" => "Can not see this entry.", 
-          "type" => "error"
-          )
-        );
-        
+            "message" => $message, 
+            "type" => ($error)? "error" : "success"
+        ));
+
+
         if (!$this->testing) {
-          header("Location: {$redirect_path}");
-          exit();
-        }
-      }
-      
-      
-    } else if ($this->belongsToUserManyToMany) {
-        try {
-          $this->entries = $this->user
-            ->belongsToMany($this->belongsToUserManyToMany[0], $this->belongsToUserManyToMany[1], $this->belongsToUserManyToMany[2], $this->belongsToUserManyToMany[3])
-            ->findOrFail(Util::get("id"));
-        } catch (ModelNotFoundException $e) {
-
-          if (Util::get("stack")) {
-            $redirect_path = Util::childBackLink();
-          } else {
-            $redirect_path = Util::redirectUrl();
-          }
-
-          Util::flash(array(
-            "message" => "Can not see this entry.", 
-            "type" => "error"
-            )
-          );
-          
-          if (!$this->testing) {
             header("Location: {$redirect_path}");
             exit();
-          }
         }
-        
-    } else {
-      $this->entries = $model::find(Util::get("id"));
     }
-    
-  }
 
-  private function edit()
-  { 
-    if ($this->infuseLogin && Util::get("id") == 1 && !$this->user->is('Super Admin')) {
-      if (Util::get("stack")) {
-        $redirect_path = Util::childBackLink();
-      } else {
-        $redirect_path = Util::redirectUrl();
-      }
+    private function importCSVCustom()
+    {
+        $model = $this->model;
+        $entry = $model::find(Util::get("parent_id"));
+        $redirect_path = Util::get("back");
+        $function = Util::get("function");
 
-      Util::flash(array(
-        "message" => "Can not edit this entry.", 
-        "type" => "error"
-        )
-      );
+        $entry->{$function}();
 
-      if (!$this->testing) {
-        header("Location: {$redirect_path}");
+        if (!$this->testing) {
+            header("Location: {$redirect_path}");
+            exit();
+        }
+    }
+
+    private function exportCSVCustom()
+    {
+        $model = $this->model;
+        $entry = $model::find(Util::get("parent_id"));
+        $redirect_path = Util::get("back");
+        $function = Util::get("function");
+
+        $entry->{$function}();
         exit();
-      }
-    }
 
-
-    $model = $this->model;
-    $this->header = array(
-        "edit" => true, 
-        "name" => $this->name,
-        "associations" => $this->hasMany,
-        "manyToManyAssociations" => $this->manyToMany,
-        "hasOneAssociation" => $this->hasOne,
-        "onlyOne" => $this->onlyOne,
-        "columnNames" => $this->columnNames,
-        "importFromModel" => $this->importFromModel
-      );
-      $beforeEdit = $this->beforeEdit;
-
-    $post = Util::flashArray("post");
-    if (!$post) {
-      
-      if ($this->belongsToUser) {
-        try {
-          $this->entries = $model->where("infuse_user_id", "=", $this->user->id)
-            ->where("id", "=", Util::get("id"))
-            ->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-
-          if (Util::get("stack")) {
-            $redirect_path = Util::childBackLink();
-          } else {
-            $redirect_path = Util::redirectUrl();
-          }
-
-          Util::flash(array(
-            "message" => "Can not edit this entry.", 
-            "type" => "error"
-            )
-          );
-          
-          if (!$this->testing) {
+        if (!$this->testing) {
             header("Location: {$redirect_path}");
             exit();
-          }
         }
-        
-        
-      } else if ($this->belongsToUserManyToMany) {
-        try {
-          $this->user
-            ->belongsToMany($this->belongsToUserManyToMany[0], $this->belongsToUserManyToMany[1], $this->belongsToUserManyToMany[2], $this->belongsToUserManyToMany[3])
-            ->findOrFail(Util::get("id"));
-               // laravel many to many bug. Call by it self to get updated_at and created_at times stamps returned
-               $this->entries = $model::find(Util::get("id"));
-
-        } catch (ModelNotFoundException $e) {
-
-          if (Util::get("stack")) {
-            $redirect_path = Util::childBackLink();
-          } else {
-            $redirect_path = Util::redirectUrl();
-          }
-
-          Util::flash(array(
-            "message" => "Can not edit this entry.", 
-            "type" => "error"
-            )
-          );
-          
-          if (!$this->testing) {
-            header("Location: {$redirect_path}");
-            exit();
-          }
-        }
-        
-      } else {
-        $this->entries = $model::find(Util::get("id"));
-      }
-      
-    } else {
-      $this->entries = $model::find($post["id"]);
-      foreach ($this->columns as $column) {
-        if (isset($post[$column['field']]))
-          $this->entries->{$column['field']} = $post[$column['field']];
-      }
     }
+  
 
-      // Check if beforeEdit function returns false then exit and redirect
-      $exitCheck = $beforeEdit($this->entries);
-      if (!$exitCheck) {
-         if (Util::get("stack")) {
-            $redirect_path = Util::childBackLink();
-         } else {
-            $redirect_path = Util::redirectUrl();
-         }
+    private function sendRequestResetPasswordPage()
+    {
+        $model = $this->model;
+        $user = $model::find(Util::get("id"));
 
-         Util::flash(array(
-            "message" => "Can not edit this entry.", 
-            "type" => "error"
-            )
-         );
-         
-         if (!$this->testing) {
-            header("Location: {$redirect_path}");
-            exit();
-         }
-      }
-    
-  }
-
-  private function create()
-  {
-    $model = $this->model;
-    $this->header = array(
-        "name" => $this->name,
-        "associations" => $this->hasMany,
-        "manyToManyAssociations" => $this->manyToMany,
-        "hasOneAssociation" => $this->hasOne,
-        "columnNames" => $this->columnNames,
-        "importFromModel" => $this->importFromModel
-      );
-    $post = Util::flashArray("post");
-    if (!$post) {
-      $this->entries = $model;
-    } else {
-      $this->entries = new $model;
-      foreach ($this->columns as $column) {
-        if (isset($post[$column['field']]))
-          $this->entries->{$column['field']} = $post[$column['field']];
-      }
-    }
-    
-  }
-
-  private function createDuplicate()
-  {
-    $model = $this->model;
-    $this->header = array(
-        "name" => $this->name,
-        "associations" => $this->hasMany,
-        "manyToManyAssociations" => $this->manyToMany,
-        "columnNames" => $this->columnNames
-      );
-    $post = Util::flashArray("post");
-    if (!$post) {
-      $this->entries = $model::find(Util::get("id"));
-    } else {
-      $this->entries = Util::arrayToObject($post);
-    }
-    
-  }
-
-  private function delete() 
-  {
-    $model = $this->model;
-
-    if ($this->belongsToUser) {
-      try {
-
-        $entry = $model->where("infuse_user_id", "=", $this->user->id)
-        ->where("id", "=", Util::get("id"))
-        ->firstOrFail();
-
-      } catch (ModelNotFoundException $e) {
-
-        if (Util::get("stack")) {
-          $redirect_path = Util::childBackLink();
-        } else {
-          $redirect_path = Util::redirectUrl();
-        }
+        $user->sendRequestResetPasswordPage();
 
         Util::flash(array(
-          "message" => "Can not delete this entry.", 
-          "type" => "error"
-          )
-        );
-        
+            "message" => "Sent email with link to reset password.", 
+            "type" => "success"
+        ));
+
+        $redirect_path = Util::redirectUrl();
+
         if (!$this->testing) {
-          header("Location: {$redirect_path}");
-          exit();
+            header("Location: {$redirect_path}");
+            exit();
         }
-      }
-      
-      
-    } else {
-      $entry = $model::find(Util::get("id"));
     }
 
-    
 
-    if ($this->infuseLogin && $entry->id == 1 && $entry->username == 'super' ) {
-      Util::flash(array(
-        "message" => "Can't delete super.", 
-        "type" => "error"
-        )
-      );
+    private function update() 
+    { 
+        $model = $this->model;
+        if (Util::get("id")) { 
 
-    } else {
+            $entry = $model::find(Util::get("id"));
 
-      $entryBackUp = clone $entry;
+            $message = array("message" => "Updated {$this->name}.", "type" => "success");
 
-      if ($entry->delete()) {
-        
+            if ($this->infuseLogin && $entry->id == 1 && !$this->user->is('Super Admin')) {
+                if (Util::get("stack")) {
+                    $redirect_path = Util::childBackLink();
+                } else {
+                    $redirect_path = Util::redirectUrl();
+                }
+
+                Util::flash(array(
+                    "message" => "Can not update this entry.", 
+                    "type" => "error"
+                ));
+
+                if (!$this->testing) {
+                    header("Location: {$redirect_path}");
+                    exit();
+                }
+            }
+
+        } elseif (Util::get("stack")) {
+
+            $entry = $model;
+            $message = array("message" => "Added {$this->name}.", "type" => "success");
+
+        } else {
+
+            $entry = $model;
+            $message = array("message" => "Created {$this->name}.", "type" => "success");
+
+        }
+
         $fileUploadManage = new FileUpload($this->request);
 
         foreach ($this->columns as $column) {
-          if (array_key_exists("upload", $column)) {
-            $fileUploadManage->delete($column['field'], $entryBackUp, $column);
-          }
+
+            if (array_key_exists("upload", $column)) {
+
+                $fileUploadManage->add($column, $entry);
+
+                if (Util::get($column['field']."_delete")) {
+                    $fileUploadManage->addToDeleteQueue($column['field'], $entry, $column);
+                }
+
+            } else {
+
+                if ($column['field'] != "created_at" && 
+                    $column['field'] != "updated_at" && 
+                    Util::checkInfuseLoginFields($this->infuseLogin, $column) 
+                ) {
+
+                    $inputsTemp = Util::get($column['field']);
+
+                    if ($this->belongsToUser && $column['field'] == "infuse_user_id" && !$this->user->is('Super Admin')) {
+                        $inputsTemp = $this->user->id;
+                    }
+
+                    if (array_key_exists($column['field'], $this->defaultColumnValues)) {
+                        $inputsTemp = $this->defaultColumnValues["{$column['field']}"];
+                    }
+
+                    if (empty($inputsTemp) && $column['type'] == "int") {
+                        $inputsTemp = 0;
+                    }
+
+                    Util::setColumnValue($entry, $column, $inputsTemp);
+
+                }
+            }
         }
 
-        Util::flash(array(
-          "message" => "Deleted {$this->name}.", 
-          "type" => "success"
-          )
-        );
+        $data = Util::getAll();
 
-      } else {
-        Util::flash(array(
-          "message" => "Failed to delete {$this->name}.", 
-          "type" => "error"
-          )
-        );
-      }
-
-      
-      
-      
-    }
-     
-
-    if (Util::get("stack")) {
-      $redirect_path = Util::childBackLink();
-    } else {
-      $redirect_path = Util::redirectUrl();
-    }
-    
-    if (!$this->testing) {
-      header("Location: {$redirect_path}");
-      exit();
-    }
-  }
-
-  private function importCSV()
-  {
-    $model = $this->model;
-    $entry = $model::find(Util::get("parent_id"));
-    $redirect_path = Util::get("back");
-    $error = false;
-    
-    if (\Input::hasFile('csv_file')) {
-      $rule = array('csv_file' => 'mimes:csv');
-      $validator = \Validator::make(array('csv_file' => \Input::get('csv_file')), $rule);
-      if($validator->fails()) {
-        $error = true;
-        $message = "File uploaded not valid.";
-      } else {
-
-        $file            = \Input::file('csv_file');
-        $destinationPath = $_SERVER['DOCUMENT_ROOT'].'/uploads/tmp/';
-        $filename        = time().'_'.$file->getClientOriginalName();
-        $uploadSuccess   = $file->move($destinationPath, $filename);
-        
-        if (Util::get("child")) { 
-          $child = Util::get("child");
-          $childInstance = new $child;
-          $db = self::$db;
-          $columns = $db::select("SHOW COLUMNS FROM ".$childInstance->getTable());
-          unset($db);
-
-          $columns = array_map(function($n) {
-            return $n->Field;
-          }, $columns);
-
-          $header = Util::importCSV($destinationPath.$filename, true);
+        // Remove any FALSE values. This includes NULL values, EMPTY arrays, etc. 
+        $data = array_filter($data);
 
 
+        if ($this->databaseConnection == "mysql") {
+            //$data = array_filter($data);
+        } elseif ($this->databaseConnection == "pgsql" ) {
+            //$data = array_filter($data);
+        }
 
-          foreach ($header as $h) {
-            if (!in_array($h, $columns)) {
-              $error = true;
-              $message = "Fields not correct in csv file.";
-            }
-          }
-          unset($columns);
 
-          if (!$error) {
-            $data = Util::importCSV($destinationPath.$filename);
-            $foreignKey = Util::getForeignKeyString($entry);
-            foreach ($data as $row) {
-              $childInstance = new $child;
-              foreach($row as $key => $value)
-                $childInstance->{$key} = $value;
-              $childInstance->{$foreignKey} = $entry->id;
-              $entry->hasMany($child)->save($childInstance);
+        $fileErrors = $fileUploadManage->fileErrors();
+
+        if ($entry->validate($data) && empty($fileErrors)) {
+
+            $fileUploadManage->processUploads();
+
+            // Check if brand new user
+            if ($this->infuseLogin && !Util::get("id")) { 
+                $entry->verified = 1;
+                $entry->deleted_at = null;
             }
 
-            $message = "Succesfully imported csv data.";
-          }
-          
-          unlink($destinationPath.$filename);
+            if (!Util::get("id")) { 
+                if ($this->associateToSameParentOfUserRelatedBy){
+                    $entry->{$this->associateToSameParentOfUserRelatedBy} = $this->user->{$this->associateToSameParentOfUserRelatedBy};
+                }
+            }
+
+
+            // Do many to many relationship saving
+            if (Util::get("id") && count($this->manyToMany) > 0) {
+                foreach ($this->manyToMany as $association) {
+                    $firstModel = $association[0];
+                    $secondModel = $association[2];
+                    $manyToManyTable = $association[4];
+                    $model = get_class($entry);
+
+                    if ($model == $firstModel) {
+                        $belongsToModel = $secondModel;
+                        $firstForeignId = $association[1];
+                        $secondForeignId = $association[3];
+                    } else if ($model == $secondModel) {
+                        $belongsToModel = $firstModel;
+                        $firstForeignId = $association[3];
+                        $secondForeignId = $association[1];
+                    }
+
+                    $event = $this->event;
+                    $newIds = Util::get($manyToManyTable); 
+
+                    if ($newIds) { 
+
+                        $originalIds = $entry->belongsToMany(
+                            $belongsToModel, 
+                            $manyToManyTable, 
+                            $firstForeignId, 
+                            $secondForeignId
+                        )->lists('id');
+
+                        $added = array_diff($newIds, $originalIds);
+                        $removed = array_diff($originalIds, $newIds);
+
+                        foreach($added as $id) { 
+                            $entry->belongsToMany(
+                                $belongsToModel, 
+                                $manyToManyTable, 
+                                $firstForeignId, 
+                                $secondForeignId
+                            )->attach($id);
+
+                            $event::fire('infuse.attach.'.Util::camel2under($model).'.'.Util::camel2under($belongsToModel), array($entry, $id));
+                        }
+
+                        foreach($removed as $id) {
+                            $event::fire('infuse.detach.'.Util::camel2under($model).'.'.Util::camel2under($belongsToModel), array($entry, $id));
+                            $entry->belongsToMany(
+                                $belongsToModel, 
+                                $manyToManyTable, 
+                                $firstForeignId, 
+                                $secondForeignId
+                            )->detach($id);
+                        }
+
+
+                        if ($this->infuseLogin && $entry->id == 1) {
+                            $entry->belongsToMany(
+                                $belongsToModel, 
+                                $manyToManyTable, 
+                                $firstForeignId, 
+                                $secondForeignId
+                            )->attach(1);
+                        }
+            
+
+                    } else {
+
+                        if ($this->infuseLogin && $entry->id == 1 && $this->user->is('Super Admin')) {
+                            // do nothing
+                        } else {
+                            $event::fire('infuse.detach.'.Util::camel2under($model).'.'.Util::camel2under($belongsToModel), array($entry, 0));
+                            $entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach();
+                        }
+
+                    }
+                }
+            }
+
+
+
+            $entry->save();
+            Util::flash($message);
+
+            foreach ($this->columns as $column) {
+                if (isset($column['display_order']) && empty($entry->{$column['field']})) {
+                    $entry->{$column['field']} =  $entry->id;
+                    $entry->save();
+                } 
+            }
+
+            if (!Util::get("id") && $this->belongsToUserManyToMany) {
+                $this->user->belongsToMany(
+                        $this->belongsToUserManyToMany[0], 
+                        $this->belongsToUserManyToMany[1], 
+                        $this->belongsToUserManyToMany[2], 
+                        $this->belongsToUserManyToMany[3]
+                    )->attach($entry->id);
+            }
+
+
+
+            if (Util::get("oneToOne")) { 
+                $entry->belongsTo(ucfirst(Util::get("oneToOne")))->get()->{Util::getForeignKeyString($entry)} = $entry->id;
+            }
+
+            $afterSavePage = Util::get("typeSubmit");
+
+
+            if (Util::get("stack")) {
+
+                switch (Util::get("typeSubmit")) {
+                    case 'save':
+                        $redirect_path = Util::childBackLink();
+                        break;
+                    case 'save_and_return':
+                        $redirect_path = Util::childActionLink(Util::get("stack"),"e", $entry->id);
+                        break;
+                    case 'save_and_create_another':
+                        $redirect_path = Util::childActionLink(Util::get("stack"), "c");
+                        break;
+
+                    default:
+                        $redirect_path = Util::childBackLink();
+                        break;
+                }
+
+            } else {
+
+                switch (Util::get("typeSubmit")) {
+                    case 'save':
+                        $redirect_path = Util::redirectUrl();
+                        break;
+                    case 'save_and_return':
+                        $redirect_path = Util::redirectUrl("e", $entry->id);
+                        break;
+                    case 'save_and_create_another':
+                        $redirect_path = Util::redirectUrl("c");
+                        break;
+
+                    default:
+                        $redirect_path = Util::redirectUrl();
+                        break;
+                }
+
+            }
+
+        } else { 
+
+            Util::flash(array(
+                "message" => "Failed to save {$this->name}.", 
+                "type" => "error"
+            ));
+            Util::flashArray("errors", $entry->errors());
+
+            $fileUploadManage->resetUploads();
+
+            Util::flashArray("file_errors", $fileUploadManage->fileErrors());
+            Util::flashArray("post", Util::getAll());
+
+            if (Util::get("stack")) {
+
+                if (!Util::get("id")) { 
+                    $redirect_path = Util::redirectUrlChildSaveFailed();
+                } else {
+                    $redirect_path = Util::redirectUrlChildSaveFailed($entry->id);
+                }
+
+            } else { 
+
+                $redirect_path = Util::redirectUrlSaveFailed(Util::get("id"));
+
+            }
         }
-      }
-      
-    } else {
-      $error = true;
-      $message = "No file uploaded.";
-    }
-  
-    Util::flash(array(
-      "message" => $message, 
-      "type" => ($error)? "error" : "success"
-      )
-    );
-    
-    
-    if (!$this->testing) {
-      header("Location: {$redirect_path}");
-      exit();
-    }
-  }
-
-  private function importCSVCustom()
-  {
-    $model = $this->model;
-    $entry = $model::find(Util::get("parent_id"));
-    $redirect_path = Util::get("back");
-    $function = Util::get("function");
-
-    $entry->{$function}();
-    
-    if (!$this->testing) {
-      header("Location: {$redirect_path}");
-      exit();
-    }
-  }
-
-   private function exportCSVCustom()
-   {
-      $model = $this->model;
-      $entry = $model::find(Util::get("parent_id"));
-      $redirect_path = Util::get("back");
-      $function = Util::get("function");
-
-      $entry->{$function}();
-      exit();
-      if (!$this->testing) {
-         header("Location: {$redirect_path}");
-         exit();
-      }
-   }
-  
-
-  private function sendRequestResetPasswordPage()
-  {
-    $model = $this->model;
-    $user = $model::find(Util::get("id"));
-
-    $user->sendRequestResetPasswordPage();
-    Util::flash(array(
-      "message" => "Sent email with link to reset password.", 
-      "type" => "success"
-      )
-    );
-    
-    $redirect_path = Util::redirectUrl();
-    
-    if (!$this->testing) {
-      header("Location: {$redirect_path}");
-      exit();
-    }
-  }
-
-
-  private function update() 
-  { 
-    $model = $this->model;
-    if (Util::get("id")) { 
-      $entry = $model::find(Util::get("id"));
-
-      $message = array("message" => "Updated {$this->name}.", "type" => "success");
-
-      if ($this->infuseLogin && $entry->id == 1 && !$this->user->is('Super Admin')) {
-        if (Util::get("stack")) {
-          $redirect_path = Util::childBackLink();
-        } else {
-          $redirect_path = Util::redirectUrl();
-        }
-
-        Util::flash(array(
-          "message" => "Can not update this entry.", 
-          "type" => "error"
-          )
-        );
 
         if (!$this->testing) {
-          header("Location: {$redirect_path}");
-          exit();
+            header("Location: {$redirect_path}");
+            exit();
         }
-      }
-
-    } elseif (Util::get("stack")) {
-      $entry = $model;
-      $message = array("message" => "Added {$this->name}.", "type" => "success");
-    } else {
-      $entry = $model;
-      $message = array("message" => "Created {$this->name}.", "type" => "success");
     }
 
-    $fileUploadManage = new FileUpload($this->request);
-    
-    foreach ($this->columns as $column) {
 
-      
+    private function toCSV($prepareModel)
+    {
+        $model = $this->model;
+        $columnNames = array_keys($this->columns);
+        array_unshift($columnNames, "id");
+        $data = $prepareModel->select($columnNames)->get()->toArray();
 
-      if (array_key_exists("upload", $column)) {
-
-        $fileUploadManage->add($column, $entry);
-
-        if (Util::get($column['field']."_delete")) {
-          $fileUploadManage->addToDeleteQueue($column['field'], $entry, $column);
+        foreach ($columnNames as $key => $column) {
+            $columnNames[$key] = Util::cleanName($column);
         }
 
-      } else {
-        if ($column['field'] != "created_at" && $column['field'] != "updated_at" && Util::checkInfuseLoginFields($this->infuseLogin, $column) ) {
-
-          $inputsTemp = Util::get($column['field']);
-
-          if ($this->belongsToUser && $column['field'] == "infuse_user_id" && !$this->user->is('Super Admin')) {
-            $inputsTemp = $this->user->id;
-          }
-
-          if (array_key_exists($column['field'], $this->defaultColumnValues)) {
-            $inputsTemp = $this->defaultColumnValues["{$column['field']}"];
-          }
-          
-          if (empty($inputsTemp) && $column['type'] == "int") {
-            $inputsTemp = 0;
-          }
-
-          Util::setColumnValue($entry, $column, $inputsTemp);
-
-        }
-      }
+        array_unshift($data, $columnNames);
+        Util::returnCSVDataAsFile(Util::classToString($model), $data);
+        exit();
     }
 
-    $data = Util::getAll();
-    
-      // Remove any FALSE values. This includes NULL values, EMPTY arrays, etc. 
-    $data = array_filter($data);
 
-    
-      if ($this->databaseConnection == "mysql") {
-         //$data = array_filter($data);
-      } elseif ($this->databaseConnection == "pgsql" ) {
-         //$data = array_filter($data);
-      }
+  
+    private function callActionFunction() 
+    {
+        $model = $this->model;
+        $entry = $model::find(Util::get("id"));
+        $callFunction = Util::get("cf");
 
-      
-    $fileErrors = $fileUploadManage->fileErrors();
-    
-    if ($entry->validate($data) && empty($fileErrors)) {
+        $success = $entry->{$callFunction}();
 
-      $fileUploadManage->processUploads();
+        if ($success && is_array($success) && isset($success['message']) && isset($success['type'])) {
 
-      // Check if brand new user
-      if ($this->infuseLogin && !Util::get("id")) { 
-        $entry->verified = 1;
-        $entry->deleted_at = null;
-      }
+            Util::flash(array(
+                "message" => $success['message'], 
+                "type" => $success['type']
+            ));
 
-      if(!Util::get("id")) { 
-        if ($this->associateToSameParentOfUserRelatedBy){
-          $entry->{$this->associateToSameParentOfUserRelatedBy} = $this->user->{$this->associateToSameParentOfUserRelatedBy};
-        }
-          
-      }
+        } else if ($success) {
 
-            
-      // Do many to many relationship saving
-      if (Util::get("id") && count($this->manyToMany) > 0) {
-        foreach ($this->manyToMany as $association) {
-          $firstModel = $association[0];
-          $secondModel = $association[2];
-          $manyToManyTable = $association[4];
-          $model = get_class($entry);
+            Util::flash(array(
+                "message" => "Succesfully called {$callFunction} action.", 
+                "type" => "success"
+            ));
 
-          if ($model == $firstModel) {
-            $belongsToModel = $secondModel;
-            $firstForeignId = $association[1];
-            $secondForeignId = $association[3];
-          } else if ($model == $secondModel) {
-            $belongsToModel = $firstModel;
-            $firstForeignId = $association[3];
-            $secondForeignId = $association[1];
-          }
-
-          $event = $this->event;
-          $newIds = Util::get($manyToManyTable); 
-          if ($newIds) { 
-            $originalIds = $entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->lists('id');
-
-            $added = array_diff($newIds, $originalIds);
-            $removed = array_diff($originalIds, $newIds);
-
-            foreach($added as $id) { 
-              $entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach($id);
-              $event::fire('infuse.attach.'.Util::camel2under($model).'.'.Util::camel2under($belongsToModel), array($entry, $id));
-            }
-            
-            foreach($removed as $id) {
-              $event::fire('infuse.detach.'.Util::camel2under($model).'.'.Util::camel2under($belongsToModel), array($entry, $id));
-              $entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach($id);
-            }
-
-            
-            if ($this->infuseLogin && $entry->id == 1)
-              $entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->attach(1);
-
-          } else {
-            if ($this->infuseLogin && $entry->id == 1 && $this->user->is('Super Admin')) {
-            } else {
-              $event::fire('infuse.detach.'.Util::camel2under($model).'.'.Util::camel2under($belongsToModel), array($entry, 0));
-              $entry->belongsToMany($belongsToModel, $manyToManyTable, $firstForeignId, $secondForeignId)->detach();
-            }
-              
-          }
-        }
-      }
-
-      
-      
-      $entry->save();
-      Util::flash($message);
-
-         foreach ($this->columns as $column) {
-            if (isset($column['display_order']) && empty($entry->{$column['field']})) {
-              $entry->{$column['field']} =  $entry->id;
-              $entry->save();
-            } 
-         }
-
-      if (!Util::get("id") && $this->belongsToUserManyToMany) {
-        $this->user
-          ->belongsToMany($this->belongsToUserManyToMany[0], $this->belongsToUserManyToMany[1], $this->belongsToUserManyToMany[2], $this->belongsToUserManyToMany[3])
-          ->attach($entry->id);
-      }
-
-
-      
-      if (Util::get("oneToOne")) { 
-        $entry->belongsTo(ucfirst(Util::get("oneToOne")))->get()->{Util::getForeignKeyString($entry)} = $entry->id;
-      }
-
-         $afterSavePage = Util::get("typeSubmit");
-         
-
-      if (Util::get("stack")) {
-            switch (Util::get("typeSubmit")) {
-               case 'save':
-                  $redirect_path = Util::childBackLink();
-                  break;
-               case 'save_and_return':
-                  $redirect_path = Util::childActionLink(Util::get("stack"),"e", $entry->id);
-                  break;
-               case 'save_and_create_another':
-                  $redirect_path = Util::childActionLink(Util::get("stack"), "c");
-                  break;
-               
-               default:
-                  $redirect_path = Util::childBackLink();
-                  break;
-            }
-      } else {
-            switch (Util::get("typeSubmit")) {
-               case 'save':
-                  $redirect_path = Util::redirectUrl();
-                  break;
-               case 'save_and_return':
-                  $redirect_path = Util::redirectUrl("e", $entry->id);
-                  break;
-               case 'save_and_create_another':
-                  $redirect_path = Util::redirectUrl("c");
-                  break;
-               
-               default:
-                  $redirect_path = Util::redirectUrl();
-                  break;
-            }
-      }
-      
-    } else { 
-      Util::flash(array(
-        "message" => "Failed to save {$this->name}.", 
-        "type" => "error"
-        )
-      );
-      Util::flashArray("errors", $entry->errors());
-
-      $fileUploadManage->resetUploads();
-      
-      Util::flashArray("file_errors", $fileUploadManage->fileErrors());
-      Util::flashArray("post", Util::getAll());
-
-      if (Util::get("stack")) {
-        if (!Util::get("id")) { 
-          $redirect_path = Util::redirectUrlChildSaveFailed();
         } else {
-          $redirect_path = Util::redirectUrlChildSaveFailed($entry->id);
+
+            Util::flash(array(
+                "message" => "Failed to call {$callFunction} action.", 
+                "type" => "error"
+            ));
+
         }
-      } else { 
-        $redirect_path = Util::redirectUrlSaveFailed(Util::get("id"));
-      }
 
-      
-      
+        if (Util::get("stack")) {
+            $redirect_path = Util::childBackLink();
+        } else {
+            $redirect_path = Util::redirectUrl();
+        }
+
+        if (!$this->testing) {
+            header("Location: {$redirect_path}");
+            exit();
+        }
     }
-      
-    if (!$this->testing) {
-      header("Location: {$redirect_path}");
-      exit();
+
+    private function callOtherAction() 
+    {
+        $model = $this->model;
+        $entry = $model::find(Util::get("id"));
+        $callFunction = Util::get("cf");
+
+        $success = $model::$callFunction($this->user);
+
+        if ($success) {
+
+            Util::flash(array(
+                "message" => "Succesfully called {$callFunction} action.", 
+                "type" => "success"
+            ));
+
+        } else {
+
+            Util::flash(array(
+                "message" => "Failed to call {$callFunction} action.", 
+                "type" => "error"
+            ));
+
+        }
+
+
+        if (Util::get("stack")) {
+            $redirect_path = Util::childBackLink();
+        } else {
+            $redirect_path = Util::redirectUrl();
+        }
+
+        if (!$this->testing) {
+            header("Location: {$redirect_path}");
+            exit();
+        }
     }
-      
-  }
 
-
-  private function toCSV($prepareModel)
-  {
-    $model = $this->model;
-    $columnNames = array_keys($this->columns);
-    array_unshift($columnNames, "id");
-    $data = $prepareModel->select($columnNames)->get()->toArray();
-    foreach ($columnNames as $key => $column) {
-      $columnNames[$key] = Util::cleanName($column);
-    }
-    array_unshift($data, $columnNames);
-    Util::returnCSVDataAsFile(Util::classToString($model), $data);
-    exit();
-  }
-
-
-  
-  private function callActionFunction() 
-  {
-    $model = $this->model;
-    $entry = $model::find(Util::get("id"));
-    $callFunction = Util::get("cf");
-
-    $success = $entry->{$callFunction}();
-
-    if ($success && is_array($success) && isset($success['message']) && isset($success['type'])) {
-      Util::flash(array(
-        "message" => $success['message'], 
-        "type" => $success['type']
-        )
-      );
-    } else if ($success) {
-      Util::flash(array(
-        "message" => "Succesfully called {$callFunction} action.", 
-        "type" => "success"
-        )
-      );
-    } else {
-      Util::flash(array(
-        "message" => "Failed to call {$callFunction} action.", 
-        "type" => "error"
-        )
-      );
-    }
-     
-    if (Util::get("stack")) {
-      $redirect_path = Util::childBackLink();
-    } else {
-      $redirect_path = Util::redirectUrl();
-    }
-    
-    if (!$this->testing) {
-      header("Location: {$redirect_path}");
-      exit();
-    }
-  }
-
-  private function callOtherAction() 
-  {
-    $model = $this->model;
-    $entry = $model::find(Util::get("id"));
-    $callFunction = Util::get("cf");
-
-    $success = $model::$callFunction($this->user);
-
-    if ($success) {
-      Util::flash(array(
-        "message" => "Succesfully called {$callFunction} action.", 
-        "type" => "success"
-        )
-      );
-    } else {
-      Util::flash(array(
-        "message" => "Failed to call {$callFunction} action.", 
-        "type" => "error"
-        )
-      );
-    }
-     
-
-    if (Util::get("stack")) {
-      $redirect_path = Util::childBackLink();
-    } else {
-      $redirect_path = Util::redirectUrl();
-    }
-    
-    if (!$this->testing) {
-      header("Location: {$redirect_path}");
-      exit();
-    }
-  }
-  
 
   
 
 
-  /******************************
+    /******************************
     Final build scaffold
-  *******************************/
-  public function process()
-  { 
-    $this->route();
-    $this->header['description'] = $this->description;
-    $this->header['deleteAction'] = $this->deleteAction;
-    $this->header['callFunctions'] = $this->callFunctions;
-      $this->header['formatLaravelTimestamp'] = $this->formatLaravelTimestamp;
+    *******************************/
+    public function process()
+    { 
+        $this->route();
+        $this->header['description'] = $this->description;
+        $this->header['deleteAction'] = $this->deleteAction;
+        $this->header['callFunctions'] = $this->callFunctions;
+        $this->header['formatLaravelTimestamp'] = $this->formatLaravelTimestamp;
 
-    $data = array(
-      "action" => $this->action,
-      "entries" => $this->entries,
-      "header" => $this->header,
-      "columns" => $this->columns,
-      "infuseLogin" => $this->infuseLogin,
-      "user" => $this->user,
-      "db" => self::$db
-    );
+        $data = array(
+            "action" => $this->action,
+            "entries" => $this->entries,
+            "header" => $this->header,
+            "columns" => $this->columns,
+            "infuseLogin" => $this->infuseLogin,
+            "user" => $this->user,
+            "db" => self::$db
+        );
 
-    return $this->view->make($this->getBladeTemplate(), $data);
-  }
-
-  // Used to test scaffold need to call route before
-  public function processDataOnly()
-  { 
-    $this->header['description'] = $this->description;
-    $this->header['deleteAction'] = $this->deleteAction;
-    $this->header['callFunctions'] = $this->callFunctions;
-      $this->header['formatLaravelTimestamp'] = $this->formatLaravelTimestamp;
-
-    $data = array(
-      "action" => $this->action,
-      "entries" => $this->entries,
-      "header" => $this->header,
-      "columns" => $this->columns,
-      "infuseLogin" => $this->infuseLogin,
-      "user" => $this->user,
-      "db" => self::$db
-    );
-
-    return $data;
-  }
-
-
-  public function getBladeTemplate()
-  {
-    switch (Util::get("action")) {
-      case 'l':
-        return "infuse::scaffold.list";
-      case 'e':
-      case 'c':
-      case 'cd':
-        return "infuse::scaffold.create_edit";
-      case 's':
-        return "infuse::scaffold.show";
-      default:
-        return "infuse::scaffold.list";
+        return $this->view->make($this->getBladeTemplate(), $data);
     }
 
-  }
+    // Used to test scaffold need to call route before
+    public function processDataOnly()
+    { 
+        $this->header['description'] = $this->description;
+        $this->header['deleteAction'] = $this->deleteAction;
+        $this->header['callFunctions'] = $this->callFunctions;
+        $this->header['formatLaravelTimestamp'] = $this->formatLaravelTimestamp;
+
+        $data = array(
+            "action" => $this->action,
+            "entries" => $this->entries,
+            "header" => $this->header,
+            "columns" => $this->columns,
+            "infuseLogin" => $this->infuseLogin,
+            "user" => $this->user,
+            "db" => self::$db
+        );
+
+        return $data;
+    }
+
+
+    public function getBladeTemplate()
+    {
+        switch (Util::get("action")) {
+            case 'l':
+                return "infuse::scaffold.list";
+            case 'e':
+            case 'c':
+            case 'cd':
+                return "infuse::scaffold.create_edit";
+            case 's':
+                return "infuse::scaffold.show";
+            default:
+                return "infuse::scaffold.list";
+        }
+    }
 
 }
-
-?>
