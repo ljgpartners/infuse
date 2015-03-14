@@ -658,7 +658,7 @@ class Scaffold
         
 
         if ($this->rolePermission && $model instanceof \InfuseUser && !$this->user->is('Super Admin')) { 
-            user = $this->user;
+            $user = $this->user;
 
             if ($user->can("infuse_user_load_level_comparison_or_equal_zero")) { 
                 $db = self::$db;
