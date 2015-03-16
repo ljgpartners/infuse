@@ -291,3 +291,12 @@ addCkeditor(
 - Database table field names
 
 Created with [http://dillinger.io](http://dillinger.io/)
+
+
+
+
+Do do list
+
+- add delete to infuse delete and then add method that can be used for deleting children
+- redo generateThumbnail in model library then remove fron composer.json
+
