@@ -137,12 +137,30 @@ $(document).ready(function() {
     }
 	});
 
-  /*******************************************************
+	/*******************************************************
    * Twitter bootstrap - Let checkboxes in dropdowns work
    ********************************************************/
 	$('.dropdown-menu-form .checkbox').on('click', function(event)
 	{
     event.stopPropagation();
+	});
+
+
+	/*******************************************************
+	* Twitter bootstrap - upload button functionality
+	********************************************************/
+	$(document).on('change', '.btn-file :file', function() {
+		var input = $(this),
+		numFiles = input.get(0).files ? input.get(0).files.length : 1,
+		label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+		input.trigger('fileselect', [numFiles, label]);
+	});
+
+	$('.btn-file :file').on('fileselect', function(event, numFiles, label)
+	{
+		var self = $(this)
+				textInput = self.parent().parent().siblings("input.form-control");
+		textInput.val(label);
 	});
 
 
