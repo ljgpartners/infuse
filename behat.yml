@@ -2,7 +2,7 @@ default:
     suites:
         infuse_features:
             paths:    [ %paths.base%/features ]
-            contexts: [ Bpez\Infuse\Features\Bootstrap\AuthContext ]
+            contexts: [ InfuseAuthContext ]
             filters:
                 tags: @auth
     extensions:
