@@ -20,40 +20,40 @@ class InfuseServiceProvider extends ServiceProvider {
   {
     
 
-    $this->loadViewsFrom(__DIR__.'/../../views', "infuse");
+    $this->loadViewsFrom(__DIR__.'/../views', "infuse");
 
 
     // artisan vendor:publish --tag=infuse_public --force
 
     $this->publishes([
-      __DIR__.'/../../public/css' => public_path('bpez/infuse')."/css",
-      __DIR__.'/../../public/js' => public_path('bpez/infuse')."/js",
-      __DIR__.'/../../public/fonts' => public_path('bpez/infuse')."/fonts",
-      __DIR__.'/../../public/images' => public_path('bpez/infuse')."/images",
-      __DIR__.'/../../public/ckeditor' => public_path('bpez/infuse')."/ckeditor",
-      __DIR__.'/../../public/other' => public_path('bpez/infuse')."/other",
+      __DIR__.'/../public/css' => public_path('bpez/infuse')."/css",
+      __DIR__.'/../public/js' => public_path('bpez/infuse')."/js",
+      __DIR__.'/../public/fonts' => public_path('bpez/infuse')."/fonts",
+      __DIR__.'/../public/images' => public_path('bpez/infuse')."/images",
+      __DIR__.'/../public/ckeditor' => public_path('bpez/infuse')."/ckeditor",
+      __DIR__.'/../public/other' => public_path('bpez/infuse')."/other",
     ], 'infuse_public');
 
     // artisan vendor:publish --tag=infuse_config
 
     $this->publishes([
-      __DIR__.'/../../config/config.php' => config_path('infuse/config.php'),
+      __DIR__.'/../config/config.php' => config_path('infuse/config.php'),
     ], 'infuse_config');
 
     // artisan vendor:publish --tag=infuse_structure
 
     $this->publishes([
-      __DIR__.'/../../structure/' =>  app_path().'/Infuse'
+      __DIR__.'/../structure/' =>  app_path().'/Infuse'
     ], 'infuse_structure');
 
      // artisan vendor:publish --tag=infuse_migrations
 
     // Publish your migrations
     $this->publishes([
-        __DIR__.'/../../migrations/' => base_path('/database/migrations')
+        __DIR__.'/../migrations/' => base_path('/database/migrations')
     ], 'infuse_migrations');
     
-    require __DIR__ . '/../../routes.php';
+    require __DIR__ . '/../routes.php';
   }
 
   /**
@@ -156,7 +156,7 @@ class InfuseServiceProvider extends ServiceProvider {
   protected function registerResources()
   {
     $userConfigFile    = config_path('infuse').'/config.php';
-    $packageConfigFile = __DIR__.'/../../config/config.php';
+    $packageConfigFile = __DIR__.'/../config/config.php';
     $config            = $this->app['files']->getRequire($packageConfigFile);
 
     if (file_exists($userConfigFile)) {
