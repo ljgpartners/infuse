@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ac33ea83-31fa-4391-bc80-23e4db3a55c9" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/.name" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/behat.yml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/infuse.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/checkstyle.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/classes/Bpez.Infuse.Scaffold.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/bootstrap-responsive.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/bootstrap-responsive.min.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/bootstrap.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/bootstrap.min.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/jquery.iviewer.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/phpdocumentor-clean-icons/Read Me.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/phpdocumentor-clean-icons/fonts/phpdocumentor-clean-icons.dev.svg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/phpdocumentor-clean-icons/fonts/phpdocumentor-clean-icons.eot" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/phpdocumentor-clean-icons/fonts/phpdocumentor-clean-icons.svg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/phpdocumentor-clean-icons/fonts/phpdocumentor-clean-icons.ttf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/phpdocumentor-clean-icons/fonts/phpdocumentor-clean-icons.woff" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/phpdocumentor-clean-icons/lte-ie7.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/phpdocumentor-clean-icons/style.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/prettify.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/prism.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/css/template.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/deprecated.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/errors.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/files/Scaffold.php.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/files/Scaffold.php.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/graph_class.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/graphs/class.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/apple-touch-icon-114x114.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/apple-touch-icon-72x72.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/apple-touch-icon.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/custom-icons.svg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/favicon.ico" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/hierarchy-item.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/icon-class-13x13.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/icon-class.svg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/icon-interface-13x13.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/icon-interface.svg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/icon-trait-13x13.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/icon-trait.svg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/iviewer/grab.cur" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/iviewer/hand.cur" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/iviewer/iviewer.rotate_left.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/iviewer/iviewer.rotate_right.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/iviewer/iviewer.zoom_fit.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/iviewer/iviewer.zoom_in.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/iviewer/iviewer.zoom_out.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/images/iviewer/iviewer.zoom_zero.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/apple-touch-icon-114x114.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/apple-touch-icon-72x72.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/apple-touch-icon.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/favicon.ico" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/glyphicons-halflings-white.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/glyphicons-halflings.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/arrow_down.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/arrow_right.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/class.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/constant.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/favicon.ico" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/file-php.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/file.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/folder.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/function.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/icon-folder-open-big.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/icon-th-big.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/icon_template.svg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/interface.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/method.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/ok.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/property.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/search.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/variable.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/view_source.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/visibility_private.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/visibility_protected.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/icons/visibility_public.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/iviewer/grab.cur" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/iviewer/hand.cur" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/iviewer/iviewer.rotate_left.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/iviewer/iviewer.rotate_right.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/iviewer/iviewer.zoom_fit.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/iviewer/iviewer.zoom_fit2.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/iviewer/iviewer.zoom_in.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/iviewer/iviewer.zoom_in2.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/iviewer/iviewer.zoom_out.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/iviewer/iviewer.zoom_out2.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/iviewer/iviewer.zoom_zero.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/iviewer/iviewer.zoom_zero2.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/img/loader.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/index.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/SVGPan.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/bootstrap.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/bootstrap.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery-1.4.2.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery-1.7.1.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery-ui-1.8.2.custom.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery.cookie.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery.dotdotdot-1.5.9.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery.dotdotdot-1.5.9.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery.iviewer.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery.iviewer.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery.mousewheel.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery.panzoom.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery.smooth-scroll.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery.splitter.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery.tools.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/jquery.treeview.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/menu.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-apollo.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-clj.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-css.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-go.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-hs.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-lisp.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-lua.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-ml.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-n.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-proto.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-scala.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-sql.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-tex.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-vb.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-vhdl.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-wiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-xq.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/lang-yaml.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prettify/prettify.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/prism.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/sidebar.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/js/template.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/markers.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/namespaces/Bpez.Infuse.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/namespaces/Bpez.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/namespaces/default.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/packages/Scaffold.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/packages/default.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/phpdoc-cache-2e/phpdoc-cache-settings.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/phpdoc-cache-fb/phpdoc-cache-file_0f446cceb3ad2d6ceac9bb25dc226b91.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/reports/deprecated.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/reports/errors.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/reports/markers.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/views/.gitkeep" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/tests/.gitkeep" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vendor/autoload.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vendor/composer/ClassLoader.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vendor/composer/autoload_classmap.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vendor/composer/autoload_files.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vendor/composer/autoload_namespaces.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vendor/composer/autoload_psr4.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vendor/composer/autoload_real.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vendor/composer/installed.json" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/BaseController.php" afterPath="$PROJECT_DIR$/src/BaseController.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Commands/InfuseDeploy.php" afterPath="$PROJECT_DIR$/src/Commands/InfuseDeploy.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Exceptions/ScaffoldConfigurationException.php" afterPath="$PROJECT_DIR$/src/Exceptions/ScaffoldConfigurationException.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Exceptions/ScaffoldModelNotRecognizedException.php" afterPath="$PROJECT_DIR$/src/Exceptions/ScaffoldModelNotRecognizedException.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Exceptions/ScaffoldUnknownConfigurationIndexException.php" afterPath="$PROJECT_DIR$/src/Exceptions/ScaffoldUnknownConfigurationIndexException.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Facades/FileUpload.php" afterPath="$PROJECT_DIR$/src/Facades/FileUpload.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Facades/Scaffold.php" afterPath="$PROJECT_DIR$/src/Facades/Scaffold.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Facades/Util.php" afterPath="$PROJECT_DIR$/src/Facades/Util.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Facades/WebService.php" afterPath="$PROJECT_DIR$/src/Facades/WebService.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/FileUpload.php" afterPath="$PROJECT_DIR$/src/FileUpload.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/InfuseModel.php" afterPath="$PROJECT_DIR$/src/InfuseModel.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/InfuseModelLibrary.php" afterPath="$PROJECT_DIR$/src/InfuseModelLibrary.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/InfusePageBreadcrumb.php" afterPath="$PROJECT_DIR$/src/InfusePageBreadcrumb.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/InfuseServiceProvider.php" afterPath="$PROJECT_DIR$/src/InfuseServiceProvider.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/InfuseUserLibrary.php" afterPath="$PROJECT_DIR$/src/InfuseUserLibrary.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Middleware/InfuseAfterMiddleware.php" afterPath="$PROJECT_DIR$/src/Middleware/InfuseAfterMiddleware.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Middleware/InfuseBeforeMiddleware.php" afterPath="$PROJECT_DIR$/src/Middleware/InfuseBeforeMiddleware.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/PGUtil.php" afterPath="$PROJECT_DIR$/src/PGUtil.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Referencer.php" afterPath="$PROJECT_DIR$/src/Referencer.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Scaffold.php" afterPath="$PROJECT_DIR$/src/Scaffold.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/ScaffoldAPI.php" afterPath="$PROJECT_DIR$/src/ScaffoldAPI.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/Util.php" afterPath="$PROJECT_DIR$/src/Util.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Bpez/Infuse/WebService.php" afterPath="$PROJECT_DIR$/src/WebService.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/CookieCache/PHPCrawlerCookieCacheBase.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/CookieCache/PHPCrawlerCookieCacheBase.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/CookieCache/PHPCrawlerMemoryCookieCache.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/CookieCache/PHPCrawlerMemoryCookieCache.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/CookieCache/PHPCrawlerSQLiteCookieCache.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/CookieCache/PHPCrawlerSQLiteCookieCache.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/Enums/PHPCrawlerAbortReasons.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/Enums/PHPCrawlerAbortReasons.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/Enums/PHPCrawlerHTTPProtocols.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/Enums/PHPCrawlerHTTPProtocols.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/Enums/PHPCrawlerMultiProcessModes.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/Enums/PHPCrawlerMultiProcessModes.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/Enums/PHPCrawlerRequestErrors.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/Enums/PHPCrawlerRequestErrors.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/Enums/PHPCrawlerUrlCacheTypes.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/Enums/PHPCrawlerUrlCacheTypes.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawler.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawler.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerBenchmark.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerBenchmark.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerCookieDescriptor.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerCookieDescriptor.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerDNSCache.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerDNSCache.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerDocumentInfo.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerDocumentInfo.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerHTTPRequest.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerHTTPRequest.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerLinkFinder.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerLinkFinder.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerProcessReport.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerProcessReport.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerResponseHeader.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerResponseHeader.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerRobotsTxtParser.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerRobotsTxtParser.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerStatus.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerStatus.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerURLDescriptor.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerURLDescriptor.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerURLFilter.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerURLFilter.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerUrlPartsDescriptor.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerUrlPartsDescriptor.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerUserSendDataCache.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerUserSendDataCache.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/PHPCrawlerUtils.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/PHPCrawlerUtils.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/ProcessCommunication/PHPCrawlerDocumentInfoQueue.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/ProcessCommunication/PHPCrawlerDocumentInfoQueue.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/ProcessCommunication/PHPCrawlerProcessHandler.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/ProcessCommunication/PHPCrawlerProcessHandler.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/ProcessCommunication/PHPCrawlerStatusHandler.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/ProcessCommunication/PHPCrawlerStatusHandler.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/UrlCache/PHPCrawlerMemoryURLCache.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/UrlCache/PHPCrawlerMemoryURLCache.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/UrlCache/PHPCrawlerSQLiteURLCache.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/UrlCache/PHPCrawlerSQLiteURLCache.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/PHPCrawler/UrlCache/PHPCrawlerURLCacheBase.class.php" afterPath="$PROJECT_DIR$/PHPCrawler/UrlCache/PHPCrawlerURLCacheBase.class.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/config/.gitkeep" afterPath="$PROJECT_DIR$/config/.gitkeep" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/config/config.php" afterPath="$PROJECT_DIR$/config/config.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/controllers/.gitkeep" afterPath="$PROJECT_DIR$/controllers/.gitkeep" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/controllers/AuthenticationController.php" afterPath="$PROJECT_DIR$/controllers/AuthenticationController.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/controllers/InfuseController.php" afterPath="$PROJECT_DIR$/controllers/InfuseController.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/controllers/InfusePageController.php" afterPath="$PROJECT_DIR$/controllers/InfusePageController.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/controllers/RemindersController.php" afterPath="$PROJECT_DIR$/controllers/RemindersController.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/lang/.gitkeep" afterPath="$PROJECT_DIR$/migrations/.gitkeep" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/migrations/.gitkeep" afterPath="$PROJECT_DIR$/views/.gitkeep" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/migrations/2013_06_02_173913_create_verify_init.php" afterPath="$PROJECT_DIR$/migrations/2013_06_02_173913_create_verify_init.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/migrations/2013_06_03_173913_create_user_soft_delete.php" afterPath="$PROJECT_DIR$/migrations/2013_06_03_173913_create_user_soft_delete.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/migrations/2013_06_05_173913_create_infuse_admin_users.php" afterPath="$PROJECT_DIR$/migrations/2013_06_05_173913_create_infuse_admin_users.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/migrations/2014_08_20_220559_create_webcrawler.php" afterPath="$PROJECT_DIR$/migrations/2014_08_20_220559_create_webcrawler.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/migrations/2014_11_05_174155_create_pages_table.php" afterPath="$PROJECT_DIR$/migrations/2014_11_05_174155_create_pages_table.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/models/InfusePage.php" afterPath="$PROJECT_DIR$/models/InfusePage.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/models/InfusePermission.php" afterPath="$PROJECT_DIR$/models/InfusePermission.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/models/InfuseRole.php" afterPath="$PROJECT_DIR$/models/InfuseRole.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/models/InfuseUser.php" afterPath="$PROJECT_DIR$/models/InfuseUser.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/routes.php" afterPath="$PROJECT_DIR$/routes.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/structure/infuse_page.php" afterPath="$PROJECT_DIR$/structure/infuse_page.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/structure/infuse_user.php" afterPath="$PROJECT_DIR$/structure/infuse_user.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/structure/permission.php" afterPath="$PROJECT_DIR$/structure/permission.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/structure/role.php" afterPath="$PROJECT_DIR$/structure/role.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/authentication/install.blade.php" afterPath="$PROJECT_DIR$/views/authentication/install.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/authentication/login.blade.php" afterPath="$PROJECT_DIR$/views/authentication/login.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/emails/created_user.blade.php" afterPath="$PROJECT_DIR$/views/emails/created_user.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/emails/password.blade.php" afterPath="$PROJECT_DIR$/views/emails/password.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/emails/request_reset.blade.php" afterPath="$PROJECT_DIR$/views/emails/request_reset.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/infuse/_nav_center.blade.php" afterPath="$PROJECT_DIR$/views/infuse/_nav_center.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/infuse/_sidemenu.blade.php" afterPath="$PROJECT_DIR$/views/infuse/_sidemenu.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/infuse/dashboard.blade.php" afterPath="$PROJECT_DIR$/views/infuse/dashboard.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/layouts/application.blade.php" afterPath="$PROJECT_DIR$/views/layouts/application.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/page/_divider.blade.php" afterPath="$PROJECT_DIR$/views/page/_divider.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/page/_string.blade.php" afterPath="$PROJECT_DIR$/views/page/_string.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/page/_text.blade.php" afterPath="$PROJECT_DIR$/views/page/_text.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/page/_upload.blade.php" afterPath="$PROJECT_DIR$/views/page/_upload.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/page/create_edit.blade.php" afterPath="$PROJECT_DIR$/views/page/create_edit.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/password/remind.blade.php" afterPath="$PROJECT_DIR$/views/password/remind.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/password/reset.blade.php" afterPath="$PROJECT_DIR$/views/password/reset.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/scaffold/__children_loop.blade.php" afterPath="$PROJECT_DIR$/views/scaffold/__children_loop.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/scaffold/_breadcrumbs.blade.php" afterPath="$PROJECT_DIR$/views/scaffold/_breadcrumbs.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/scaffold/_children.blade.php" afterPath="$PROJECT_DIR$/views/scaffold/_children.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/scaffold/_has_one.blade.php" afterPath="$PROJECT_DIR$/views/scaffold/_has_one.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/scaffold/_import_from_models.blade.php" afterPath="$PROJECT_DIR$/views/scaffold/_import_from_models.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/scaffold/_many_to_many.blade.php" afterPath="$PROJECT_DIR$/views/scaffold/_many_to_many.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/scaffold/create_edit.blade.php" afterPath="$PROJECT_DIR$/views/scaffold/create_edit.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/scaffold/list.blade.php" afterPath="$PROJECT_DIR$/views/scaffold/list.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/scaffold/show.blade.php" afterPath="$PROJECT_DIR$/views/scaffold/show.blade.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/views/web_service/fetch_import_batch.blade.php" afterPath="$PROJECT_DIR$/views/web_service/fetch_import_batch.blade.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/composer.json" afterPath="$PROJECT_DIR$/composer.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/readme.md" afterPath="$PROJECT_DIR$/readme.md" />
+    </list>
+    <ignored path="infuse.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path=".idea/dataSources.local.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DaemonCodeAnalyzer">
+    <disable_hints />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="infuse" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="behat.yml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/behat.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.19918284" vertical-offset="0" max-vertical-offset="979">
+              <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="26" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="readme.md" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/readme.md">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-27.6" vertical-offset="945" max-vertical-offset="4725">
+              <caret line="109" column="27" selection-start-line="109" selection-start-column="27" selection-end-line="109" selection-end-column="27" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="composer.json" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/composer.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-25.0" vertical-offset="0" max-vertical-offset="810">
+              <caret line="40" column="31" selection-start-line="40" selection-start-column="31" selection-end-line="40" selection-end-column="31" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="InfuseServiceProvider.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/InfuseServiceProvider.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-98.75" vertical-offset="0" max-vertical-offset="2850">
+              <caret line="158" column="40" selection-start-line="158" selection-start-column="40" selection-end-line="158" selection-end-column="40" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="2014_11_05_174155_create_pages_table.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/migrations/2014_11_05_174155_create_pages_table.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-17.5" vertical-offset="0" max-vertical-offset="780">
+              <caret line="29" column="8" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
+              <folding>
+                <marker date="1425155883000" expanded="true" signature="613:656" placeholder="ALTER TABLE pages..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="2015_17_03_173913_create_test_table.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/migrations/2015_17_03_173913_create_test_table.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-10.0" vertical-offset="0" max-vertical-offset="870">
+              <caret line="16" column="66" selection-start-line="16" selection-start-column="66" selection-end-line="16" selection-end-column="66" />
+              <folding>
+                <element signature="e#7#48#0#PHP" expanded="true" />
+                <marker date="1426726536000" expanded="true" signature="1014:1038" placeholder="ALTER TABLE infuse_tests..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="InfuseAuthContext.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/features/bootstrap/InfuseAuthContext.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-8.125" vertical-offset="0" max-vertical-offset="945">
+              <caret line="13" column="12" selection-start-line="13" selection-start-column="12" selection-end-line="13" selection-end-column="12" />
+              <folding>
+                <element signature="e#7#57#0#PHP" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="auth.feature" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/features/auth.feature">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="225">
+              <caret line="9" column="35" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/Bpez/Infuse/InfuseServiceProvider.php" />
+        <option value="$PROJECT_DIR$/src/InfuseServiceProvider.php" />
+        <option value="$PROJECT_DIR$/behat.yml" />
+        <option value="$PROJECT_DIR$/composer.json" />
+        <option value="$PROJECT_DIR$/readme.md" />
+        <option value="$PROJECT_DIR$/migrations/2015_17_03_173913_create_test_table.php" />
+        <option value="$PROJECT_DIR$/features/bootstrap/InfuseAuthContext.php" />
+        <option value="$PROJECT_DIR$/features/auth.feature" />
+      </list>
+    </option>
+  </component>
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="974" />
+    <option name="y" value="250" />
+    <option name="width" value="1567" />
+    <option name="height" value="1076" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="1" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="infuse" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="infuse" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="infuse" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="infuse" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="infuse" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="features" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../ljg/pardeehomes" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
+      <TestRunner />
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpLocalRunConfigurationType" factoryName="PHP Console">
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpBehatConfigurationType" factoryName="Behat">
+      <BehatRunner />
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server">
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <method />
+    </configuration>
+    <list size="0" />
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ac33ea83-31fa-4391-bc80-23e4db3a55c9" name="Default" comment="" />
+      <created>1426720764299</created>
+      <option name="number" value="Default" />
+      <updated>1426720764299</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="974" y="250" width="1567" height="1076" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24952137" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="myTodoPanelSettings">
+      <TodoPanelSettings />
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/Middleware/InfuseAfterMiddleware.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="979">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/readme.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-27.6" vertical-offset="945" max-vertical-offset="4725">
+          <caret line="109" column="27" selection-start-line="109" selection-start-column="27" selection-end-line="109" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composer.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-25.0" vertical-offset="0" max-vertical-offset="810">
+          <caret line="40" column="31" selection-start-line="40" selection-start-column="31" selection-end-line="40" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controllers/InfuseController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2880">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/BaseController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.2408377" vertical-offset="230" max-vertical-offset="1185">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/InfuseServiceProvider.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-98.75" vertical-offset="0" max-vertical-offset="2850">
+          <caret line="158" column="40" selection-start-line="158" selection-start-column="40" selection-end-line="158" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/migrations/2014_11_05_174155_create_pages_table.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-17.5" vertical-offset="0" max-vertical-offset="780">
+          <caret line="29" column="8" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
+          <folding>
+            <marker date="1425155883000" expanded="true" signature="613:656" placeholder="ALTER TABLE pages..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/migrations/2015_17_03_173913_create_test_table.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.0" vertical-offset="0" max-vertical-offset="870">
+          <caret line="16" column="66" selection-start-line="16" selection-start-column="66" selection-end-line="16" selection-end-column="66" />
+          <folding>
+            <element signature="e#7#48#0#PHP" expanded="true" />
+            <marker date="1426726536000" expanded="true" signature="1014:1038" placeholder="ALTER TABLE infuse_tests..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/features/bootstrap/InfuseAuthContext.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.125" vertical-offset="0" max-vertical-offset="945">
+          <caret line="13" column="12" selection-start-line="13" selection-start-column="12" selection-end-line="13" selection-end-column="12" />
+          <folding>
+            <element signature="e#7#57#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/features/auth.feature">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="225">
+          <caret line="9" column="35" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/behat.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.19918284" vertical-offset="0" max-vertical-offset="979">
+          <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

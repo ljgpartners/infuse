@@ -107,6 +107,12 @@ RewriteRule \.(?:jpe?g|gif|png|bmp)$ /packages/bpez/infuse/retinaimages.php [NC,
 > sudo curl https://raw.github.com/villimagg/Artisan-on-Steroids/master/artisan -o /usr/local/bin/artisan && sudo chmod +x /usr/local/bin/artisan
 ```
 
+### Behat infuse test suite
+```
+imports:
+  - vendor/bpez/infuse/behat.yml
+```
+
 # Infuse Configuration API
 
 ##### addSelect  
