@@ -7,12 +7,17 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Behat\MinkExtension\Context\MinkContext;
 use PHPUnit_Framework_Assert as PHPUnit;
+use Laracasts\Behat\Context\Migrator;
+use Laracasts\Behat\Context\DatabaseTransactions;
 
 /**
  * Defines application features from the specific context.
  */
 class InfuseAuthContext extends MinkContext implements Context, SnippetAcceptingContext
 {
+
+    use Migrator;
+    use DatabaseTransactions;
 
     /**
      * Initializes context.
@@ -25,14 +30,6 @@ class InfuseAuthContext extends MinkContext implements Context, SnippetAccepting
     {
     }
 
-    /**
-     * @static
-     * @beforeSuite
-     */
-    public static function setUpDb()
-    {
-        Artisan::call('migrate');
-    }
 
     /**
      * @Then I should be able to do something with Laravel
@@ -54,4 +51,6 @@ class InfuseAuthContext extends MinkContext implements Context, SnippetAccepting
         $this->printCurrentUrl();
 
     }
+
+
 }

@@ -1,10 +1,10 @@
 @auth
-Feature: Infuse Authentication main
-  In order to authenticate
-  As an infuse system user
-  I want to login into the system
+Feature: User accounts
+    In order to give user accounts to manage content
+    As an administrator
+    I need authentication, user creation and reset password page
 
-  Scenario: Login with super user
-    Given I have an account
-    When I login with "super" "password
-    Then I am on "/admin/dashboard"
+    Scenario: Successful authentication
+        Given I have an account "super" "password"
+        When I sign in
+        Then I should be logged in
