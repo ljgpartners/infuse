@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ac33ea83-31fa-4391-bc80-23e4db3a55c9" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/behat.yml" afterPath="$PROJECT_DIR$/behat.yml" />
-    </list>
+    <list default="true" id="ac33ea83-31fa-4391-bc80-23e4db3a55c9" name="Default" comment="" />
     <ignored path="infuse.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -138,8 +136,8 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="811" />
-    <option name="y" value="156" />
+    <option name="x" value="868" />
+    <option name="y" value="167" />
     <option name="width" value="1567" />
     <option name="height" value="1076" />
   </component>
@@ -279,8 +277,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="811" y="156" width="1567" height="1076" extended-state="0" />
-    <editor active="true" />
+    <frame x="868" y="167" width="1567" height="1076" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
