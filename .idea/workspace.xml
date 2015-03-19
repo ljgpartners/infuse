@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ac33ea83-31fa-4391-bc80-23e4db3a55c9" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/features/bootstrap/InfuseAuthContext.php" afterPath="$PROJECT_DIR$/features/bootstrap/InfuseAuthContext.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/features/auth.feature" afterPath="$PROJECT_DIR$/features/auth.feature" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/behat.yml" afterPath="$PROJECT_DIR$/behat.yml" />
     </list>
     <ignored path="infuse.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,8 +30,8 @@
       <file leaf-file-name="behat.yml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/behat.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2039749" vertical-offset="0" max-vertical-offset="956">
-              <caret line="13" column="12" selection-start-line="13" selection-start-column="12" selection-end-line="13" selection-end-column="12" />
+            <state vertical-scroll-proportion="0.04707113" vertical-offset="0" max-vertical-offset="956">
+              <caret line="3" column="66" selection-start-line="3" selection-start-column="66" selection-end-line="3" selection-end-column="66" />
               <folding />
             </state>
           </provider>
@@ -129,9 +127,9 @@
         <option value="$PROJECT_DIR$/readme.md" />
         <option value="$PROJECT_DIR$/migrations/2015_17_03_173913_create_test_table.php" />
         <option value="$PROJECT_DIR$/src/InfuseServiceProvider.php" />
-        <option value="$PROJECT_DIR$/behat.yml" />
         <option value="$PROJECT_DIR$/features/auth.feature" />
         <option value="$PROJECT_DIR$/features/bootstrap/InfuseAuthContext.php" />
+        <option value="$PROJECT_DIR$/behat.yml" />
       </list>
     </option>
   </component>
@@ -423,8 +421,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/behat.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2039749" vertical-offset="0" max-vertical-offset="956">
-          <caret line="13" column="12" selection-start-line="13" selection-start-column="12" selection-end-line="13" selection-end-column="12" />
+        <state vertical-scroll-proportion="0.04707113" vertical-offset="0" max-vertical-offset="956">
+          <caret line="3" column="66" selection-start-line="3" selection-start-column="66" selection-end-line="3" selection-end-column="66" />
           <folding />
         </state>
       </provider>

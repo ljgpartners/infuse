@@ -1,7 +1,7 @@
 default:
     suites:
         infuse_features:
-            paths:    [ %paths.base%/features ]
+            paths:    [ %paths.base%/vendor/bpez/infuse/features ]
             contexts: [ InfuseAuthContext ]
             filters:
                 tags: @auth
