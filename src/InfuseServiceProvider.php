@@ -49,10 +49,12 @@ class InfuseServiceProvider extends ServiceProvider {
      // artisan vendor:publish --tag=infuse_migrations
 
     // Publish your migrations
+    /*
     $this->publishes([
         __DIR__.'/../migrations/' => base_path('/database/migrations')
     ], 'infuse_migrations');
-    
+    */
+
     require __DIR__ . '/../routes.php';
   }
 
