@@ -54,12 +54,12 @@ Step 5: Configure auth file
 ...
 ```
 
-Step 6: Publish Configurations & public assets
+Step 6: Publish Configurations & public assets & run migrations
 ```cmd
 > php artisan vendor:publish --provider="\Bpez\Infuse\InfuseServiceProvider" --tag=infuse_public --force
 > php artisan vendor:publish --provider="\Bpez\Infuse\InfuseServiceProvider" --tag=infuse_config
 > php artisan vendor:publish --provider="\Bpez\Infuse\InfuseServiceProvider" --tag=infuse_structure
-> php artisan vendor:publish --provider="\Bpez\Infuse\InfuseServiceProvider" --tag=infuse_migrations
+> php artisan migrate --path="vendor/bpez/infuse/migrations"
 ```
 
 Step 7: Add to composer.json

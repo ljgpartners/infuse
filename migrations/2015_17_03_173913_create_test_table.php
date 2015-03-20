@@ -16,6 +16,8 @@ class CreateTestTable extends Migration {
 
         if (env('APP_ENV') == "behat" && $databaseConnectionType == "pgsql") {
 
+            DB::statement("CREATE EXTENSION IF NOT EXISTS hstore;");
+
             Schema::create('infuse_tests', function(Blueprint $table)
             {
                 $table->increments('id');

@@ -28,7 +28,8 @@ class InfuseAuthContext extends MinkContext implements Context, SnippetAccepting
      */
     public function __construct()
     {
-        Artisan::call('migrate:reset',  array('--path' => "vendor/bpez/infuse/migrations"));
+        #Artisan::call('migrate:reset');
+        Artisan::call('migrate',  array('--path' => "vendor/bpez/infuse/migrations"));
         Artisan::call('db:seed', array('--class' => "InfuseDatabaseSeeder"));
     }
 
