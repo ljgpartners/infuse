@@ -16,7 +16,7 @@ use Laracasts\Behat\Context\DatabaseTransactions;
 class InfuseAuthContext extends MinkContext implements Context, SnippetAcceptingContext
 {
 
-    use Migrator;
+    #use Migrator;
     use DatabaseTransactions;
 
     /**
@@ -28,29 +28,56 @@ class InfuseAuthContext extends MinkContext implements Context, SnippetAccepting
      */
     public function __construct()
     {
+        Artisan::call('migrate:reset',  array('--path' => "vendor/bpez/infuse/migrations"));
+        Artisan::call('db:seed', array('--class' => "InfuseDatabaseSeeder"));
     }
 
 
     /**
-     * @Then I should be able to do something with Laravel
+     * @Given I have an account :arg1
      */
-    public function iShouldBeAbleToDoSomethingWithLaravel()
+    public function iHaveAnAccount($arg1)
     {
-        $environmentFileName = app()->environmentFile();
-        $environmentName = env('APP_ENV');
-        PHPUnit::assertEquals('.env.behat', $environmentFileName);
-        PHPUnit::assertEquals('behat', $environmentName);
+        throw new PendingException();
     }
 
-    public function iLoginWith($username, $password)
+    /**
+     * @When I sign in with :arg1 :arg2
+     */
+    public function iSignInWith($arg1, $arg2)
     {
-        $this->visit('admin/posts/create');
-        $this->fillField('infuseU', $username);
-        $this->fillField('infuseP', $password);
-        $this->pressButton('go');
-        $this->printCurrentUrl();
-
+        throw new PendingException();
     }
 
+    /**
+     * @Then I should be on the dashboard
+     */
+    public function iShouldBeOnTheDashboard()
+    {
+        throw new PendingException();
+    }
 
+    /**
+     * @When I fill :arg1 with :arg2
+     */
+    public function iFillWith($arg1, $arg2)
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Given I signed in with :arg1 :arg2
+     */
+    public function iSignedInWith($arg1, $arg2)
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Then I should be redirected to :arg1
+     */
+    public function iShouldBeRedirectedTo($arg1)
+    {
+        throw new PendingException();
+    }
 }

@@ -94,7 +94,7 @@
 
 	<a class="navLink" href="/admin/logout">
 		<div class="inner">
-			<span class="glyphicon glyphicon-off"></span> Logout
+			<span class="glyphicon glyphicon-off"></span> Sign out
 		</div>
 	</a>
 
