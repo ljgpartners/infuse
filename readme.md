@@ -113,6 +113,12 @@ imports:
   - vendor/bpez/infuse/behat.yml
 ```
 
+### High level data flow
+```php
+model(mapConifig -> getbModelInstance(s) -> boot -> apiCalls) -> process(route -> renderView) 
+```
+
+
 # Infuse Configuration API
 
 ##### addSelect  
