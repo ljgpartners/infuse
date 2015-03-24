@@ -34,10 +34,12 @@ class CreateWebcrawler extends Migration {
 	 */
 	public function down()
 	{
+		/*
 		Schema::table('webcrawlers', function($table) {
 			$table->dropIndex('fulltext_page_content');
 		});
 		Schema::drop('webcrawlers');
+		*/
 
 	}
 
