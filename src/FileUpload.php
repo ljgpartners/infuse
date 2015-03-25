@@ -128,7 +128,7 @@ class FileUpload {
 		$count = 1;
 
 		while ($this->disk->has($newpath)) {
-			$newname = $name .'_'. $count . $ext;
+			$newname = $name .'_'. $count . "." . $ext;
 			$newpath = $uploadPath.$newname;
 			$count++;
 		}

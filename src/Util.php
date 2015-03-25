@@ -630,7 +630,9 @@ STRING;
 	{
 		if ($column['hstore_column'] == true && isset($instance->hstore[$column['hstore_column']])) {
 			$instance->setHstore($column['hstore_column'], array($column['field'] => $value));;
-		}
+		} else {
+            $instance->{$column['field']} = $value;
+        }
 	}
 
 
