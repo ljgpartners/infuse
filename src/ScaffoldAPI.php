@@ -1,5 +1,7 @@
 <?php namespace Bpez\Infuse;
 
+use Bpez\Infuse\Exceptions\ScaffoldConfigurationException;
+
 trait ScaffoldAPI {
 
 	public function mapConfig($config)
