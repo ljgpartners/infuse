@@ -46,7 +46,7 @@
 								@foreach ($topLevel as $secondNavLevel => $secondLevel )
 									
 									@if (is_array($secondLevel)) 
-										@if ($superAdmin || (isset($databaseConnectionType) && $databaseConnectionType == "pgsql" && Util::checkPsqlPagesExist($countInner+1))) 
+										@if (($superAdmin && $databaseConnectionType == "pgsql")  || (isset($databaseConnectionType) && $databaseConnectionType == "pgsql" && Util::checkPsqlPagesExist($countInner+1))) 
 							    	<li class="list-group-item" data-active="{{$firstNavLevel}}{{$secondNavLevel}}">
 							    		<a href="/admin/page?infuse_pages_section={{$countInner+1}}">{{$secondLevel['name']}}</a>
 							    	</li>
