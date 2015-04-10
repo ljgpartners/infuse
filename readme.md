@@ -255,6 +255,21 @@ hasMany(array(
 3. (Required) [array] Child columns to display on entries listed on parent edit page 
 4. (Optional) [array] Contains extra functionality for dislaying child entries. Some options are as follows:
 
+Ex. Child Columns array may have an array nested to match an id with a value like below:
+```php
+$childColumnArray = array(
+  "column_1", 
+  "column_2",
+  array("column_3" => array(
+    array("id" => 1, "name" => "some name"), 
+    array("id" => 2, "name" => "some name 2")
+  ), 
+  "column_4",
+  ...
+)
+```
+array("category" => $categories)
+
 ```php
 $optionsArray = array(
   "order_column" => "display_order", 
