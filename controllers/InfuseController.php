@@ -40,14 +40,14 @@ class InfuseController extends Bpez\Infuse\BaseController {
 		$this->layout->title =  "Resource | Infuse"; 
 		View::share('manageActive', true);
 		$uri = Request::path();
-
-		Util::stackReset();
-		Util::stackPush($resource, Input::get('id', null), $uri);
 		
 		$this->loadResource($resource);
 		$config = Config::get("infuse::{$resource}");
+
+		Util::stackReset();
+		Util::stackPush($config['model'], Input::get('id', null), $uri);
 		
-			$scaffold = Scaffold::mapConfig($config);
+		$scaffold = Scaffold::mapConfig($config);
 
 
 		$redirect = $scaffold->checkPermissions($uri);

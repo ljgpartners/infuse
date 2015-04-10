@@ -132,6 +132,7 @@ class Util {
 
 	public static function stackPush($resource, $id, $uri)
 	{
+        $resource = (!is_string($resource))? self::camel2under(get_class($resource)) : $resource
 		$stack = self::flashArray("infuse_stack");
 		$stack = ($stack == null)? array() : $stack;
 		if (!array_key_exists($resource, $stack))
