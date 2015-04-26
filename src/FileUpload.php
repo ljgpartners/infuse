@@ -11,7 +11,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 
 /*
 |--------------------------------------------------------------------------
-| FileUpload 
+| FileUpload
 |--------------------------------------------------------------------------
 | This class contains helper uploading methods used by infuse
 |
@@ -36,12 +36,12 @@ class FileUpload {
 	private $savedQueue = array();
 
 	public function __construct(\Illuminate\Http\Request $request)
-	{	
+	{
 		$this->fileSystemDiskType = \Config::get("filesystems.default");
 		$this->request = $request;
 
 		if ($this->fileSystemDiskType == "s3") {  // disks.s3.bucket secret bucket
-			
+
 			$client = S3Client::factory(array(
 		    'key'    => \Config::get("filesystems.disks.s3.key"),
 		    'secret' => \Config::get("filesystems.disks.s3.secret"),
@@ -56,7 +56,7 @@ class FileUpload {
 			]);
 
 		} else if ($this->fileSystemDiskType == "local") {
-			
+
 			$adapter = new Adapter(public_path());
 
 			$this->disk = new Filesystem($adapter, [
@@ -64,7 +64,7 @@ class FileUpload {
 			]);
 		}
 
-		
+
 	}
 
 	public function fileErrors()
@@ -78,48 +78,48 @@ class FileUpload {
                 .get_class($instance).DIRECTORY_SEPARATOR
                 .$column.DIRECTORY_SEPARATOR);
     return $uploadPath;
-	} 
+	}
 
 
 	public function url($instance, $column, $hstoreColumn = false)
 	{
 		$columnConfig = array(
-      "field" => $column,
-      'hstore_column' => $hstoreColumn
-    );
+	      "field" => $column,
+	      'hstore_column' => $hstoreColumn
+	    );
 
 		$value = Util::getColumnValue($instance, $columnConfig);
 
-    if (filter_var($value, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
-      return $value;
-    } else { 
+	    if (filter_var($value, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
+	      return $value;
+	    } else {
 
-    	$url = strtolower($instance->uploadFolder.DIRECTORY_SEPARATOR
-	                  .get_class($instance).DIRECTORY_SEPARATOR
-	                  .$column.DIRECTORY_SEPARATOR).$value;
+			$url = strtolower($instance->uploadFolder.DIRECTORY_SEPARATOR
+			          .get_class($instance).DIRECTORY_SEPARATOR
+			          .$column.DIRECTORY_SEPARATOR).$value;
 
-    	if ($this->fileSystemDiskType == "s3") {
+			if ($this->fileSystemDiskType == "s3") {
 
-    		return $this->disk->getAdapter()->getClient()->getObjectUrl($this->s3Bucket, $url);
+				return $this->disk->getAdapter()->getClient()->getObjectUrl($this->s3Bucket, $url);
 
-    	} else if ($this->fileSystemDiskType == "local") {
-    		$baseUrlUploadedAssetsLocal = \Config::get("infuse::config.base_url_uploaded_assets_local");
+			} else if ($this->fileSystemDiskType == "local") {
+				$baseUrlUploadedAssetsLocal = \Config::get("infuse::config.base_url_uploaded_assets_local");
 
-	      if (\App::environment() != "production" && !empty($baseUrlUploadedAssetsLocal)) { 
-	        return $baseUrlUploadedAssetsLocal.$url;
-	      } else { 
-	      	$httpHOST = (strpos($this->request->server("HTTP_HOST"), 'http://') !== false)? $this->request->server("HTTP_HOST") : "http://".$this->request->server("HTTP_HOST");
-	        return $httpHOST.$url; 
-	      }
-    	}
-    }
+				if (\App::environment() != "production" && !empty($baseUrlUploadedAssetsLocal)) {
+					return $baseUrlUploadedAssetsLocal.$url;
+				} else {
+					$httpHOST = (strpos($this->request->server("HTTP_HOST"), 'http://') !== false)? $this->request->server("HTTP_HOST") : "http://".$this->request->server("HTTP_HOST");
+					return $httpHOST.$url;
+				}
+			}
+		}
 	}
 
 
 	private function checkIfFileExistReturnNewName($uploadPath, $filename)
 	{
 		$name = pathinfo($filename, PATHINFO_FILENAME);
-    $ext  = pathinfo($filename, PATHINFO_EXTENSION);
+    	$ext  = pathinfo($filename, PATHINFO_EXTENSION);
 
 		$newpath = $uploadPath.$filename;
 		$newname = $filename;
@@ -132,12 +132,12 @@ class FileUpload {
 			$newpath = $uploadPath.$newname;
 			$count++;
 		}
-		
+
 
 		$newname = preg_replace('/\s+/', '_', $newname);
 		$newname = strtolower($newname);
-		
-    return $newname;
+
+    	return $newname;
 	}
 
 	public function delete($column, &$entry, $columnConfig)
@@ -148,7 +148,7 @@ class FileUpload {
 		$uploadPath = $entry->uploadPath($column);
 		$originalFile = $uploadPath.$value;
 
-		$exists = $this->disk->has($originalFile);;
+		$exists = $this->disk->has($originalFile);
 
 		if (!empty($value) && $exists) {
 	    $this->disk->delete($originalFile);
@@ -168,6 +168,29 @@ class FileUpload {
 	    Util::setColumnValue($entry, $columnConfig, "");
 	  }
 	}
+
+	public function deleteBasicUpload($uploadPath, $value)
+	{
+		$originalFile = $uploadPath.$value;
+
+		$exists = $this->disk->has($originalFile);
+
+		if (!empty($value) && $exists) {
+	    $this->disk->delete($originalFile);
+
+	    $name = pathinfo($value, PATHINFO_FILENAME);
+	    $ext  = pathinfo($value, PATHINFO_EXTENSION);
+
+	    $retinaImage = $uploadPath.$name."@2x.".$ext;
+
+	    $exists = $this->disk->has($retinaImage);
+
+	    if ($exists) {
+	       $this->disk->delete($retinaImage);
+	    }
+	  }
+	}
+
 
 	public function deleteByPath($path)
 	{
@@ -189,21 +212,21 @@ class FileUpload {
 
 	private function processRetina($uploadPath, $filename, $url)
 	{
-			
+
 			if(strpos($filename, "@2x.") !== FALSE) {
-				
+
 				ini_set('memory_limit', '64M');
 
-			  $img = Image::make($url);	  
+			  $img = Image::make($url);
 
 			  // 1.5 instead of 2. Almost same quality but saves more space and bandwidth.
 			  $halfRetinaSize = floor($img->width()/1.5);
 			  $retinaFileName = $filename;
-			  
+
 			  $filename = explode("@2x.", $filename);
 			  $filename = $filename[0].".".$filename[1];
 
-			  
+
 			  $img->resize($halfRetinaSize, null, function ($constraint) {
 					$constraint->aspectRatio();
 				});
@@ -214,13 +237,13 @@ class FileUpload {
 				if ($this->fileSystemDiskType == "s3") {
 					$stream = fopen($img, 'r+');
 					$this->disk->writeStream($uploadPath.$filename, $stream);
-					
+
 				} else if ($this->fileSystemDiskType == "local") {
 					$stream = fopen($img, 'r+');
 					$this->disk->writeStream($uploadPath.$filename, $stream);
 					fclose($stream);
 				}
-				
+
 
 				$this->addToSavedQueue($uploadPath.$filename);
 
@@ -247,14 +270,14 @@ class FileUpload {
 			return true;
 		}
 
-		
+
 		$newFilename = "";
 
 		try {
 
 			if ($checkIfInFiles) {
 
-				
+
 				$file = $this->request->file($column);
 				$originalFilename =  $file->getClientOriginalName();
 				$uploadPath = $this->uploadPath($entry, $column);
@@ -263,26 +286,26 @@ class FileUpload {
 				/*if ($this->fileSystemDiskType != "s3") {
 					$this->disk->makeDirectory($uploadPath, 775, true, true);
 				}*/
-				
+
 				$newFilename = $this->checkIfFileExistReturnNewName($uploadPath, $originalFilename);
 
 
-				if ($file->isValid()) { 
-					
+				if ($file->isValid()) {
+
 
 					if ($this->fileSystemDiskType == "s3") {
 						$stream = fopen($file->getRealPath(), 'r+');
 						$this->disk->writeStream($uploadPath.$newFilename, $stream);
 						//fclose($stream);
-						$this->addToSavedQueue($uploadPath.$newFilename); 
-						
+						$this->addToSavedQueue($uploadPath.$newFilename);
+
 					} else if ($this->fileSystemDiskType == "local") {
 						$stream = fopen($file->getRealPath(), 'r+');
 						$this->disk->writeStream($uploadPath.$newFilename, $stream);
 						fclose($stream);
 						$this->addToSavedQueue($uploadPath.$newFilename);
 					}
-			   
+
 				}
 
 
@@ -293,7 +316,7 @@ class FileUpload {
 			} else if ($checkIfExternalFile) {
 				//$tempUploadedFilePath  = Util::get($column);
 			}
-			
+
 		} catch (Exception $e) {
 			$this->fileErrors[$column] = "File failed uploading.";
 		}
@@ -303,18 +326,113 @@ class FileUpload {
 
 		// If old present queue removal
 		if (!empty($columnValue)) {
-			$this->addToDeleteQueue($column, $entry, $columnConfig); 
+			$this->addToDeleteQueue($column, $entry, $columnConfig);
 		}
-		
-		
+
+
 	  Util::setColumnValue($entry, $columnConfig, $newFilename);
 
 	  // process retina
-  	$url = $this->url($entry, $column, $columnConfig['hstore_column']);
+  		$url = $this->url($entry, $column, $columnConfig['hstore_column']);
 		$processRetinaImage = $this->processRetina($uploadPath, $newFilename, $url);
 		if ($processRetinaImage) {
 			Util::setColumnValue($entry, $columnConfig, $processRetinaImage);
 		}
+
+	} // END OF ADD
+
+
+	public function addBasicUpload(&$entry, $entryPropertyName, $uploadFieldName, $uploadPath)
+	{
+
+		// If column in files array or if uploaded already by cropping tool
+		$checkIfInFiles = (array_key_exists($uploadFieldName, $_FILES) && !empty($_FILES["{$uploadFieldName}"]['name']));
+		$checkIfAlreadyUploaded = (Util::get($uploadFieldName) && !filter_var(Util::get($uploadFieldName), FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED));
+		$checkIfExternalFile = (Util::get($uploadFieldName) && filter_var(Util::get($uploadFieldName), FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED));
+
+		// Only process if file present
+		if (!$checkIfInFiles && !$checkIfAlreadyUploaded && !$checkIfExternalFile) {
+			return true;
+		}
+
+
+		$newFilename = "";
+
+		try {
+
+			if ($checkIfInFiles) {
+
+
+				$file = $this->request->file($uploadFieldName);
+				$originalFilename =  $file->getClientOriginalName();
+
+				$newFilename = $this->checkIfFileExistReturnNewName($uploadPath, $originalFilename);
+
+				if ($file->isValid()) {
+
+
+					if ($this->fileSystemDiskType == "s3") {
+						$stream = fopen($file->getRealPath(), 'r+');
+						$this->disk->writeStream($uploadPath.$newFilename, $stream);
+						//fclose($stream);
+						$this->addToSavedQueue($uploadPath.$newFilename);
+
+					} else if ($this->fileSystemDiskType == "local") {
+						$stream = fopen($file->getRealPath(), 'r+');
+						$this->disk->writeStream($uploadPath.$newFilename, $stream);
+						fclose($stream);
+						$this->addToSavedQueue($uploadPath.$newFilename);
+					}
+
+				}
+
+
+			} else if ($checkIfAlreadyUploaded) {
+				//$tempUploadedFilePath = $_SERVER['DOCUMENT_ROOT'].Util::get($column);
+				//$filename = Util::get($column);
+
+			} else if ($checkIfExternalFile) {
+				//$tempUploadedFilePath  = Util::get($column);
+			}
+
+		} catch (Exception $e) {
+			$this->fileErrors[$uploadFieldName] = "File failed uploading.";
+			return false;
+		}
+
+
+		$entry->{$entryPropertyName} = $newFilename;
+
+		/************************************************************
+		* Url function without instance references refactor later
+		************************************************************/
+		$url = $uploadPath.$newFilename;
+
+		if ($this->fileSystemDiskType == "s3") {
+
+			$url = $this->disk->getAdapter()->getClient()->getObjectUrl($this->s3Bucket, $url);
+
+		} else if ($this->fileSystemDiskType == "local") {
+			$baseUrlUploadedAssetsLocal = \Config::get("infuse::config.base_url_uploaded_assets_local");
+
+			if (\App::environment() != "production" && !empty($baseUrlUploadedAssetsLocal)) {
+				$url = $baseUrlUploadedAssetsLocal.$url;
+			} else {
+				$httpHOST = (strpos($this->request->server("HTTP_HOST"), 'http://') !== false)? $this->request->server("HTTP_HOST") : "http://".$this->request->server("HTTP_HOST");
+				$url = $httpHOST.$url;
+			}
+		}
+		/************************************************************
+		* end of url refactor section
+		************************************************************/
+
+
+		$processRetinaImage = $this->processRetina($uploadPath, $newFilename, $url);
+		if ($processRetinaImage) {
+			$entry->{$entryPropertyName} = $processRetinaImage;
+		}
+
+		return true;
 
 	} // END OF ADD
 
@@ -328,7 +446,7 @@ class FileUpload {
 	public function processUploads()
 	{
 		if (count($this->fileErrors) == 0) {
-			// allow deletion 
+			// allow deletion
 			$this->allowDeletion();
 
 		}

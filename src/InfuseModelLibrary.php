@@ -14,12 +14,12 @@ trait InfuseModelLibrary {
       $v = \Validator::make($data, $this->rules);
 
       // check for failure
-      if ($v->fails()) { 
+      if ($v->fails()) {
           // set errors and return false
           $this->errors = $v->messages();
           return false;
       }
-      
+
       // validation pass
       return true;
   }
@@ -42,9 +42,11 @@ trait InfuseModelLibrary {
       return $this->errors;
   }
 
-
+  /**
+   *  DO NOT USE THIS FUNCTION UNTIL RECODED USING THE FILEUPLOAD CLASS *********
+   */
   public function generateThumbnail($thumbnailToColumn, $thumbnailFromColumn, $width, $height)
-  {   
+  {
       // Only process if image changed
       $original = $this->getOriginal();
       if (isset($original[$thumbnailFromColumn]) &&  $this->{$thumbnailFromColumn} == $original[$thumbnailFromColumn]) {
@@ -72,9 +74,9 @@ trait InfuseModelLibrary {
       $name = pathinfo($fileName, PATHINFO_FILENAME);
       $ext  = pathinfo($fileName, PATHINFO_EXTENSION);
       $retinaImage = $this->uploadPath($thumbnailFromColumn).$name."@2x.".$ext;
-      
-      // Process retina 
-      if (file_exists($retinaImage)) { 
+
+      // Process retina
+      if (file_exists($retinaImage)) {
         $retinaImageThumbnail = $this->uploadPath($thumbnailToColumn).$name.".thumbnail@2x.".$ext;
         $imageThumbnail = $this->uploadPath($thumbnailToColumn).$name.".thumbnail.".$ext;
         $widthRetina = 1.5*$width;
@@ -85,7 +87,7 @@ trait InfuseModelLibrary {
             mkdir(dirname($retinaImageThumbnail), 0775, true);
           }
 
-          
+
           if (copy($retinaImage, $retinaImageThumbnail)) {
               $transitRetina = new ResizeTransformer(array('width' => $widthRetina));
               if (!$transitRetina->transform(new File($retinaImageThumbnail), true)) {
@@ -113,16 +115,16 @@ trait InfuseModelLibrary {
         } catch (Exception $e) {
           return die($e->getMessage());
         }
-      
-      // Process standard 
-      } else if (!empty($this->{$thumbnailFromColumn}) && file_exists($thumbnailImageFrom)) { 
+
+      // Process standard
+      } else if (!empty($this->{$thumbnailFromColumn}) && file_exists($thumbnailImageFrom)) {
         $imageThumbnail = $this->uploadPath($thumbnailToColumn).$name.".thumbnail.".$ext;
         try {
 
           if (!file_exists($this->uploadPath($thumbnailToColumn))) {
             mkdir(dirname($imageThumbnail), 0775, true);
           }
-          
+
           if (copy($thumbnailImageFrom, $imageThumbnail)) {
             $transitRetina = new ResizeTransformer(array('width' => $width));
             if (!$transitRetina->transform(new File($imageThumbnail), true)) {
@@ -156,7 +158,7 @@ trait InfuseModelLibrary {
   }
 
   public function url($column, $hstoreColumn = false)
-  { 
+  {
     return \FileUpload::url($this, $column, $hstoreColumn);
   }
 
@@ -181,7 +183,7 @@ trait InfuseModelLibrary {
 
   public function infuseSaveHstoreValuesStart()
   {
-    foreach ($this->hstore as $key => $value) { 
+    foreach ($this->hstore as $key => $value) {
       if (isset($value['modified']) && isset($value['cache'])) {
         $this->setAttribute($key, $this->arrayTohstore($value['cache']));
       }
@@ -224,7 +226,7 @@ trait InfuseModelLibrary {
 
 
   }
-  
+
 
   public function getHstore($hstoreColumn, $key)
   {
@@ -239,7 +241,7 @@ trait InfuseModelLibrary {
   | Extend functionality Model
   |
   */
- 
+
 
   public function getAttributeValue($key)
   {
@@ -262,6 +264,6 @@ trait InfuseModelLibrary {
     return $saved;
   }
 
-  
+
 
 }

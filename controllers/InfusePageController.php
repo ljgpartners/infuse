@@ -4,15 +4,13 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Bpez\Infuse\Util;
 use Bpez\Infuse\InfusePageBreadcrumb;
 use Bpez\Infuse\Referencer;
+use Bpez\Infuse\FileUpload;
 
-use Transit\Transit;
-use Transit\Validator\ImageValidator;
-use Transit\Transformer\Image\ResizeTransformer;
-use Transit\File;
+
 
 /*
 |--------------------------------------------------------------------------
-| InfusePageController 
+| InfusePageController
 |--------------------------------------------------------------------------
 | Main logic for Infuse Page tool
 |
@@ -22,7 +20,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 
 
 	public function __construct(\InfuseUser $user, \Illuminate\Http\Request $request, \Illuminate\Session\Store $session)
-	{	
+	{
 		$this->session = $session;
 		$this->request = $request;
 		$this->user = $user;
@@ -36,13 +34,13 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 
 		$this->breadcrumbs = new InfusePageBreadcrumb($this->request, $this->session);
 
-		if (Input::has("infuse_pages_section")) { 
+		if (Input::has("infuse_pages_section")) {
 			$infusePagesSection = Input::get("infuse_pages_section");
 			Session::put('infuse_pages_section', $infusePagesSection);
 			$this->breadcrumbs->reset();
 		}
 
-		
+
 	}
 
 
@@ -56,7 +54,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	{
 		$infusePagesSection = Session::get('infuse_pages_section');
 		$this->layout->infusePagesSection = $infusePagesSection;
-		
+
 		try {
 			$infusePage = InfusePage::select(DB::raw("id, title, page_data->'page' as page_data"))
 				->where("navigation_section", "=", $infusePagesSection)
@@ -96,7 +94,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 		$resource['infusePage']->page_data = \File::get(public_path('bpez/infuse').'/other/page_template.json');
 
 
-		if (!$nested) { 
+		if (!$nested) {
 			$resource['pageInstance'] = json_decode($resource['infusePage']->page_data);
 			$resource['pageInstance'] = $resource['pageInstance']->page;
 		} else { // nested
@@ -120,9 +118,9 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 		$resource = array();
 		$infusePagesSection = Session::get('infuse_pages_section');
 		$nested = (Input::has("pri") && Input::has("pip"))? true : false;
-		
+
 		// Update page
-		if (Input::has("pageData")) { 
+		if (Input::has("pageData")) {
 			$updatePageInstance = Input::get("pageData");
 			$updatePageInstance = json_decode($updatePageInstance);
 
@@ -144,7 +142,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 				$infusePage->save();
 
 				Util::flash(array(
-					"message" => "Created page.", 
+					"message" => "Created page.",
 					"type" => "success"
 					)
 				);
@@ -163,7 +161,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 				$psqlSelectOnlyNestedInstance = preg_replace('/->\'pages\'$/', '', $psqlSelectOnlyNestedInstance);
 				$psqlSelectOnlyNestedInstance .= " as page_instance ";
 
-				
+
 				try {
 					$infusePage = InfusePage::select(DB::raw("id, title, page_data, {$psqlSelectOnlyNestedInstance}"))
 						->where("navigation_section", "=", $infusePagesSection)
@@ -173,7 +171,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 					$pageInstanceJson = $infusePage->page_instance;
 				} catch (ModelNotFoundException $e) {
 					Util::flash(array(
-						"message" => "Failed to create page.", 
+						"message" => "Failed to create page.",
 						"type" => "error"
 						)
 					);
@@ -191,7 +189,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 
 				//  Update page instance
 				$fullJsonColumnDecoded = json_decode($fullJsonColumn);
-				
+
 				$updatePath = "";
 				$pip = Input::get("pip"); // page instance path
 				$parent = explode(";", $pip);
@@ -214,21 +212,21 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 				$infusePage->save();
 
 				Util::flash(array(
-					"message" => "Created page.", 
+					"message" => "Created page.",
 					"type" => "success"
 					)
 				);
 
 				return Redirect::route('admin.page.edit', array("page" => $infusePage->id, 'pri' => $pri, 'pip' => $newPip));
 			}
-			
+
 
 			return Redirect::route('admin.page.edit', array("page" => $infusePage->id));
 
 		}
 
 		Util::flash(array(
-			"message" => "Failed to create page.", 
+			"message" => "Failed to create page.",
 			"type" => "error"
 			)
 		);
@@ -238,7 +236,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 
 	/**
 	 * Display the specified resource.
-	 * GET /admin/page/{page} 
+	 * GET /admin/page/{page}
 	 *
 	 * @param  int  $id
 	 * @return Response
@@ -256,8 +254,8 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	 * @return Response
 	 */
 	public function edit($id)
-	{	
-		$this->layout->title = "Edit Infuse Page | Infuse"; 
+	{
+		$this->layout->title = "Edit Infuse Page | Infuse";
 		$infusePagesSection = Session::get('infuse_pages_section');
 		$this->layout->infusePagesSection = $infusePagesSection;
 		$nested = (Input::has("pip"))? true : false;
@@ -269,7 +267,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 		if (Input::has("rpip") && $nested) {
 			$this->breadcrumbs->rebuild(Input::get("pip"));
 		}
-		
+
 		$resource = array();
 		$resource['method'] = "PUT";
 
@@ -279,7 +277,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 			->get();
 
 
-		if (!$nested) { 
+		if (!$nested) {
 			try {
 				$resource['infusePage'] = InfusePage::select(DB::raw("id, title, page_data->'page'  as page_data"))
 					->where("navigation_section", "=", $infusePagesSection)
@@ -315,7 +313,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 				->where("id", "=", $id)->firstOrFail();
 
 			$resource['pageInstance'] = json_decode($resource['infusePage']->page_instance);
-			
+
 			$this->breadcrumbs->infusePageNestedEdit($resource['infusePage'], $resource['pageInstance'], $pageInstanceId);
 
 			$query = ($pip == "page")? "" : "?pip={$pip}";
@@ -334,17 +332,17 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 
 	/**
 	 * Update the specified resource in storage.
-	 * PUT /admin/page/{page} 
+	 * PUT /admin/page/{page}
 	 *
 	 * @param  int  $id
 	 * @return Response
 	 */
 	public function update($id)
-	{ 
+	{
 		$resource = array();
 		$infusePagesSection = Session::get('infuse_pages_section');
 		$nested = (Input::has("pip"))? true : false;
-		
+
 		// Update page
 		if (Input::has("pageData")) {
 			$updatePageInstance = Input::get("pageData");
@@ -365,7 +363,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 			}
 
 			$select = "{$jsonQuery} as page_instance, {$jsonQuery}->'pageValues' as page_values, {$jsonQuery}->'pageProperties' as page_properties";
-			
+
 
 			try {
 				$infusePage =  InfusePage::select(DB::raw("id, title, page_data, {$select}"))
@@ -374,7 +372,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 					->firstOrFail();
 			} catch (ModelNotFoundException $e) {
 				Util::flash(array(
-					"message" => "Can not update this page.", 
+					"message" => "Can not update this page.",
 					"type" => "error"
 					)
 				);
@@ -390,51 +388,49 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 			if (isset($rootPage)) {
 				$infusePage->title = $updatePageInstance->pageProperties->pageTitle;
 			}
-			
+
 			//  Update page values of page instance
-			
+
 			// Process adding new images
-			$newImages = array(); 
+			$newImages = array();
 			foreach ($updatePageInstance->pageValues as &$item) {
 				if ($item->type == "upload") {
-					self::processUploads($item, $newImages, $pageInstance, $infusePage);
+					$this->processUploads($item, $newImages, $pageInstance, $infusePage);
 				} else if ($item->type == "group") {
 					foreach ($item->value as $groupItem) {
 						if ($groupItem->type == "upload") {
-							self::processUploads($groupItem, $newImages, $pageInstance, $infusePage);
+							$this->processUploads($groupItem, $newImages, $pageInstance, $infusePage);
 						}
 					}
 				} // end of $item->type == "upload"
 			} // end of foreach
 
-			
+			$fileUploadManager = new FileUpload($this->request);
+
 			// check for images to remove
 			foreach ($pageInstance->pageValues as &$item) {
 
 				// Checks if upload && replacement image uploaded then removes old file
-				if (($item->type == "upload" && isset($newImages[$item->id]) && $newImages[$item->id] == true) || 
+				if (($item->type == "upload" && isset($newImages[$item->id]) && $newImages[$item->id] == true) ||
 						($item->type == "upload" && !isset($newImages[$item->id]))) {
 
-					$uploadedFile = $infusePage->uploadPath("page_data").$item->value;
-					if (!empty($item->value) && file_exists($uploadedFile)) {
-						unlink($uploadedFile);
-					}
+					$fileUploadManager->deleteBasicUpload($infusePage->uploadPath("page_data"), $item->value);
+
 				} else if ($item->type == "group") {
 					foreach ($item->value as $groupItem) {
-						if (($groupItem->type == "upload" && isset($newImages[$groupItem->id]) && $newImages[$groupItem->id] == true) || 
+						if (($groupItem->type == "upload" && isset($newImages[$groupItem->id]) && $newImages[$groupItem->id] == true) ||
 								($groupItem->type == "upload" && !isset($newImages[$groupItem->id]))) {
 
-							$uploadedFile = $infusePage->uploadPath("page_data").$groupItem->value;
-							if (!empty($groupItem->value) && file_exists($uploadedFile)) {
-								unlink($uploadedFile);
-							}
+							$fileUploadManager->deleteBasicUpload($infusePage->uploadPath("page_data"), $groupItem->value);
 						}
 					}
 				}
 			}
-			
-			$pageInstance->pageValues = $updatePageInstance->pageValues; 
-		
+
+			unset($fileUploadManager);
+
+			$pageInstance->pageValues = $updatePageInstance->pageValues;
+
 			//  Update page instance
 			$fullJsonColumnDecoded = json_decode($infusePage->page_data);
 			$updatePath = "";
@@ -461,13 +457,13 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 			$infusePage->save();
 
 			Util::flash(array(
-				"message" => "Saved page.", 
+				"message" => "Saved page.",
 				"type" => "success"
 				)
 			);
 
 			if ($nested) {
-				$pip = Input::get("pip"); 
+				$pip = Input::get("pip");
 				return Redirect::to("admin/page/{$infusePage->id}/edit?pip={$pip}");
 			} else {
 				return Redirect::route('admin.page.edit', array("page" => $infusePage->id));
@@ -477,7 +473,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 		}
 
 		Util::flash(array(
-			"message" => "Can not update this page.", 
+			"message" => "Can not update this page.",
 			"type" => "error"
 			)
 		);
@@ -486,55 +482,30 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	}
 
 
-	
-	private static function processUploads(&$item, &$newImages, &$pageInstance, &$infusePage)
+	private function processUploads(&$item, &$newImages, &$pageInstance, &$infusePage)
 	{
+		$fileUploadManager = new FileUpload($this->request);
 		$newImages[$item->id] = false;
-		
-		if (isset($_FILES["{$item->id}"]) && !empty($_FILES["{$item->id}"]['name'])) { 
-			$transit = new Transit($_FILES["{$item->id}"]);
 
-			$transit->setDirectory($infusePage->uploadPath("page_data"));
-			
-			try { 
 
-				$success = $transit->upload();
-				
-				if ($success) {
-					$fileName = explode(DIRECTORY_SEPARATOR, $transit->getOriginalFile());
-          $fileName = end($fileName);
-					
-          if(strpos($fileName, "@2x.") !== FALSE) {
-            $uploadPath = $infusePage->uploadPath("page_data");
-            $halfRetinaSize = floor($transit->getOriginalFile()->width()/1.5);
-            $retinaFileName = $fileName;
+		if (isset($_FILES["{$item->id}"]) && !empty($_FILES["{$item->id}"]['name'])) {
 
-            $fileName = explode("@2x.", $fileName);
-            $fileName = $fileName[0].".".$fileName[1];
-            if (copy($uploadPath.$retinaFileName, $uploadPath.$fileName)) {
 
-              $transitRetina = new ResizeTransformer(array('width' => $halfRetinaSize));
+			$success = $fileUploadManager->addBasicUpload($item, 'value', $item->id, $infusePage->uploadPath("page_data"));
 
-              if (!$transitRetina->transform(new File($uploadPath.$fileName), true)) {
-                throw new Exception("Failed to resize retina for non retina version.");
-              }
-            } else {
-              throw new Exception("Failed to copy retina image for processing.");
-            }
-          }
-
-          $item->value = $fileName;
-          $newImages[$item->id] = true;
-
-				} 
-			} catch (Exception $e) {
-				$fileErrors["{$item->id}"] = $e->getMessage();
+			if ($success && count($fileUploadManager->fileErrors()) == 0) {
+				$newImages[$item->id] = true;
+			} else {
+				$tempErrorArray = $fileUploadManager->fileErrors();
+				$fileErrors["{$item->id}"] = $tempErrorArray["{$item->id}"];
+				unset($tempErrorArray);
 			}
 		} // end of isset($_FILES["{$item->id}"])
 
-		
+		unset($fileUploadManager);
+
 		// Add back original value (if exists) if no new image present
-		if (!$newImages[$item->id]) { 
+		if (!$newImages[$item->id]) {
 			foreach ($pageInstance->pageValues as &$OGItem) {
 				if ($OGItem->type == "upload") {
 					self::addBackOriginalInProcessUploads($OGItem, $item);
@@ -546,7 +517,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 					}
 				}
 			}
-			
+
 		}
 	}
 
@@ -554,14 +525,14 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	private static function addBackOriginalInProcessUploads(&$OGItem, &$item)
 	{
 		if ($OGItem->id == $item->id) {
-			$item->value =  $OGItem->value; 
+			$item->value =  $OGItem->value;
 		}
 	}
 
 
 	/**
 	 * Remove the specified resource from storage.
-	 * DELETE /admin/page/{page} 
+	 * DELETE /admin/page/{page}
 	 *
 	 * @param  int  $id
 	 * @return Response
@@ -580,13 +551,13 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 					->firstOrFail();
 			if ($infusePage->delete()) {
 				Util::flash(array(
-					"message" => "Deleted page.", 
+					"message" => "Deleted page.",
 					"type" => "success"
 					)
 				);
 			}
 
-			
+
 
 			return Redirect::route('admin.page.index');
 
@@ -604,7 +575,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 			$psqlSelectOnlyNestedInstance = preg_replace('/->\'pages\'$/', '', $psqlSelectOnlyNestedInstance);
 			$psqlSelectOnlyNestedInstance .= " as parent_instance ";
 
-			
+
 			try {
 				$infusePage = InfusePage::select(DB::raw("id, title, page_data, {$psqlSelectOnlyNestedInstance}"))
 					->where("navigation_section", "=", $infusePagesSection)
@@ -622,32 +593,26 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 			$tempPage = $pageParentInstanceJsonDecoded->pages->{$nestedPageId};
 
 
-	    function recursiveDeleteOfNestedFiles($page, $infusePage)
-	    {
+	    	function recursiveDeleteOfNestedFiles($page, $infusePage, &$fileUploadManager)
+	    	{
 			    foreach($page->pagesKeys as $key){
-			    	 recursiveDeleteOfNestedFiles($page->pages->{$key}, $infusePage);
+			    	 recursiveDeleteOfNestedFiles($page->pages->{$key}, $infusePage, $fileUploadManager);
 			    }
 			    //echo $page->pageProperties->pageTitle."</br>";
 			    foreach ($page->pageValues as $value) {
 			    	if ($value->type == "upload" &&  !empty($value->value))	{
 			    		//echo "delete: ".$value->value."</br>";
-			    		$uploadedFile = $infusePage->uploadPath("page_data").$value->value;
-							if (!empty($value->value) && file_exists($uploadedFile)) {
-								unlink($uploadedFile);
-
-			          $name = pathinfo($uploadedFile, PATHINFO_FILENAME);
-			          $ext  = pathinfo($uploadedFile, PATHINFO_EXTENSION);
-			          $retinaImage = $infusePage->uploadPath("page_data").$name."@2x.".$ext;
-			          if (file_exists($retinaImage)) {
-			            unlink($retinaImage);
-			          }
-							}
+						$fileUploadManager->deleteBasicUpload($infusePage->uploadPath("page_data"), $value->value);
 			    	}
 			    }
 			}
 
-	    recursiveDeleteOfNestedFiles($tempPage, $infusePage);
-	    
+			$fileUploadManager = new FileUpload($this->request);
+
+	    	recursiveDeleteOfNestedFiles($tempPage, $infusePage, $fileUploadManager);
+
+			unset($fileUploadManager);
+
 
 			// Remove nested page
 			unset($pageParentInstanceJsonDecoded->pages->{$nestedPageId});
@@ -656,8 +621,8 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 			if ($key !== false) {
 				unset($pageParentInstanceJsonDecoded->pagesKeys[$key]);
 			}
-			
-			
+
+
 			//  Update page instance
 			$fullJsonColumnDecoded = json_decode($fullJsonColumn);
 			$updatePath = "";
@@ -669,7 +634,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 			$reference =& Referencer::getReference($updatePath, $fullJsonColumnDecoded);
 			$reference = $pageParentInstanceJsonDecoded;
 			unset($pageParentInstanceJsonDecoded);
-			
+
 			$fullJsonColumnEncoded = json_encode($fullJsonColumnDecoded);
 			unset($fullJsonColumnDecoded);
 
@@ -680,7 +645,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 			$this->breadcrumbs->pop();
 
 			Util::flash(array(
-				"message" => "Deleted page.", 
+				"message" => "Deleted page.",
 				"type" => "success"
 				)
 			);
@@ -695,14 +660,14 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 
 
 		Util::flash(array(
-			"message" => "Failed to delete page.", 
+			"message" => "Failed to delete page.",
 			"type" => "error"
 			)
 		);
 	}
 
 
-	
+
 
 
 }
