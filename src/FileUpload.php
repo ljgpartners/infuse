@@ -140,7 +140,7 @@ class FileUpload {
     	return $newname;
 	}
 
-	public function delete($column, &$entry, $columnConfig)
+	public function delete($column, $entry, $columnConfig)
 	{
 		$value = Util::getColumnValue($entry, $columnConfig);
 
@@ -151,22 +151,20 @@ class FileUpload {
 		$exists = $this->disk->has($originalFile);
 
 		if (!empty($value) && $exists) {
-	    $this->disk->delete($originalFile);
+		    $this->disk->delete($originalFile);
 
-	    $name = pathinfo($value, PATHINFO_FILENAME);
-	    $ext  = pathinfo($value, PATHINFO_EXTENSION);
+		    $name = pathinfo($value, PATHINFO_FILENAME);
+		    $ext  = pathinfo($value, PATHINFO_EXTENSION);
 
-	    $retinaImage = $uploadPath.$name."@2x.".$ext;
+		    $retinaImage = $uploadPath.$name."@2x.".$ext;
 
 
-	    $exists = $this->disk->has($retinaImage);
+		    $exists = $this->disk->has($retinaImage);
 
-	    if ($exists) {
-	       $this->disk->delete($retinaImage);
-	    }
-
-	    Util::setColumnValue($entry, $columnConfig, "");
-	  }
+		    if ($exists) {
+		       $this->disk->delete($retinaImage);
+		    }
+		}
 	}
 
 	public function deleteBasicUpload($uploadPath, $value)
@@ -176,18 +174,18 @@ class FileUpload {
 		$exists = $this->disk->has($originalFile);
 
 		if (!empty($value) && $exists) {
-	    $this->disk->delete($originalFile);
+		    $this->disk->delete($originalFile);
 
-	    $name = pathinfo($value, PATHINFO_FILENAME);
-	    $ext  = pathinfo($value, PATHINFO_EXTENSION);
+		    $name = pathinfo($value, PATHINFO_FILENAME);
+		    $ext  = pathinfo($value, PATHINFO_EXTENSION);
 
-	    $retinaImage = $uploadPath.$name."@2x.".$ext;
+		    $retinaImage = $uploadPath.$name."@2x.".$ext;
 
-	    $exists = $this->disk->has($retinaImage);
+		    $exists = $this->disk->has($retinaImage);
 
-	    if ($exists) {
-	       $this->disk->delete($retinaImage);
-	    }
+		    if ($exists) {
+		       $this->disk->delete($retinaImage);
+		    }
 	  }
 	}
 
@@ -200,7 +198,7 @@ class FileUpload {
 		}
 	}
 
-	public function addToDeleteQueue($column, &$entry, $columnConfig)
+	public function addToDeleteQueue($column, $entry, $columnConfig)
 	{
 		$this->deleteQueue[$column] = array($entry, $columnConfig);
 	}
@@ -213,44 +211,45 @@ class FileUpload {
 	private function processRetina($uploadPath, $filename, $url)
 	{
 
-			if(strpos($filename, "@2x.") !== FALSE) {
+		if(strpos($filename, "@2x.") !== FALSE) {
 
-				ini_set('memory_limit', '64M');
+			ini_set('memory_limit', '64M');
 
-			  $img = Image::make($url);
+		  	$img = Image::make($url);
 
-			  // 1.5 instead of 2. Almost same quality but saves more space and bandwidth.
-			  $halfRetinaSize = floor($img->width()/1.5);
-			  $retinaFileName = $filename;
+		  	// 1.5 instead of 2. Almost same quality but saves more space and bandwidth.
+		  	$halfRetinaSize = floor($img->width()/1.5);
+		  	$retinaFileName = $filename;
 
-			  $filename = explode("@2x.", $filename);
-			  $filename = $filename[0].".".$filename[1];
-
-
-			  $img->resize($halfRetinaSize, null, function ($constraint) {
-					$constraint->aspectRatio();
-				});
+		  	$filename = explode("@2x.", $filename);
+		  	$filename = $filename[0].".".$filename[1];
 
 
-				$img = (string) $img->encode('data-url');
-
-				if ($this->fileSystemDiskType == "s3") {
-					$stream = fopen($img, 'r+');
-					$this->disk->writeStream($uploadPath.$filename, $stream);
-
-				} else if ($this->fileSystemDiskType == "local") {
-					$stream = fopen($img, 'r+');
-					$this->disk->writeStream($uploadPath.$filename, $stream);
-					fclose($stream);
-				}
+		  	$img->resize($halfRetinaSize, null, function ($constraint) {
+				$constraint->aspectRatio();
+			});
 
 
-				$this->addToSavedQueue($uploadPath.$filename);
+			$img = (string) $img->encode('data-url');
 
-			  return $filename;
-			} else {
-				return false;
+			if ($this->fileSystemDiskType == "s3") {
+				$stream = fopen($img, 'r+');
+				$this->disk->writeStream($uploadPath.$filename, $stream);
+
+			} else if ($this->fileSystemDiskType == "local") {
+				$stream = fopen($img, 'r+');
+				$this->disk->writeStream($uploadPath.$filename, $stream);
+				fclose($stream);
 			}
+
+
+			$this->addToSavedQueue($uploadPath.$filename);
+
+			return $filename;
+
+		} else {
+			return false;
+		}
 
 	}
 
@@ -326,13 +325,14 @@ class FileUpload {
 
 		// If old present queue removal
 		if (!empty($columnValue)) {
-			$this->addToDeleteQueue($column, $entry, $columnConfig);
+			$originalEntry = clone $entry;
+			$this->addToDeleteQueue($column, $originalEntry, $columnConfig);
+			unset($originalEntry);
 		}
 
+	  	Util::setColumnValue($entry, $columnConfig, $newFilename);
 
-	  Util::setColumnValue($entry, $columnConfig, $newFilename);
-
-	  // process retina
+	  	// process retina
   		$url = $this->url($entry, $column, $columnConfig['hstore_column']);
 		$processRetinaImage = $this->processRetina($uploadPath, $newFilename, $url);
 		if ($processRetinaImage) {
@@ -361,7 +361,6 @@ class FileUpload {
 		try {
 
 			if ($checkIfInFiles) {
-
 
 				$file = $this->request->file($uploadFieldName);
 				$originalFilename =  $file->getClientOriginalName();

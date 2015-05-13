@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 /**
  * Scaffold class contains all the logic for configuring and generating a scaffold on a model.
  *
- * This class does  processes and ORM model by giving you the ability to manage a model. Uses api config methods for 
+ * This class does  processes and ORM model by giving you the ability to manage a model. Uses api config methods for
  * customizing the functionality of a scaffold. Also maps config files for api methods.
- * 
+ *
  */
 class Scaffold
 {
@@ -22,7 +22,7 @@ class Scaffold
     /**
     * Toggles role/permission authentication.
     */
-    private $rolePermission = false; 
+    private $rolePermission = false;
 
     /**
     * Allows unit testing to work.
@@ -50,7 +50,7 @@ class Scaffold
     private $action;
 
     /**
-    * Contains current instance of model that scaffold is working with or 
+    * Contains current instance of model that scaffold is working with or
     * a collection of models represented by the laravel Collection Class or
     * can be model(s) representing in pure php array form.
     */
@@ -58,9 +58,9 @@ class Scaffold
 
     /**
     * An array containing various configuration information for the templates.
-    * (pagination, name, list, edit, onlyOne, columnNames, associations, manyToManyAssociations, 
+    * (pagination, name, list, edit, onlyOne, columnNames, associations, manyToManyAssociations,
     * hasOneAssociation, onlyOne, filters, description, deleteAction)
-    */ 
+    */
     private $header = array();
 
     /**
@@ -112,7 +112,7 @@ class Scaffold
     private $list = array();
 
     /**
-    * Contains the list of columns to be allowed to filter through 
+    * Contains the list of columns to be allowed to filter through
     */
     private $filterList = array();
 
@@ -155,18 +155,18 @@ class Scaffold
     private $onlyLoadSiblingsOfUserRelatedBy = false;
 
     /**
-    * Associates model to the same parent of the user by the foreign key given. 
+    * Associates model to the same parent of the user by the foreign key given.
     */
     private $associateToSameParentOfUserRelatedBy = false;
 
     /**
-    * Only load model if sibling of user's parent. Specify parent 
+    * Only load model if sibling of user's parent. Specify parent
     * foreign id and current model  foreign id.
     */
     private $siblingOfUserParentOnly = false;
 
     /**
-    * Disables the action delete action on an instance of the model. 
+    * Disables the action delete action on an instance of the model.
     */
     private $deleteAction = true;
 
@@ -191,7 +191,7 @@ class Scaffold
     private $permanentFilters = array();
 
     /**
-    * Contains the model configuration to what models to import from. 
+    * Contains the model configuration to what models to import from.
     */
     private $importFromModel = false;
 
@@ -234,7 +234,7 @@ class Scaffold
     /**
     * Type of database (pgsql or mysql)
     */
-    private $databaseConnection; 
+    private $databaseConnection;
 
     /**
     * Allow hstore keys to be removed via hstore model schema
@@ -242,18 +242,18 @@ class Scaffold
     private $hstoreAllowKeyRemoval = false;
 
     public function __construct(
-        \Illuminate\View\Factory $view, 
-        \InfuseUser $user, 
-        \Illuminate\Support\Facades\DB $db, 
-        \Illuminate\Http\Request $request, 
+        \Illuminate\View\Factory $view,
+        \InfuseUser $user,
+        \Illuminate\Support\Facades\DB $db,
+        \Illuminate\Http\Request $request,
         \Event $event, \Illuminate\Session\SessionManager $session
-    ) { 
+    ) {
         $this->view = $view;
         $this->user = $user;
         $this->request = $request;
         $this->event = $event;
         $this->session = $session;
-        self::$db = $db; 
+        self::$db = $db;
         $this->rolePermission = (\Config::get("infuse::config.role_permission"))? true : false;
         $this->formatLaravelTimestamp = \Config::get("infuse::config.format_laravel_timestamp");
         $this->beforeEdit = function() { return true; };
@@ -267,10 +267,10 @@ class Scaffold
     public function model($model)
     {
         $this->model = $model;
-        if (is_subclass_of($this->model, 'Bpez\Infuse\InfuseModel') 
-            || is_subclass_of($this->model, 'Toddish\Verify\Models\User') 
-            || is_subclass_of($this->model, 'Toddish\Verify\Models\Role')  
-            || is_subclass_of($this->model, 'Toddish\Verify\Models\Permission') 
+        if (is_subclass_of($this->model, 'Bpez\Infuse\InfuseModel')
+            || is_subclass_of($this->model, 'Toddish\Verify\Models\User')
+            || is_subclass_of($this->model, 'Toddish\Verify\Models\Role')
+            || is_subclass_of($this->model, 'Toddish\Verify\Models\Permission')
         ) {
             $this->name = get_class($this->model);
             $this->boot();
@@ -287,7 +287,7 @@ class Scaffold
     * Boot sets up base configuration for model right after model is loaded into the instance.
     */
     protected function boot()
-    { 
+    {
         $db = self::$db;
 
         $this->checkIfOverUploadLimit();
@@ -308,14 +308,14 @@ class Scaffold
         }
 
         foreach ($columns as $column) {
-            
+
             if (isset($hstoreColumns) && isset($hstoreColumns[$column->field])) {
 
                 $hstoreColumn = $hstoreColumns[$column->field];
                 $this->hstoreColumnStructureCheck(
-                    $column->field, 
-                    $hstoreColumns[$column->field], 
-                    $atLeastOneExist, 
+                    $column->field,
+                    $hstoreColumns[$column->field],
+                    $atLeastOneExist,
                     $table
                 );
 
@@ -359,7 +359,7 @@ class Scaffold
         $currentKeySet = explode(",", $keys);
         $masterKeySet = array_keys($hstoreColumn['columns']);
 
-        // Check what keys current are missing 
+        // Check what keys current are missing
         $addKeys = array_diff($masterKeySet, $currentKeySet);
 
         foreach ($addKeys as $key) {
@@ -381,13 +381,13 @@ class Scaffold
 
     private function processColumn($columnName, $columnType, $hstore = false)
     {
-        if ($columnName != $this->primaryKey) { 
+        if ($columnName != $this->primaryKey) {
 
             if (strlen(strstr($columnType, "varchar")) > 0 || strlen(strstr($columnType, "character varying")) > 0) {
                 $type = "varchar";
             } else if (strlen(strstr($columnType, "tinyint")) > 0 || strlen(strstr($columnType, "boolean")) > 0) {
                 $type = "tinyint";
-            } else if (strlen(strstr($columnType, "int")) > 0) { 
+            } else if (strlen(strstr($columnType, "int")) > 0) {
                 $type = "int";
             } else if (strlen(strstr($columnType, "timestamp")) > 0) {
                 $type = "timestamp";
@@ -416,14 +416,14 @@ class Scaffold
     */
     protected function checkIfOverUploadLimit()
     {
-        if (empty($_FILES) && empty($_POST) && 
-            isset($_SERVER['REQUEST_METHOD']) && 
+        if (empty($_FILES) && empty($_POST) &&
+            isset($_SERVER['REQUEST_METHOD']) &&
             strtolower($_SERVER['REQUEST_METHOD']) == 'post'
-        ) { 
+        ) {
             $postMax = ini_get('post_max_size');
 
             Util::flash(array(
-                "message" => "Maximum upload size exceeded on server. Please note files or total combined size of files larger than {$postMax} will result in this error!", 
+                "message" => "Maximum upload size exceeded on server. Please note files or total combined size of files larger than {$postMax} will result in this error!",
                 "type" => "error"
             ));
 
@@ -492,17 +492,17 @@ class Scaffold
             default:
                 $this->listAll();
                 break;
-        } 
+        }
     }
 
 
     public function checkPermissions($redirectBack)
-    { 
+    {
         // Check if role/permission authentication is on otherwise return false and check no permissions.
         if (!$this->rolePermission) {
             return false;
         }
-        
+
 
         switch ($this->action) {
             case 'l':
@@ -538,7 +538,7 @@ class Scaffold
             break;
         }
 
-        $resource = Util::camel2under(get_class($this->model)); 
+        $resource = Util::camel2under(get_class($this->model));
 
         if ($this->user->can($resource."_".$action)) {
 
@@ -550,10 +550,10 @@ class Scaffold
             if ($this->user->is('Super Admin')) {
                 return false;
             }
-            
+
             $name = Util::cleanName($this->name);
             Util::flash(array(
-                "message" => "{$this->user->username} is not authorized to {$action} {$name}.", 
+                "message" => "{$this->user->username} is not authorized to {$action} {$name}.",
                 "type" => "warning"
             ));
             // User does not have permission don't let user continue action
@@ -577,8 +577,8 @@ class Scaffold
             $pagination['active_page'] = $page;
         }
 
-        if ($this->siblingOfUserParentOnly) { 
-            $foreign_id = $this->user 
+        if ($this->siblingOfUserParentOnly) {
+            $foreign_id = $this->user
                 ->belongsTo($this->siblingOfUserParentOnly['parent_model'], Util::createForeignKeyString($this->siblingOfUserParentOnly['parent_model']))
                 ->firstOrFail()
                 ->{$this->siblingOfUserParentOnly['parent_foriegn_id']};
@@ -587,9 +587,9 @@ class Scaffold
         if ($this->belongsToUserManyToMany && !$this->user->is('Super Admin')) {
 
             $modelInstance = $this->user->belongsToMany(
-                $this->belongsToUserManyToMany[0], 
-                $this->belongsToUserManyToMany[1], 
-                $this->belongsToUserManyToMany[2], 
+                $this->belongsToUserManyToMany[0],
+                $this->belongsToUserManyToMany[1],
+                $this->belongsToUserManyToMany[2],
                 $this->belongsToUserManyToMany[3]
             );
 
@@ -599,14 +599,14 @@ class Scaffold
 
         }
 
-        if (!$count) { 
+        if (!$count) {
             $modelNameString = get_class($model);
 
-            if ($order) { 
-                if ($this->session->has("infuse_order_column") && 
-                    $this->session->has("infuse_order") && 
-                    $this->session->has("infuse_order_model") && 
-                    $this->session->get("infuse_order_column") == $order && 
+            if ($order) {
+                if ($this->session->has("infuse_order_column") &&
+                    $this->session->has("infuse_order") &&
+                    $this->session->has("infuse_order_model") &&
+                    $this->session->get("infuse_order_column") == $order &&
                     $this->session->get("infuse_order_model") == $modelNameString
                 ) {
 
@@ -622,17 +622,17 @@ class Scaffold
                 }
             }
 
-            $orderSessionCheck = ($this->session->has("infuse_order_column") && 
-                $this->session->has("infuse_order") && 
-                $this->session->has("infuse_order_model") && 
+            $orderSessionCheck = ($this->session->has("infuse_order_column") &&
+                $this->session->has("infuse_order") &&
+                $this->session->has("infuse_order_model") &&
                 $this->session->get("infuse_order_model") == $modelNameString
             );
             $orderByColumn = ($orderSessionCheck)? $this->session->get("infuse_order_column") : $this->order["column"];
             $orderByDirection = ($orderSessionCheck)? $this->session->get("infuse_order") : $this->order["order"];
 
-            if ($page == "a") { 
+            if ($page == "a") {
                 $modelInstance = $modelInstance->orderBy($orderByColumn, $orderByDirection);
-            } else { 
+            } else {
                 $modelInstance = $modelInstance->orderBy($orderByColumn, $orderByDirection)
                     ->take($pagination['limit'])
                     ->skip($offset);
@@ -650,17 +650,17 @@ class Scaffold
         if ($this->onlyLoadSiblingsOfUserRelatedBy) {
              $modelInstance = $modelInstance->where($this->onlyLoadSiblingsOfUserRelatedBy, "=", $this->user->{$this->onlyLoadSiblingsOfUserRelatedBy});
         }
-       
+
 
         if ($this->siblingOfUserParentOnly) {
             $modelInstance = $modelInstance->where($this->siblingOfUserParentOnly['foreign_id'], "=", $foreign_id);
         }
-        
 
-        if ($this->rolePermission && $model instanceof \InfuseUser && !$this->user->is('Super Admin')) { 
+
+        if ($this->rolePermission && $model instanceof \InfuseUser && !$this->user->is('Super Admin')) {
             $user = $this->user;
 
-            if ($user->can("infuse_user_load_level_comparison_or_equal_zero")) { 
+            if ($user->can("infuse_user_load_level_comparison_or_equal_zero")) {
                 $db = self::$db;
                 $originalIds = $db::table('users')->lists("id");
                 $newIds = $db::table('role_user')->distinct("user_id")->lists("user_id");
@@ -684,8 +684,8 @@ class Scaffold
                     $q->where('level', '>=', $level);
                 } else {
                     $q->where('level', '>', $level);
-                } 
-            }); 
+                }
+            });
         }
 
         foreach ($this->permanentFilters as $where) {
@@ -709,7 +709,7 @@ class Scaffold
 
 
     private function listAll()
-    { 
+    {
         $pagination = array(
             "limit" => $this->limit,
             "active_page" => 1,
@@ -727,7 +727,7 @@ class Scaffold
 
         $this->entries = $prepareModel->get();
 
-        $this->header = array( 
+        $this->header = array(
             "pagination" => $pagination,
             "name" => $this->name,
             "list" => $this->list,
@@ -770,24 +770,24 @@ class Scaffold
 
                 array_push($filters, $filter);
             }
-        } 
+        }
 
         $prepareModel = $this->filterQueryForListings(false, $pagination);
 
         $columnNames = array_keys($this->columns);
 
         $comparisons = array(
-            "equals" => "=", 
-            "less than" => "<", 
-            "greater than" => ">", 
-            "not equal to" => "!=", 
+            "equals" => "=",
+            "less than" => "<",
+            "greater than" => ">",
+            "not equal to" => "!=",
             "contains" => "like"
         );
 
         foreach ($filters as $filter) {
 
-            if (isset($comparisons[$filter[1]]) && 
-                $comparisons[$filter[1]] == "like" && 
+            if (isset($comparisons[$filter[1]]) &&
+                $comparisons[$filter[1]] == "like" &&
                 in_array($filter[0], $columnNames)
             ) {
                 $prepareModel = $prepareModel->whereRaw("{$filter[0]} LIKE ?", array("%".$filter[2]."%"));
@@ -808,8 +808,8 @@ class Scaffold
 
         foreach($filters as $filter) {
 
-            if (isset($comparisons[$filter[1]]) && 
-                $comparisons[$filter[1]] == "like" && 
+            if (isset($comparisons[$filter[1]]) &&
+                $comparisons[$filter[1]] == "like" &&
                 in_array($filter[0], $columnNames)
             ) {
                 $prepareModelForCount = $prepareModelForCount->whereRaw("{$filter[0]} LIKE ?", array("%".$filter[2]."%"));
@@ -834,7 +834,7 @@ class Scaffold
         );
     }
 
-  
+
 
     public function search($search = null, $columns)
     {
@@ -936,7 +936,7 @@ class Scaffold
 
         $prepareModelForCount = $this->filterQueryForListings(true, $pagination);
 
-        if (!empty($search)) { 
+        if (!empty($search)) {
             foreach ($columns as $column) {
                 if ($columns[0] == $column) {
                     $prepareModelForCount = $prepareModelForCount->where($column, "LIKE", "%".$search."%");
@@ -966,7 +966,7 @@ class Scaffold
 
 
     private function show()
-    { 
+    {
         $model = $this->model;
         $this->header = array(
             "pagination" => array(),
@@ -992,7 +992,7 @@ class Scaffold
                 }
 
                 Util::flash(array(
-                    "message" => "Can not see this entry.", 
+                    "message" => "Can not see this entry.",
                     "type" => "error"
                 ));
 
@@ -1020,7 +1020,7 @@ class Scaffold
                 }
 
                 Util::flash(array(
-                    "message" => "Can not see this entry.", 
+                    "message" => "Can not see this entry.",
                     "type" => "error"
                 ));
 
@@ -1038,7 +1038,7 @@ class Scaffold
     }
 
     private function edit()
-    { 
+    {
         if ($this->infuseLogin && Util::get("id") == 1 && !$this->user->is('Super Admin')) {
             if (Util::get("stack")) {
                 $redirect_path = Util::childBackLink();
@@ -1047,7 +1047,7 @@ class Scaffold
             }
 
             Util::flash(array(
-                "message" => "Can not edit this entry.", 
+                "message" => "Can not edit this entry.",
                 "type" => "error"
             ));
 
@@ -1060,7 +1060,7 @@ class Scaffold
 
         $model = $this->model;
         $this->header = array(
-            "edit" => true, 
+            "edit" => true,
             "name" => $this->name,
             "associations" => $this->hasMany,
             "manyToManyAssociations" => $this->manyToMany,
@@ -1093,7 +1093,7 @@ class Scaffold
                     }
 
                     Util::flash(array(
-                        "message" => "Can not edit this entry.", 
+                        "message" => "Can not edit this entry.",
                         "type" => "error"
                     ));
 
@@ -1110,9 +1110,9 @@ class Scaffold
 
                     $this->user
                     ->belongsToMany(
-                        $this->belongsToUserManyToMany[0], 
-                        $this->belongsToUserManyToMany[1], 
-                        $this->belongsToUserManyToMany[2], 
+                        $this->belongsToUserManyToMany[0],
+                        $this->belongsToUserManyToMany[1],
+                        $this->belongsToUserManyToMany[2],
                         $this->belongsToUserManyToMany[3]
                     )
                     ->findOrFail(Util::get("id"));
@@ -1128,7 +1128,7 @@ class Scaffold
                     }
 
                     Util::flash(array(
-                        "message" => "Can not edit this entry.", 
+                        "message" => "Can not edit this entry.",
                         "type" => "error"
                     ));
 
@@ -1165,7 +1165,7 @@ class Scaffold
             }
 
             Util::flash(array(
-                "message" => "Can not edit this entry.", 
+                "message" => "Can not edit this entry.",
                 "type" => "error"
             ));
 
@@ -1223,7 +1223,7 @@ class Scaffold
         }
     }
 
-    private function delete() 
+    private function delete()
     {
         $model = $this->model;
 
@@ -1244,7 +1244,7 @@ class Scaffold
                 }
 
                 Util::flash(array(
-                    "message" => "Can not delete this entry.", 
+                    "message" => "Can not delete this entry.",
                     "type" => "error"
                 ));
 
@@ -1267,7 +1267,7 @@ class Scaffold
         if ($this->infuseLogin && $entry->id == 1 && $entry->username == 'super' ) {
 
             Util::flash(array(
-                "message" => "Can't delete super.", 
+                "message" => "Can't delete super.",
                 "type" => "error"
             ));
 
@@ -1286,14 +1286,14 @@ class Scaffold
                 }
 
                 Util::flash(array(
-                    "message" => "Deleted {$this->name}.", 
+                    "message" => "Deleted {$this->name}.",
                     "type" => "success"
                 ));
 
             } else {
 
                 Util::flash(array(
-                    "message" => "Failed to delete {$this->name}.", 
+                    "message" => "Failed to delete {$this->name}.",
                     "type" => "error"
                 ));
 
@@ -1337,7 +1337,7 @@ class Scaffold
                 $filename        = time().'_'.$file->getClientOriginalName();
                 $uploadSuccess   = $file->move($destinationPath, $filename);
 
-                if (Util::get("child")) { 
+                if (Util::get("child")) {
                     $child = Util::get("child");
                     $childInstance = new $child;
                     $db = self::$db;
@@ -1388,7 +1388,7 @@ class Scaffold
         }
 
         Util::flash(array(
-            "message" => $message, 
+            "message" => $message,
             "type" => ($error)? "error" : "success"
         ));
 
@@ -1429,7 +1429,7 @@ class Scaffold
             exit();
         }
     }
-  
+
 
     private function sendRequestResetPasswordPage()
     {
@@ -1439,7 +1439,7 @@ class Scaffold
         $user->sendRequestResetPasswordPage();
 
         Util::flash(array(
-            "message" => "Sent email with link to reset password.", 
+            "message" => "Sent email with link to reset password.",
             "type" => "success"
         ));
 
@@ -1452,10 +1452,10 @@ class Scaffold
     }
 
 
-    private function update() 
-    { 
+    private function update()
+    {
         $model = $this->model;
-        if (Util::get("id")) { 
+        if (Util::get("id")) {
 
             $entry = $model::find(Util::get("id"));
 
@@ -1469,7 +1469,7 @@ class Scaffold
                 }
 
                 Util::flash(array(
-                    "message" => "Can not update this entry.", 
+                    "message" => "Can not update this entry.",
                     "type" => "error"
                 ));
 
@@ -1500,14 +1500,16 @@ class Scaffold
                 $fileUploadManage->add($column, $entry);
 
                 if (Util::get($column['field']."_delete")) {
-                    $fileUploadManage->addToDeleteQueue($column['field'], $entry, $column);
+
+                    $fileUploadManage->deleteBasicUpload($entry->uploadPath($column['field']), $entry->{$column['field']});
+                    $entry->{$column['field']} = "";
                 }
 
             } else {
 
-                if ($column['field'] != "created_at" && 
-                    $column['field'] != "updated_at" && 
-                    Util::checkInfuseLoginFields($this->infuseLogin, $column) 
+                if ($column['field'] != "created_at" &&
+                    $column['field'] != "updated_at" &&
+                    Util::checkInfuseLoginFields($this->infuseLogin, $column)
                 ) {
 
                     $inputsTemp = Util::get($column['field']);
@@ -1532,7 +1534,7 @@ class Scaffold
 
         $data = Util::getAll();
 
-        // Remove any FALSE values. This includes NULL values, EMPTY arrays, etc. 
+        // Remove any FALSE values. This includes NULL values, EMPTY arrays, etc.
         $data = array_filter($data);
 
 
@@ -1550,12 +1552,12 @@ class Scaffold
             $fileUploadManage->processUploads();
 
             // Check if brand new user
-            if ($this->infuseLogin && !Util::get("id")) { 
+            if ($this->infuseLogin && !Util::get("id")) {
                 $entry->verified = 1;
                 $entry->deleted_at = null;
             }
 
-            if (!Util::get("id")) { 
+            if (!Util::get("id")) {
                 if ($this->associateToSameParentOfUserRelatedBy){
                     $entry->{$this->associateToSameParentOfUserRelatedBy} = $this->user->{$this->associateToSameParentOfUserRelatedBy};
                 }
@@ -1581,25 +1583,25 @@ class Scaffold
                     }
 
                     $event = $this->event;
-                    $newIds = Util::get($manyToManyTable); 
+                    $newIds = Util::get($manyToManyTable);
 
-                    if ($newIds) { 
+                    if ($newIds) {
 
                         $originalIds = $entry->belongsToMany(
-                            $belongsToModel, 
-                            $manyToManyTable, 
-                            $firstForeignId, 
+                            $belongsToModel,
+                            $manyToManyTable,
+                            $firstForeignId,
                             $secondForeignId
                         )->lists('id');
 
                         $added = array_diff($newIds, $originalIds);
                         $removed = array_diff($originalIds, $newIds);
 
-                        foreach($added as $id) { 
+                        foreach($added as $id) {
                             $entry->belongsToMany(
-                                $belongsToModel, 
-                                $manyToManyTable, 
-                                $firstForeignId, 
+                                $belongsToModel,
+                                $manyToManyTable,
+                                $firstForeignId,
                                 $secondForeignId
                             )->attach($id);
 
@@ -1609,9 +1611,9 @@ class Scaffold
                         foreach($removed as $id) {
                             $event::fire('infuse.detach.'.Util::camel2under($model).'.'.Util::camel2under($belongsToModel), array($entry, $id));
                             $entry->belongsToMany(
-                                $belongsToModel, 
-                                $manyToManyTable, 
-                                $firstForeignId, 
+                                $belongsToModel,
+                                $manyToManyTable,
+                                $firstForeignId,
                                 $secondForeignId
                             )->detach($id);
                         }
@@ -1619,13 +1621,13 @@ class Scaffold
 
                         if ($this->infuseLogin && $entry->id == 1) {
                             $entry->belongsToMany(
-                                $belongsToModel, 
-                                $manyToManyTable, 
-                                $firstForeignId, 
+                                $belongsToModel,
+                                $manyToManyTable,
+                                $firstForeignId,
                                 $secondForeignId
                             )->attach(1);
                         }
-            
+
 
                     } else {
 
@@ -1649,21 +1651,21 @@ class Scaffold
                 if (isset($column['display_order']) && empty($entry->{$column['field']})) {
                     $entry->{$column['field']} =  $entry->id;
                     $entry->save();
-                } 
+                }
             }
 
             if (!Util::get("id") && $this->belongsToUserManyToMany) {
                 $this->user->belongsToMany(
-                        $this->belongsToUserManyToMany[0], 
-                        $this->belongsToUserManyToMany[1], 
-                        $this->belongsToUserManyToMany[2], 
+                        $this->belongsToUserManyToMany[0],
+                        $this->belongsToUserManyToMany[1],
+                        $this->belongsToUserManyToMany[2],
                         $this->belongsToUserManyToMany[3]
                     )->attach($entry->id);
             }
 
 
 
-            if (Util::get("oneToOne")) { 
+            if (Util::get("oneToOne")) {
                 $entry->belongsTo(ucfirst(Util::get("oneToOne")))->get()->{Util::getForeignKeyString($entry)} = $entry->id;
             }
 
@@ -1708,10 +1710,10 @@ class Scaffold
 
             }
 
-        } else { 
+        } else {
 
             Util::flash(array(
-                "message" => "Failed to save {$this->name}.", 
+                "message" => "Failed to save {$this->name}.",
                 "type" => "error"
             ));
             Util::flashArray("errors", $entry->errors());
@@ -1723,13 +1725,13 @@ class Scaffold
 
             if (Util::get("stack")) {
 
-                if (!Util::get("id")) { 
+                if (!Util::get("id")) {
                     $redirect_path = Util::redirectUrlChildSaveFailed();
                 } else {
                     $redirect_path = Util::redirectUrlChildSaveFailed($entry->id);
                 }
 
-            } else { 
+            } else {
 
                 $redirect_path = Util::redirectUrlSaveFailed(Util::get("id"));
 
@@ -1760,8 +1762,8 @@ class Scaffold
     }
 
 
-  
-    private function callActionFunction() 
+
+    private function callActionFunction()
     {
         $model = $this->model;
         $entry = $model::find(Util::get("id"));
@@ -1772,21 +1774,21 @@ class Scaffold
         if ($success && is_array($success) && isset($success['message']) && isset($success['type'])) {
 
             Util::flash(array(
-                "message" => $success['message'], 
+                "message" => $success['message'],
                 "type" => $success['type']
             ));
 
         } else if ($success) {
 
             Util::flash(array(
-                "message" => "Succesfully called {$callFunction} action.", 
+                "message" => "Succesfully called {$callFunction} action.",
                 "type" => "success"
             ));
 
         } else {
 
             Util::flash(array(
-                "message" => "Failed to call {$callFunction} action.", 
+                "message" => "Failed to call {$callFunction} action.",
                 "type" => "error"
             ));
 
@@ -1804,7 +1806,7 @@ class Scaffold
         }
     }
 
-    private function callOtherAction() 
+    private function callOtherAction()
     {
         $model = $this->model;
         $entry = $model::find(Util::get("id"));
@@ -1815,14 +1817,14 @@ class Scaffold
         if ($success) {
 
             Util::flash(array(
-                "message" => "Succesfully called {$callFunction} action.", 
+                "message" => "Succesfully called {$callFunction} action.",
                 "type" => "success"
             ));
 
         } else {
 
             Util::flash(array(
-                "message" => "Failed to call {$callFunction} action.", 
+                "message" => "Failed to call {$callFunction} action.",
                 "type" => "error"
             ));
 
@@ -1842,14 +1844,14 @@ class Scaffold
     }
 
 
-  
+
 
 
     /******************************
     Final build scaffold
     *******************************/
     public function process()
-    { 
+    {
         $this->route();
         $this->header['description'] = $this->description;
         $this->header['deleteAction'] = $this->deleteAction;
@@ -1871,7 +1873,7 @@ class Scaffold
 
     // Used to test scaffold need to call route before
     public function processDataOnly()
-    { 
+    {
         $this->header['description'] = $this->description;
         $this->header['deleteAction'] = $this->deleteAction;
         $this->header['callFunctions'] = $this->callFunctions;
