@@ -118,12 +118,14 @@ class FileUpload {
 
 	private function checkIfFileExistReturnNewName($uploadPath, $filename)
 	{
-		$name = pathinfo($filename, PATHINFO_FILENAME);
-    	$ext  = pathinfo($filename, PATHINFO_EXTENSION);
-
-		$newpath = $uploadPath.$filename;
 		$newname = $filename;
+    	$newname = preg_replace('/\s+/', '_', $newname);
+    	$newname = Util::camel2under($newname);
 
+		$newpath = $uploadPath.$newname;
+
+		$name = pathinfo($newname, PATHINFO_FILENAME);
+    	$ext  = pathinfo($newname, PATHINFO_EXTENSION);
 
 		$count = 1;
 
@@ -132,10 +134,6 @@ class FileUpload {
 			$newpath = $uploadPath.$newname;
 			$count++;
 		}
-
-
-		$newname = preg_replace('/\s+/', '_', $newname);
-		$newname = strtolower($newname);
 
     	return $newname;
 	}
