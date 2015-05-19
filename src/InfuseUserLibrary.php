@@ -3,39 +3,33 @@
 trait InfuseUserLibrary {
 
 	protected $rules = array(
-	  'username' => "required|unique:users,username",
-	  'email'  => 'required|email|unique:users,email'
-  );
+		'username' => "required|unique:users,username,[id]",
+		'email'  => 'required|email|unique:users,email,[id]'
+	);
 
-  /*
-  protected $rules = array(
-    'username' => "required|unique:users,username,[id]",
-    'email'  => 'required|email|unique:users,email,[id]'
-  );
-  */
 
-  protected $errors;
+	protected $errors;
 
-  // Added functionailty for files
-  public $uploadFolder = "/uploads";
+	// Added functionailty for files
+	public $uploadFolder = "/uploads";
 
-  public function roles()
-  {
-    return $this->belongsToMany('InfuseRole', 'role_user', 'user_id', 'role_id');
-  }
+	public function roles()
+	{
+		return $this->belongsToMany('InfuseRole', 'role_user', 'user_id', 'role_id');
+	}
 
 	public function sendRequestResetPasswordPage()
-  {
-  	$email = $this->email;
-  	$server = $_SERVER['SERVER_NAME'];
+	{
+		$email = $this->email;
+		$server = $_SERVER['SERVER_NAME'];
 
-  	\Mail::send('infuse::emails.request_reset', array(), function($message)  use ($email, $server) {
-	    $message->from("no-reply@{$server}");
-	    $message->subject('[Infuse] Request Reset Password ');
-	    $message->to($email); 
+		\Mail::send('infuse::emails.request_reset', array(), function($message)  use ($email, $server) {
+			$message->from("no-reply@{$server}");
+			$message->subject('[Infuse] Request Reset Password ');
+			$message->to($email);
 		});
-  }
+	}
 
- 
+
 
 }
