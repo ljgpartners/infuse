@@ -118,9 +118,18 @@ class FileUpload {
 
 	private function checkIfFileExistReturnNewName($uploadPath, $filename)
 	{
+		$retinaImage = false;
+
+		if (strpos($filename, "@2x.") !== FALSE) {
+			$filename = explode("@2x.", $filename);
+			$filename = $filename[0].".".$filename[1];
+			$retinaImage = true;
+		}
+
+
 		$newname = $filename;
-    	$newname = preg_replace('/\s+/', '_', $newname);
     	$newname = Util::camel2under($newname);
+		$newname = preg_replace('/\s+/', '', $newname);
 
 		$newpath = $uploadPath.$newname;
 
@@ -133,6 +142,12 @@ class FileUpload {
 			$newname = $name .'_'. $count . "." . $ext;
 			$newpath = $uploadPath.$newname;
 			$count++;
+		}
+
+		if ($retinaImage) {
+			$name = pathinfo($newname, PATHINFO_FILENAME);
+	    	$ext  = pathinfo($newname, PATHINFO_EXTENSION);
+			$newname = $name . "@2x." . $ext;
 		}
 
     	return $newname;

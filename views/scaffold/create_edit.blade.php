@@ -21,7 +21,7 @@
 		<div class="col-sm-12 col-xs-12">
 			<?php $errors = Util::flashArray("errors"); ?>
 			<?php $fileErrors = Util::flashArray("file_errors"); ?>
-			{!!Util::fuseAlerts(Util::flash())!!} 
+			{!!Util::fuseAlerts(Util::flash())!!}
 		</div>
 	</div>
 
@@ -34,7 +34,7 @@
 
 	<div class="row">
 		<div class="col-sm-12 col-xs-12">
-		
+
 
 		<form method="post" action="?" enctype="multipart/form-data"  class="form-horizontal" role="form">
 
@@ -57,11 +57,11 @@
 		@if (Util::get("stack"))
 			<input type="hidden" name="stack" value="{{Util::get("stack")}}">
 		@endif
-		
 
-		
+
+
 		{{-- 	Added foreign keys to the form for children --}}
-		
+
 		@if (Util::get("stack"))
 			<input type="hidden" name="{{Util::foreignKeyString(Util::stackParentName())}}" value="{{Util::stackParentId()}}">
 			@if (Util::get("oneToOne"))
@@ -71,7 +71,7 @@
 
 
 		{{-- Iterate through all columns and display correlating form input  --}}
-		
+
 		@foreach ($columns as $column)
 
 		{{-- 	Check if column is actually an hstore column	--}}
@@ -102,7 +102,7 @@
 			</div>
 			</div>
 		@endif
-		
+
 
 		{{-- 	Added foreign keys to the form for top level parent --}}
 
@@ -117,8 +117,8 @@
 		<div class="form-group">
 			<div class="col-sm-12 col-xs-12">
 				<div class="input-group">
-				
-			  
+
+
 			{{-- Column Names  --}}
 			<?php $masterColumnName = (array_key_exists($column['field'], $header['columnNames']))? $header['columnNames']["{$column['field']}"] : Util::cleanName($column['field']); ?>
 
@@ -127,9 +127,9 @@
 			@endif
 
 			{{-- Column Values/Form Input  --}}
-			
+
 			{{-- ckeditor  --}}
-			@if (array_key_exists("ckeditor", $column)) 
+			@if (array_key_exists("ckeditor", $column))
 				<textarea class="infuseCkeditor" data-config="{{Util::classToString($entries)."_".$column['field']}}" name="{{$column['field']}}">{{$columnValue }}</textarea>
 
 			{{-- select  --}}
@@ -155,9 +155,9 @@
 
 
 				{{-- do nested select  --}}
-				@else  
+				@else
 
-					<?php  
+					<?php
 					$totalNested = count($column['nested']);
 					$nestedCount = 0;
 					$selectID = "{$column['field']}_{$nestedCount}";
@@ -165,7 +165,7 @@
 					?>
 
 					@foreach ($column['nested'] as $index => $nestedModelName)
-						<?php 
+						<?php
 
 							if (is_array($nestedModelName)) {
 								$nestedModelName = $nestedModelName['model'];
@@ -177,23 +177,23 @@
 							} else {
 								$nextModel = (isset($column['nested'][$index+1]))? $column['nested'][$index+1] : "";
 							}
-							
-							
-							$nestedCount++; 
+
+
+							$nestedCount++;
 							$foreignKey = ($nestedCount == $totalNested)? $column['field'] : Util::createForeignKeyString($nestedModelName);
 							$cssClass = ($nestedCount == $totalNested)? "importReplace".$column['field'] : "importRemove".$column['field'];
 							$selectID = "{$column['field']}_{$nestedCount}";
 							$tempNextCount = $nestedCount+1;
 							$selectNextID = "{$column['field']}_{$tempNextCount}";
 							$overideForeignKey = (isset($column['nested'][$index]['foreign_key']))? "&overide_foreign_key=".$column['nested'][$index]['foreign_key'] : "";
-							
+
 							if (isset($column['nested'][$index+1]['not_column'])) {
 								$notColumn = $column['nested'][$index+1]['not_column'];
 								$notColumn = "&not_column=".key($notColumn).",".current($notColumn);
 							} else {
 								$notColumn = "";
 							}
-							
+
 							$nestColumn = (isset($nestColumn))? "&column={$nestColumn}" : "";
 						?>
 						<select id="{{$selectID}}" class="{{$cssClass}} form-control" name="{{$foreignKey}}">
@@ -215,7 +215,7 @@
 								@endforeach
 						  @endif
 						</select>
-						
+
 						@if ($nestedCount != $totalNested)
 						<script type="text/javascript">
 						$(document).ready(function() {
@@ -232,10 +232,10 @@
 						<?php $foreignKey = Util::createForeignKeyString($nestedModelName); ?>
 					@endforeach
 
-					
+
 
 				@endif
-				
+
 
 			{{-- multi select  --}}
 			@elseif (array_key_exists("multi_select", $column))
@@ -247,7 +247,7 @@
 							array_push($dataMultiSelect, array("id" => (int)$value["id"], "value" => $columnName));
 					endforeach;
 				?>
-				
+
 				<div class="multiSelect"  data-name="{{$column['field']}}" data-data='{{json_encode($dataMultiSelect)}}' data-value="{{$columnValue }}"></div>
 				<input class="multiSelect{{$column['field']}}" name="{{$column['field']}}" type="hidden" value="{{$columnValue }}">
 
@@ -264,34 +264,34 @@
 				<!--<input type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "imagePreviewCropOn": "" )}}  importReplace{{$column['field']}}" id="upload{{$column['field']}}" >-->
 
 				<div class="input-group-btn">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{$masterColumnName}} <span class="caret"></span></button>
-          @if (!empty($columnValue))
-	        <ul class="dropdown-menu dropdown-menu-form" role="menu">
-	        	<li>
-	        		@if (preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $columnValue ))
-	        			<a href="" data-toggle="modal" data-target="#{{"Modal".$column['field'].$entries->id}}">Preview current</a>
-	        		@else
-								<a href="<?php echo $entries->uploadPath($column['field']).$columnValue; ?>" >Current {{$columnValue}}</a>
+		          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{$masterColumnName}} <span class="caret"></span></button>
+		          @if (!empty($columnValue))
+			        <ul class="dropdown-menu dropdown-menu-form" role="menu">
+			        	<li>
+			        		@if (preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $columnValue ))
+			        			<a href="" data-toggle="modal" data-target="#{{"Modal".$column['field'].$entries->id}}">Preview current</a>
+			        		@else
+								<a href="<?php echo $entries->url($column['field']); ?>" >Current {{$columnValue}}</a>
 							@endif
-	        	</li>
-	          <li>
-	          	<label class="checkbox">
-                Delete upload
-                <input type="checkbox" name="{{$column['field']}}_delete">
-            	</label>
-	          </li>
-	        </ul>
-	        @endif 
-        </div>
-        <input class="form-control" type="text" readonly="readonly" value="{{ (!empty($columnValue))? $columnValue : "" }}">
-        <div class="input-group-btn">
-        	<span class="btn btn-default btn-file"  tabindex="-1">
-              Browse… <input multiple="" type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "imagePreviewCropOn": "" )}}  importReplace{{$column['field']}}" id="upload{{$column['field']}}">
-          </span>
-        </div>
-        
-				
-				
+			        	</li>
+			          <li>
+			          	<label class="checkbox">
+		                Delete upload
+		                <input type="checkbox" name="{{$column['field']}}_delete">
+		            	</label>
+			          </li>
+			        </ul>
+			        @endif
+		        </div>
+		        <input class="form-control" type="text" readonly="readonly" value="{{ (!empty($columnValue))? $columnValue : "" }}">
+		        <div class="input-group-btn">
+		        	<span class="btn btn-default btn-file"  tabindex="-1">
+		              Browse… <input multiple="" type="file" name="{{$column['field']}}" class="{{(($column['upload']['imageCrop'])? "imagePreviewCropOn": "" )}}  importReplace{{$column['field']}}" id="upload{{$column['field']}}">
+		          </span>
+		        </div>
+
+
+
 				@if (!empty($columnValue))
 					@if (preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $columnValue ))
 						<div id="{{"Modal".$column['field'].$entries->id}}" class="modal fade previewModal"  tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
@@ -302,7 +302,7 @@
 						        <h4 class="modal-title">{{$columnValue }}</h4>
 						      </div>
 						      <div class="modal-body">
-						        <img class="uploadAreaPreviewImage" src="{{$entries->uploadPath($column['field']).$columnValue}}">
+						        <img class="uploadAreaPreviewImage" src="{{$entries->url($column['field'])}}">
 						      </div>
 						      <div class="modal-footer">
 						        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -313,17 +313,17 @@
 					@endif
 				@endif
 
-				
+
 
 				@if ($column['upload']['imageCrop'])
 
 					<input type="hidden" name="{{$column['field']}}" id="{{"croppic".$column['field'].$entries->id}}CroppedImage" value="" >
-					
+
 					<button type="button" class="btn btn-default btn-xs btn-link imageCrop" data-id="{{"croppic".$column['field'].$entries->id}}" data-path="/{{\Request::path()}}" data-width="{{$column['upload']['imageCrop']['width']}}" data-height="{{$column['upload']['imageCrop']['height']}}">
 						crop upload
 					</button>
-					
-						
+
+
 					<div class="imagePreviewCrop" id="{{"croppic".$column['field'].$entries->id}}">
 						<!-- image preview area-->
 					</div>
@@ -343,8 +343,8 @@
 
 			{{-- other inputs based on column type  --}}
 			@else
-				
-			
+
+
 				<?php switch ($column['type']):
 						case 'varchar': ?>
 							<input type="text" maxlength="{{preg_replace("/[^0-9]/", "", $column['type_original'])}}" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" value="{{htmlspecialchars($columnValue) }}" {{Util::readOnly($column)}}>
@@ -363,18 +363,18 @@
 							@else
 								<input type="text" class="selectedDateTime form-control" name="{{$column['field']}}" value="{{ (empty($columnValue))? (new \DateTime())->format('Y-m-d H:i:s') : $columnValue }}" {{Util::readOnly($column)}} />
 							@endif <!-- (empty($columnValue))? "0000-00-00 00:00:00" : $columnValue -->
-							
-				<?php 	break; 
+
+				<?php 	break;
 						case 'date': ?>
 							<input type="text" class="selectedDate form-control" name="{{$column['field']}}" value="{{ (empty($columnValue))? (new \DateTime())->format('Y-m-d') : $columnValue }}" {{Util::readOnly($column)}} />
 				<?php 	break;
-						case 'int': ?> 
+						case 'int': ?>
 							<input type="number" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" pattern="\d+" value="{{ (empty($columnValue))? 0 : $columnValue  }}" {{Util::readOnly($column)}} />
 				<?php 	break;
-						case 'float': ?> 
+						case 'float': ?>
 									<input type="number" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" step="any" value="{{ (empty($columnValue))? 0 : $columnValue  }}" {{Util::readOnly($column)}} />
 				<?php 	break;
-						case 'tinyint': ?> 
+						case 'tinyint': ?>
 							<select name="{{$column['field']}}" {{Util::readOnlyWithDisabled($column)}} class="form-control">
 								<option value="0" {{($columnValue == 0)? 'selected="selected"' : ""}} >No</option>
 								<option value="1" {{($columnValue == 1)? 'selected="selected"' : ""}} >Yes</option>
@@ -386,25 +386,25 @@
 						default: ?>
 
 							<input type="text" name="{{$column['field']}}" class="importReplace{{$column['field']}} form-control" value="{{htmlspecialchars($columnValue) }}" {{Util::readOnly($column)}} />
-				<?php		
+				<?php
 					endswitch;
 				?>
 
 			@endif
-			
-				</div> <!-- end of input-group --> 
+
+				</div> <!-- end of input-group -->
 
 				<div class="infuseLabels">
 					{{-- Add column description  --}}
-					@if (array_key_exists("description", $column)) 
+					@if (array_key_exists("description", $column))
 						@if (array_key_exists("description_popover", $column))
 							<a href="#" tabindex="0" class="infoPopOver" role="button" data-toggle="popover" data-html="true" data-trigger="focus" title="Information" data-content="{{$column['description']}}">Information</a>
 						@else
-							<span class="label label-default-bryan">{{$column['description']}}</span> 
+							<span class="label label-default-bryan">{{$column['description']}}</span>
 						@endif
 					@endif
 
-					
+
 					{{-- Display validation errors --}}
 					@if ($errors && $errors->has("{$column['field']}"))
 						@foreach ($errors->get("{$column['field']}") as $err)
@@ -420,7 +420,7 @@
 					@endif
 				</div>
 
-			</div> <!-- end of col-sm-12 col-xs-12 --> 
+			</div> <!-- end of col-sm-12 col-xs-12 -->
 		</div> <!-- end of form-group -->
 		@endif
 		@endforeach
@@ -451,8 +451,8 @@
 
 				@if(count($header['callFunctions']) > 0)
 					@foreach ($header['callFunctions'] as $function)
-						<a class="" {{((isset($function['target']))? 'target="'.$function['target'] .'"' : "" )}} 
-								href="?action=cf&id={{$entries->id}}&cf={{$function["function"]}}" 
+						<a class="" {{((isset($function['target']))? 'target="'.$function['target'] .'"' : "" )}}
+								href="?action=cf&id={{$entries->id}}&cf={{$function["function"]}}"
 								@if (isset($function['long_process']))
 									onclick='Infuse.confirmAndblockUI("{{$function["display_name"]}}", "{{$function["function"]}}");'>
 								@else
@@ -471,7 +471,7 @@
 						@endif
 					@endforeach
 				@endif
-				
+
 
 				<div class="submitGroup">
 					<input type="submit" value="save" data-type-submit="save" class="saveSubmitButton">
@@ -488,7 +488,7 @@
 		@include('infuse::scaffold._many_to_many')
 
 		</form>
-			
+
 		</div>
 	</div>
 

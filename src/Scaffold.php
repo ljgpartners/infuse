@@ -1514,6 +1514,10 @@ class Scaffold
 
                     $inputsTemp = Util::get($column['field']);
 
+                    if ($column['type_original'] == "json" || $column['type_original'] == "jsonb") {
+                        $inputsTemp = (empty($inputsTemp))? "{}" : $inputsTemp;
+                    }
+
                     if ($this->belongsToUser && $column['field'] == "infuse_user_id" && !$this->user->is('Super Admin')) {
                         $inputsTemp = $this->user->id;
                     }
