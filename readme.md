@@ -336,7 +336,15 @@ callFunction(array(
 3. (Optional) [string] If its a lengthy process you can set a message that will populate a waiting modal while the process is running.
 4. (Optional) [string] Provide a target for the html anchor tag.
 
-
+Ex. importSomeThing implementation. Returns an array to the admin marked with type ("success" || "error") and message along with it.
+```php
+public function scopeImportSomeThings()
+{
+	// ... some work here
+	$message = "Thanks";
+	return array("type" => "success", "message" => $message);
+}
+```
 
 Created with [http://dillinger.io](http://dillinger.io/)
 
