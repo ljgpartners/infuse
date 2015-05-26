@@ -92,7 +92,7 @@ RewriteCond %{HTTP:Cookie} devicePixelRatio [NC]
 RewriteRule \.(?:jpe?g|gif|png|bmp)$ /packages/bpez/infuse/retinaimages.php [NC,L]
 ```
 
-### Possible future features 
+### Possible future features
 
 ```
 > https://github.com/websoftwares/Throttle
@@ -115,28 +115,28 @@ imports:
 
 ### High level data flow
 ```php
-model(mapConifig -> getbModelInstance(s) -> boot -> apiCalls) -> process(route -> renderView) 
+model(mapConifig -> getbModelInstance(s) -> boot -> apiCalls) -> process(route -> renderView)
 ```
 
 
 # Infuse Configuration API
 
-##### addSelect  
+## addSelect  
 Turn database field to a html form select. Take in single instanct or multiple.
 ```php
 addSelect(array(
     array(
-        "column" => $columnName, 
-        "array" => array(), 
-        "insertBlank" => false, 
-        "topSelect" => false, 
-        "nested" => $nested, 
+        "column" => $columnName,
+        "array" => array(),
+        "insertBlank" => false,
+        "topSelect" => false,
+        "nested" => $nested,
         "nestedLastArray" => $nestedLastArray )
     ),
     ...
 );
 ```
-###### Parameters
+#### Parameters
 - column - (Required) [string] Database table field name
 - array - (Required) [array] Array of values. Formatted:
 
@@ -152,7 +152,7 @@ array(
 
 ```php
 $nested = array(
-    "Floorplan", 
+    "Floorplan",
     array("model" => "ImageAsset", "column" => "title")
 );
 ```
@@ -166,24 +166,24 @@ $nestedLastArray = array(
 );
 ```
 
-##### describeColumn  
+## describeColumn  
 Adds a description to a database field.
 ```php
 describeColumn(array(
     array(
-        "column" => $columnName, 
-        "desc" => "description here", 
+        "column" => $columnName,
+        "desc" => "description here",
         "popover" => true
     )
     ...
 );
 ```
-###### Parameters
+#### Parameters
 - column - (Required) [string] Database table field name
 - desc - (Required) [string] Description
-- popover (Optional) [boolean] If option present then descript displayed as html pop. 
+- popover (Optional) [boolean] If option present then descript displayed as html pop.
 
-##### onlyOne  
+## onlyOne  
 Only allow one database entry to be display and created.
 ```php
 onlyOne();
@@ -195,42 +195,42 @@ Add a SQL where clause to configuration.
 ```php
 addPermanentFilters(array(
     array(
-        "column" => $columnName, 
-        "operator" => "=", 
+        "column" => $columnName,
+        "operator" => "=",
         "value" => 87
     )
     ...
 );
 ```
-###### Parameters
+#### Parameters
 - column - (Required) [string] Database table field name
-- operator - (Required) [string] SQL comparison opertator 
-- value - (Required) [string | number] Value to be compared to 
+- operator - (Required) [string] SQL comparison opertator
+- value - (Required) [string | number] Value to be compared to
 
-##### defaultColumnValues
+## defaultColumnValues
 Add a default value for when an entry is saved.
 ```php
 defaultColumnValues(array(
-    "column_name_1" => $value1, 
+    "column_name_1" => $value1,
     "column_name_2" => $value2,
     ...
 );
 ```
-###### Parameters
+#### Parameters
 - array - (Required) [array] Array of default values where the index is the column name and the value is the value for the index
 
-##### addMultiSelect
+## addMultiSelect
 Transform field to multiple select. Where IDs are kept track separated by a coma.
 ```php
 addMultiSelect(array(
     array(
-        "column" => $columnName, 
-        "array" => array(), 
+        "column" => $columnName,
+        "array" => array(),
     ),
     ...
 );
 ```
-###### Parameters
+#### Parameters
 - column - (Required) [string] Database table field name
 - array - (Required) [array] Array of values. Formatted
 
@@ -241,7 +241,7 @@ array(
     ...
 )
 ```
-##### hasMany 
+## hasMany
 One To Many relationships are defined here. Define children relations like format below.
 ```php
 hasMany(array(
@@ -249,21 +249,21 @@ hasMany(array(
     ...
 );
 ```
-###### Parameters
-1. (Required) [string] Child model name 
+#### Parameters
+1. (Required) [string] Child model name
 2. (Required) [string] Display name for entries listed on parent edit page
-3. (Required) [array] Child columns to display on entries listed on parent edit page 
+3. (Required) [array] Child columns to display on entries listed on parent edit page
 4. (Optional) [array] Contains extra functionality for dislaying child entries. Some options are as follows:
 
 Ex. Child Columns array may have an array nested to match an id with a value like below:
 ```php
 $childColumnArray = array(
-  "column_1", 
+  "column_1",
   "column_2",
   array("column_3" => array(
-    array("id" => 1, "name" => "some name"), 
+    array("id" => 1, "name" => "some name"),
     array("id" => 2, "name" => "some name 2")
-  ), 
+  ),
   "column_4",
   ...
 )
@@ -272,50 +272,71 @@ array("category" => $categories)
 
 ```php
 $optionsArray = array(
-  "order_column" => "display_order", 
-  "order_direction" => "ASC", 
+  "order_column" => "display_order",
+  "order_direction" => "ASC",
 )
 ```
 Ex. For adding custom export and import functions.
 ```php
 $optionsArray = array(
-    "import_csv_function" => "importUserModelInstancMethod", 
-    "import_csv_function_url" => "/path/to/example/template.csv", 
+    "import_csv_function" => "importUserModelInstancMethod",
+    "import_csv_function_url" => "/path/to/example/template.csv",
     "import_csv_function_text" => "Import CSV for users. Use template provided.",
     "export_csv_function" => "exportUserModelInstanceMethod",
     "export_csv_function_text" => "Export CSV template to import.",
 )
 ```
 
-##### displayOrder
+## displayOrder
 Changes column to an column to be used for ordering entries. Integer is used for the type. Makes field not editable by user and value automatically set.
 ```php
 displayOrder(array("display_order_column"));
 ```
-###### Parameters
+#### Parameters
 1. Database table field names
 
-##### fileUpload
+## fileUpload
 Configure columns for file upload functionality.
 ```php
 fileUpload(
   array(
     array("column" => "column_name"),
   )
-) 
+)
 ```
-###### Parameters
+#### Parameters
 - column - (Required) [string] Database table field name
 
-##### addCkeditor
+## addCkeditor
 Turns a text field to a addCkeditor.
 ```php
 addCkeditor(
     array("column_name_1", "column_name_2", ...)
-) 
+)
 ```
-###### Parameters
+#### Parameters
 - Database table field names
+
+## callFunction
+Add extra action to entry's actions (show | edit | delete | YourActionHere )
+```php
+callFunction(array(
+    array(
+        "function" => "importSomeThing",
+        "display_name" => "Import some thing",
+        "long_process" => "Processing please wait...",
+        "target" => "_BLANK"
+    ),
+    ...
+);
+```
+#### Parameters
+1. (Required) [string] function - Name of the function. Its a laravel elequent query scope. So if name is importSomeThing then in the model it's declared scopeImportSomeThing
+2. (Required) [string] Display name for the function
+3. (Optional) [string] If its a lengthy process you can set a message that will populate a waiting modal while the process is running.
+4. (Optional) [string] Provide a target for the html anchor tag.
+
+
 
 Created with [http://dillinger.io](http://dillinger.io/)
 
@@ -327,4 +348,3 @@ Do do list
 - add delete to infuse delete and then add method that can be used for deleting children
 - redo generateThumbnail in model library then remove fron composer.json
 - replace pages uploading functionality
-
