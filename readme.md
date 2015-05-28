@@ -274,6 +274,7 @@ array("category" => $categories)
 $optionsArray = array(
   "order_column" => "display_order",
   "order_direction" => "ASC",
+  "order_integer" => true
 )
 ```
 Ex. For adding custom export and import functions.

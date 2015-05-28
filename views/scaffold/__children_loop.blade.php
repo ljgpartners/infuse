@@ -1,23 +1,23 @@
 <tr>
 	@foreach ($childColumns as $column)
 		@if (is_array($column))
-			<th>{{Util::cleanName(key($column))}}</th> 
+			<th>{{Util::cleanName(key($column))}}</th>
 		@elseif (Util::splitReturnFirst(Util::cleanName($column), "@"))
 			<th>{{Util::splitReturnFirst(Util::cleanName($column), "@")}}</th>
 		@else
 			<th>{{Util::cleanName($column)}}</th>
 		@endif
-	@endforeach 
+	@endforeach
 	<th>
 		<a href="{{Util::childActionLink($model, 'c')}}">Create</a>
 	</th>
-</tr> 
+</tr>
 
 
 @foreach ($hasManyObject as $key => $child)
-<tr data-class="{{$model}}" class="{{$model}}"> 
+<tr data-class="{{$model}}" class="{{$model}}">
 	@foreach ($childColumns as $column)
-		@if (is_array($column)) 
+		@if (is_array($column))
 			<td>
 			@foreach (current($column) as $value)
 					@if ($child->{key($column)} == $value["id"])
@@ -30,25 +30,25 @@
 				<td>
 					@if ($child->{Util::splitReturnFirst($column, "@")} != "")
 					<div class="previewImage">
-						<img src="{{$child->url(Util::splitReturnFirst($column, "@"))}}" alt="">  
+						<img src="{{$child->url(Util::splitReturnFirst($column, "@"))}}" alt="">
 					</div>
 					@endif
 				</td>
 			@else
-				@if ($childOrderColumn && $childOrderDirection && ($childOrderColumn == $column))
+				@if ($childOrderColumn && $childOrderDirection && ($childOrderColumn == $column) && $childOrderColumnIntegerBit)
 					<td class="childOrderColumn">
-						<a class="childUpOrder" data-id="{{$child->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column}}" data-model="{{get_class($child)}}" href="">[up]</a> 
+						<a class="childUpOrder" data-id="{{$child->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column}}" data-model="{{get_class($child)}}" href="">[up]</a>
 						<a class="childDownOrder" data-id="{{$child->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column}}" data-model="{{get_class($child)}}" href="">[down]</a>
 					</td>
 				@else
 					<td>{{$child->{$column} }}</td>
 				@endif
-				
+
 			@endif
-			
+
 		@endif
-	
-	@endforeach 
+
+	@endforeach
 	<td>
 		<a href="{{Util::childActionLink($model, 's', $child->id)}}">show</a>
 		<a href="{{Util::childActionLink($model, 'e', $child->id)}}">edit</a>
