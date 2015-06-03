@@ -287,6 +287,15 @@ $optionsArray = array(
     "export_csv_function_text" => "Export CSV template to import.",
 )
 ```
+Ex. Split table to act like 2 child tables separated by where clauses.
+```php
+$optionsArray = array(
+    "split" => array(
+		"Gallery Assets" =>	"main_gallery = 1",
+		"Gallery 2 Assets" =>	"main_gallery = 0"
+	)
+)
+```
 
 ## displayOrder
 Changes column to an column to be used for ordering entries. Integer is used for the type. Makes field not editable by user and value automatically set.
