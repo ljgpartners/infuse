@@ -5,7 +5,7 @@ trait InfuseModelLibrary {
     public function validate($data)
     {
 
-        $replace = ($this->getKey() > 0) ? $this->getKey() : '';
+        $replace = ($this->getKey() > 0) ? $this->getKey() : 0;
         foreach ($this->rules as $key => $rule) {
             $this->rules[$key] = str_replace('[id]', $replace, $rule);
         }
