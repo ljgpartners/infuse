@@ -11,17 +11,17 @@ window.InfusePages  = {
 				var ckeditor = $(this).ckeditor();
 				// control + e capture
 				ckeditor.editor.on('contentDom', function(e) {
-					ckeditor.editor.document.on('keydown', function (event) { 
-						if (event.data.$.ctrlKey && event.data.$.which == 69) { 
-							var infuseCkeditor = $(ckeditor.editor.container.$).parent().find(".infusePagesCkeditor"); 
-							sessionStorage.setItem("infuse_pages_edit_description", infuseCkeditor.val()); 
+					ckeditor.editor.document.on('keydown', function (event) {
+						if (event.data.$.ctrlKey && event.data.$.which == 69) {
+							var infuseCkeditor = $(ckeditor.editor.container.$).parent().find(".infusePagesCkeditor");
+							sessionStorage.setItem("infuse_pages_edit_description", infuseCkeditor.val());
 							infuseCkeditor.text('');
 							infuseCkeditor.attr("placeholder", "enter description and return");
 							$(ckeditor.editor.container.$).hide();
 							infuseCkeditor.show().css("visibility", "visible");
 						}
 					});
-				}); 
+				});
 			});
 
 			if ($("body").hasClass("developer")) {
@@ -84,7 +84,7 @@ window.InfusePages  = {
 			if (form.find(".form-group").length == 0) {
 				jumbotron.removeClass("hide");
 			}
-				
+
 			$(".draggable").draggable({
 				helper: 'clone',
 				opacity: 0.35,
@@ -126,21 +126,21 @@ window.InfusePages  = {
 						}).droppable({greedy: true});
 						$(".form-horizontal").append(newGroup);
 	      	}
-	      	
+
 	      }
 			}
 
-			
+
 			$(".formBlock.sortable").sortable({
 				placeholder: "ui-state-highlight",
 				stop: sortableStop,
 				items: ".form-group:not(.unsortable)"
 			}).droppable({greedy: true});
 
-			
 
-			$("html").droppable({ 
-				drop: function (event, ui) {    
+
+			$("html").droppable({
+				drop: function (event, ui) {
 		    	ui.draggable.remove();
 
 		    	if (form.find(".form-group").length == 0) {
@@ -168,7 +168,7 @@ window.InfusePages  = {
 
 		inputEditEvents: function() {
 
-			$(document).on("keypress", ".quickEdit input", function(event) { 
+			$(document).on("keypress", ".quickEdit input", function(event) {
 					var self = $(this);
 					// Return captures
 					if (event.which == 13) {
@@ -224,12 +224,12 @@ window.InfusePages  = {
 				var self = $(this);
 				// Return captures
 				if (event.which == 13) {
-					if (self.attr("placeholder") == "enter title and return") { 
+					if (self.attr("placeholder") == "enter title and return") {
 						self.parent().find("span").text(self.val());
 						self.parent().parent().attr("data-serialize-page-value-name", self.val());
 						self.val(null);
 						self.attr("placeholder", "enter description and return");
-					} else if (self.attr("placeholder") == "enter description and return") { 
+					} else if (self.attr("placeholder") == "enter description and return") {
 						self.parent().parent().find("p").text(self.val());
 						self.parent().parent().attr("data-serialize-page-value-description", self.val());
 						self.val(null);
@@ -247,12 +247,12 @@ window.InfusePages  = {
 					self.attr("placeholder", "enter description and return");
 				}
 			});
-		
-			$(document).on("dblclick", ".groupEditActivateEvent", function(event) { 
+
+			$(document).on("dblclick", ".groupEditActivateEvent", function(event) {
 				var self = $(this);
 				self.parent().find("input").toggle();
 			});
-			
+
 
 			$(document).on("keypress", ".textareaEditEvent", function(event) {
 				var self = $(this);
@@ -268,13 +268,13 @@ window.InfusePages  = {
 					self.parent().find(".cke").show();
 					event.preventDefault();
 				}
-				
+
 			});
 
-			
 
 
-			// Do ckeditor added after load 
+
+			// Do ckeditor added after load
 			$(document).on("keypress", ".initialTextareaEditEvent", function(event) {
 				var self = $(this);
 
@@ -290,13 +290,13 @@ window.InfusePages  = {
 							.attr("data-serialize-page-value-name", self.siblings(".input-group-addon").text())
 							.attr("data-serialize-page-value-description", self.val())
 							.attr("data-serialize-page-value", 0);
-							
+
 						self.parent().parent().find(".infuseLabels .label").text(self.val());
 						var val = (window.Infuse.isBlank(sessionStorage.getItem("infuse_pages_edit_description")))? "" : sessionStorage.getItem("infuse_pages_edit_description");
 						sessionStorage.setItem("infuse_pages_edit_description", null);
 						self.val(val);
 						self.attr("placeholder", "value");
-						
+
 						self.replaceWith(textarea);
 						var ckeditor = textarea.ckeditor();
 
@@ -305,8 +305,8 @@ window.InfusePages  = {
 						ckeditor.editor.on('contentDom', function(e) {
 							$(ckeditor.editor.container.$).parent().find(".infusePagesCkeditor").data("serialize-page-value", 1);
 
-							ckeditor.editor.document.on('keydown', function (event) { 
-								if (event.data.$.ctrlKey && event.data.$.which == 69) { 
+							ckeditor.editor.document.on('keydown', function (event) {
+								if (event.data.$.ctrlKey && event.data.$.which == 69) {
 									var infuseCkeditor = $(ckeditor.editor.container.$).parent().find(".infusePagesCkeditor");
 									sessionStorage.setItem("infuse_pages_edit_description", infuseCkeditor.val());
 									infuseCkeditor.text('');
@@ -315,9 +315,9 @@ window.InfusePages  = {
 									infuseCkeditor.show().css("visibility", "visible");
 								}
 							});
-						}); 
-						
-						
+						});
+
+
 					}
 					event.preventDefault();
 				}
@@ -334,7 +334,7 @@ window.InfusePages  = {
 						self.val(null);
 						self.attr("placeholder", "enter description and return");
 
-						
+
 					} else if (self.attr("placeholder") == "enter description and return") {
 						var description = self.val();
 						self.parent().parent().find(".infuseLabels .label").text(description);
@@ -346,9 +346,9 @@ window.InfusePages  = {
 
 						self.attr("placeholder", "no file");
 
-						// Only Add browse once 
+						// Only Add browse once
 						if (self.siblings(".input-group-btn").length == 0) {
-							
+
 							var inputgroupbtn = $("<div>").addClass("input-group-btn"),
 								btnbtndefaultbtnfile = $("<span>").addClass("btn btn-default btn-file").attr("tabindex", "-1").text("Browse…"),
 								input = $("<input>").attr("type","file")
@@ -384,22 +384,22 @@ window.InfusePages  = {
 					self.removeProp("readonly");
 					self.attr("placeholder", "enter description and return");
 				}
-				
+
 			});
 
 		},
 
 
 		createUpload: function() {
-			var self = this; 
-			var frontAddOn = $("<span>").addClass("input-group-addon"); 
+			var self = this;
+			var frontAddOn = $("<span>").addClass("input-group-addon");
 			var input = $("<input>").attr("type", "text")
 				.attr("name", "name")
 				.addClass("form-control initialUploadInputEvent")
 				.attr("placeholder", "enter title and return");
 			var inputgroup = $('<div>').addClass("input-group").append(frontAddOn).append(input);
 			return self.createTemplate(inputgroup);
-			
+
 		},
 
 
@@ -439,8 +439,8 @@ window.InfusePages  = {
 
 
 		createText: function() {
-			var self = this; 
-			
+			var self = this;
+
 			var frontAddOn = $("<span>").addClass("input-group-addon");
 			var input = $("<input>").attr("type", "text")
 				.attr("name", "name")
@@ -460,8 +460,8 @@ window.InfusePages  = {
 
 
 		createGroup: function() { // formBlock sortable"
-			var self = this; 
-			
+			var self = this;
+
 			var input = $("<input>").attr("type", "text")
 				.attr("name", "name")
 				.addClass("form-control groupEditEvent")
@@ -469,7 +469,7 @@ window.InfusePages  = {
 			var span = $("<span>").addClass("groupEditActivateEvent");
 			var panelHeading = $('<div>').addClass("panel-heading")
 				.append(span)
-				.append(input); 
+				.append(input);
 			var block = $('<div>').addClass("formBlock sortable");
 			var p = $("<p>");
 			var panelBody = $('<div>').addClass("panel-body")
@@ -483,14 +483,14 @@ window.InfusePages  = {
 				.attr("data-serialize-page-value", 0)
 				.append(panelHeading)
 				.append(panelBody);
-			
+
 			return panel;
 		},
 
-		
+
 
 		createTextBox: function() {
-			var self = this; 
+			var self = this;
 			var frontAddOn = $("<span>").addClass("input-group-addon");
 			var input = $("<input>").attr("type", "text")
 				.attr("name", "name")
@@ -500,18 +500,18 @@ window.InfusePages  = {
 				.append(frontAddOn)
 				.append(input);
 			return self.createTemplate(inputgroup);
-			
+
 		},
 
 
-		
+
 
 		/*
 		pageData:{}
-		 
+
 			pageTopLevel: 0,
 		pageDepth: 0,
-	
+
 
 
 
@@ -526,23 +526,23 @@ window.InfusePages  = {
 				//console.log(pageItem);
 				switch(pageItem.data("serialize-tag")) {
 					case "pageTitle":
-						self.pageData.pageProperties.pageTitle = pageItem.text();
+						self.pageData.pageProperties.pageTitle = pageItem.text().trim();
 						break;
 					case "pageDescription":
-						self.pageData.pageProperties.pageDescription = pageItem.text();
+						self.pageData.pageProperties.pageDescription = pageItem.text().trim();
 						break;
 					default:
 						var temp = self.infusePageSerializePrepItem(pageItem);
 						if (temp) {
 							self.pageData.pageValues.push(temp);
 						}
-				} 
+				}
 			});
-			
+
 			$(".panel.infusePageSerialize").each(function() {
 				var panel = $(this),
 						tempItems = [];
-				
+
 				panel.find(".panel-body .infusePageSerialize").each(function() {
 					var subPageItem = $(this),
 							temp = self.infusePageSerializePrepItem(subPageItem);
@@ -553,11 +553,11 @@ window.InfusePages  = {
 
 				if (tempItems.length > 0 && panel.data("serialize-page-value") == 1) {
 					var group = {
-						"id": panel.data("serialize-page-value-id"),
-						"type": "group", 
-						"name": panel.data("serialize-page-value-name"),
-						"value": tempItems, 
-						"description": panel.data("serialize-page-value-description"),
+						"id": panel.data("serialize-page-value-id").trim(),
+						"type": "group",
+						"name": panel.data("serialize-page-value-name").trim(),
+						"value": tempItems,
+						"description": panel.data("serialize-page-value-description").trim(),
 					};
 					self.pageData.pageValues.push(group);
 				}
@@ -568,15 +568,15 @@ window.InfusePages  = {
 		infusePageSerializePrepItem: function(pageItem) {
 			var tempPageObject = {"id": "", "type": "", "name":"", "value": "", "description": ""};
 
-			if (pageItem.data("serialize-page-value") == 1) { 
-				tempPageObject.id = pageItem.data("serialize-page-value-id");
-				tempPageObject.name = pageItem.data("serialize-page-value-name");
-				tempPageObject.description = pageItem.data("serialize-page-value-description");
-				tempPageObject.value = pageItem.val();
+			if (pageItem.data("serialize-page-value") == 1) {
+				tempPageObject.id = pageItem.data("serialize-page-value-id").trim();
+				tempPageObject.name = pageItem.data("serialize-page-value-name").trim();
+				tempPageObject.description = pageItem.data("serialize-page-value-description").trim();
+				tempPageObject.value = pageItem.val().trim();
 
 				if (pageItem.is("input")) {
 					if (pageItem.attr("type") == "text") {
-						tempPageObject.type = "string"; 
+						tempPageObject.type = "string";
 					} else if (pageItem.attr("type") == "file") {
 						tempPageObject.type = "upload";
 					}
@@ -596,8 +596,6 @@ window.InfusePages  = {
 			return tempPageObject;
 		}
 
-		
+
 		 ///chance.hash({length: 15});
 };
-
-
