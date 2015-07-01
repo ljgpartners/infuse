@@ -104,8 +104,11 @@ class FileUpload {
 
 			} else if ($this->fileSystemDiskType == "local") {
 				$baseUrlUploadedAssetsLocal = \Config::get("infuse::config.base_url_uploaded_assets_local");
+				$baseUrlAlwaysServe = \Config::get("infuse::config.base_url_for_uploaded_assets_always", false);
 
-				if (\App::environment() != "production" && !empty($baseUrlUploadedAssetsLocal)) {
+				if ($baseUrlAlwaysServe ||
+					(\App::environment() != "production" && !empty($baseUrlUploadedAssetsLocal))
+				) {
 					return $baseUrlUploadedAssetsLocal.$url;
 				} else {
 					$httpHOST = (strpos($this->request->server("HTTP_HOST"), 'http://') !== false)? $this->request->server("HTTP_HOST") : "http://".$this->request->server("HTTP_HOST");
@@ -426,8 +429,11 @@ class FileUpload {
 
 		} else if ($this->fileSystemDiskType == "local") {
 			$baseUrlUploadedAssetsLocal = \Config::get("infuse::config.base_url_uploaded_assets_local");
+			$baseUrlAlwaysServe = \Config::get("infuse::config.base_url_for_uploaded_assets_always", false);
 
-			if (\App::environment() != "production" && !empty($baseUrlUploadedAssetsLocal)) {
+			if ($baseUrlAlwaysServe ||
+				(\App::environment() != "production" && !empty($baseUrlUploadedAssetsLocal))
+			) {
 				$url = $baseUrlUploadedAssetsLocal.$url;
 			} else {
 				$httpHOST = (strpos($this->request->server("HTTP_HOST"), 'http://') !== false)? $this->request->server("HTTP_HOST") : "http://".$this->request->server("HTTP_HOST");
