@@ -4,9 +4,9 @@ $navigationSection = array();
 
 for ($x = 1; $x <= count(Config::get('infuse::config.navigation')); $x++) {
   array_push($navigationSection, array("id" => $x, "name" => $x));
-} 
+}
 
-if (empty($navigationSectio)) {
+if (empty($navigationSection)) {
 	array_push($navigationSection, array("id" => 1, "name" => 1));
 }
 
@@ -16,7 +16,7 @@ return array(
 	|--------------------------------------------------------------------------
 	| InfuseUser Scaffold config
 	|--------------------------------------------------------------------------
-	*/		
+	*/
 
 	'model' => new InfusePage,
 	'name' => 'Page',
@@ -27,5 +27,3 @@ return array(
 	'addSelect' => array("column" => 'navigation_section', "array" => $navigationSection),
 
 );
-
-

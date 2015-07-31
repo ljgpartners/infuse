@@ -5,11 +5,11 @@
 	  @foreach ($infusePages as $p)
 			@if ($p->id == $infusePage->id)
 				<li class="active">
-					<a href="/admin/page/{{$p->id}}">{{$p->title}}</a> 
+					<a href="/admin/page/{{$p->id}}">{{$p->title}}</a>
 				</li>
 			@else
 				<li>
-					<a href="/admin/page/{{$p->id}}">{{$p->title}}</a> 
+					<a href="/admin/page/{{$p->id}}">{{$p->title}}</a>
 				</li>
 			@endif
 		@endforeach
@@ -33,7 +33,7 @@
 					</p>
 				</div>
 				<div class="col-sm-6">
-					<ol class="breadcrumb pull-right"> 
+					<ol class="breadcrumb pull-right">
 						@if (isset($breadcrumbs))
 							@foreach ($breadcrumbs as $breadcrumb)
 								<?php $breadcrumbCurrentPath = $breadcrumbCurrentPath.((!empty($breadcrumbCurrentPath))? ";": "").$breadcrumb['page_instance']; ?>
@@ -46,7 +46,7 @@
 										{{$breadcrumb['page_instance_title']}}
 									</a>
 								</li>
-								
+
 							@endforeach
 						@endif
 					</ol>
@@ -55,7 +55,7 @@
 		</div>
 	</div>
 	<div class="subPages">
-		<?php $pageInstanceNestedPages = $pageInstance->pages; ?> 
+		<?php $pageInstanceNestedPages = $pageInstance->pages; ?>
 		@foreach ($pageInstance->pagesKeys as $id)
 		<a href="/admin/page/{{$infusePage->id}}/edit?pip={{$breadcrumbCurrentPath.";".$id}}">{{$pageInstanceNestedPages->{$id}->pageProperties->pageTitle}}</a>
 		@endforeach
@@ -66,7 +66,7 @@
 <div class="container-fluid">
 	<div class="row">
   	<div class="col-sm-12">
-		{{Util::fuseAlerts(Util::flash())}} 
+		{{Util::fuseAlerts(Util::flash())}}
 		</div>
 	</div>
 </div>
@@ -103,7 +103,7 @@
   				<?php $groups = array(); ?>
 
 					@foreach ($pageInstance->pageValues as $element)
-						
+
 						@if ($element->type == "string")
 							@include('infuse::page._string')
 						@elseif ($element->type == "text")
@@ -127,7 +127,7 @@
 					@if (isset($backUrl))
 					<a class="" href="{{$backUrl}}">Back</a>
 					@endif
-					@if (isset($deleteUrl)) 
+					@if (isset($deleteUrl))
 					<a class="" href="{{$deleteUrl}}" onclick="return confirm('Confirm delete?');" data-method='delete'>Delete</a>
 					@endif
 
@@ -135,13 +135,13 @@
 						<input type="submit" value="save" data-type-submit="save" class="saveSubmitButton" autocomplete="off">
 					</div>
 				</nav>
-				
+
 				@foreach ($groups as $group)
-					<div class="panel panel-default infusePageSerialize" 
-						data-serialize-tag="group" 
-						data-serialize-page-value="1" 
-						data-serialize-page-value-name="{{$group->name}}" 
-						data-serialize-page-value-description="{{$group->description}}" 
+					<div class="panel panel-default infusePageSerialize"
+						data-serialize-tag="group"
+						data-serialize-page-value="1"
+						data-serialize-page-value-name="{{$group->name}}"
+						data-serialize-page-value-description="{{$group->description}}"
 						data-serialize-page-value-id="{{$group->id}}">
 
 						<div class="panel-heading">
@@ -182,7 +182,7 @@
 				@if ($method == "PUT")
 				<input type="hidden" name="_method" value="{{$method}}">
 				@endif
-				
+
 				{{-- Laravel csrf token --}}
 				<input type="hidden" name="_token" value="{!! csrf_token() !!}" />
   		</form>
@@ -193,13 +193,13 @@
 
 </div> <!-- end of .container-fluid -->
 
-<?php 
+<?php
 // Only send neccessary json to javascript
-unset($pageInstance->pages); 
-unset($pageInstance->pagesKeys); 
+unset($pageInstance->pages);
+unset($pageInstance->pagesKeys);
 ?>
 <div class="hide">
-	<div class="pageDataPassToJs" data-page-data='{!! Util::arrayToJsonWithSingleQuoteFilter($pageInstance) !!}'></div>
+	<div class="pageDataPassToJs" data-page-data='{!! htmlspecialchars(Util::arrayToJsonWithSingleQuoteFilter($pageInstance)) !!}'></div>
 </div>
 
 <script type="text/javascript">
@@ -207,5 +207,3 @@ $(document).ready(function() {
 	window.InfusePages.init();
 });
 </script>
-
-
