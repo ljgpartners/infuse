@@ -18,7 +18,7 @@ class InfuseServiceProvider extends ServiceProvider {
    */
   public function boot()
   {
-    
+
 
     $this->loadViewsFrom(__DIR__.'/../views', "infuse");
 
@@ -72,8 +72,8 @@ class InfuseServiceProvider extends ServiceProvider {
     $this->app->register('Toddish\Verify\VerifyServiceProvider');
     $this->app->register('Barryvdh\Debugbar\ServiceProvider');
 
-    
-    
+
+
 
     $this->app->bind('InfuseController', function($app)
     {
@@ -91,10 +91,10 @@ class InfuseServiceProvider extends ServiceProvider {
         return new \InfusePageController(
           $user,
           $app['request'],
-          $app['session.store']
+          $this->app->session
         );
     });
-    
+
 
     $this->app['scaffold'] = $this->app->share(function($app)
     {
@@ -117,7 +117,8 @@ class InfuseServiceProvider extends ServiceProvider {
 
     $this->app['util'] = $this->app->share(function($app)
     {
-        return new Util($app['request']);
+        return new Util(
+            $app['request']);
     });
 
     $this->app['web.service'] = $this->app->share(function($app)
@@ -130,9 +131,9 @@ class InfuseServiceProvider extends ServiceProvider {
         return new Commands\InfuseDeploy();
     });
 
-    
 
-    
+
+
 
     $this->commands(array('command.infuse.deploy'));
 
@@ -145,9 +146,9 @@ class InfuseServiceProvider extends ServiceProvider {
     $loader->alias('Carbon', 'Carbon\Carbon');
     $loader->alias('InfuseModel', 'Bpez\Infuse\InfuseModel');
     $loader->alias('InfuseModelLibrary', 'Bpez\Infuse\InfuseModelLibrary');
-    $loader->alias('InfuseUserLibrary', 'Bpez\Infuse\InfuseUserLibrary'); 
-    
-    
+    $loader->alias('InfuseUserLibrary', 'Bpez\Infuse\InfuseUserLibrary');
+
+
   }
 
   /**

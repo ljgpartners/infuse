@@ -19,7 +19,7 @@ use Bpez\Infuse\FileUpload;
 class InfusePageController extends Bpez\Infuse\BaseController {
 
 
-	public function __construct(\InfuseUser $user, \Illuminate\Http\Request $request, \Illuminate\Session\Store $session)
+	public function __construct(\InfuseUser $user, \Illuminate\Http\Request $request,  \Illuminate\Session\SessionManager $session)
 	{
 		$this->session = $session;
 		$this->request = $request;
@@ -36,7 +36,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 
 		if (Input::has("infuse_pages_section")) {
 			$infusePagesSection = Input::get("infuse_pages_section");
-			Session::put('infuse_pages_section', $infusePagesSection);
+			$this->session->put('infuse_pages_section', $infusePagesSection);
 			$this->breadcrumbs->reset();
 		}
 
@@ -52,7 +52,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	 */
 	public function index()
 	{
-		$infusePagesSection = Session::get('infuse_pages_section');
+		$infusePagesSection = $this->session->get('infuse_pages_section');
 		$this->layout->infusePagesSection = $infusePagesSection;
 
 		try {
@@ -76,7 +76,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	public function create()
 	{
 		$this->layout->title = "Create Infuse Page | Infuse";
-		$infusePagesSection = Session::get('infuse_pages_section');
+		$infusePagesSection = $this->session->get('infuse_pages_section');
 		$this->layout->infusePagesSection = $infusePagesSection;
 
 		$resource = array();
@@ -116,7 +116,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	public function store()
 	{
 		$resource = array();
-		$infusePagesSection = Session::get('infuse_pages_section');
+		$infusePagesSection = $this->session->get('infuse_pages_section');
 		$nested = (Input::has("pri") && Input::has("pip"))? true : false;
 
 		// Update page
@@ -256,7 +256,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	public function edit($id)
 	{
 		$this->layout->title = "Edit Infuse Page | Infuse";
-		$infusePagesSection = Session::get('infuse_pages_section');
+		$infusePagesSection = $this->session->get('infuse_pages_section');
 		$this->layout->infusePagesSection = $infusePagesSection;
 		$nested = (Input::has("pip"))? true : false;
 
@@ -340,7 +340,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	public function update($id)
 	{
 		$resource = array();
-		$infusePagesSection = Session::get('infuse_pages_section');
+		$infusePagesSection = $this->session->get('infuse_pages_section');
 		$nested = (Input::has("pip"))? true : false;
 
 		// Update page
@@ -540,7 +540,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	public function destroy($id)
 	{
 		$resource = array();
-		$infusePagesSection = Session::get('infuse_pages_section');
+		$infusePagesSection = $this->session->get('infuse_pages_section');
 		$nested = (Input::has("pip"))? true : false;
 
 

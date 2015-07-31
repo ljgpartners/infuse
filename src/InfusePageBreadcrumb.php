@@ -2,7 +2,7 @@
 
 /*
 |--------------------------------------------------------------------------
-| InfusePageBreadcrumb 
+| InfusePageBreadcrumb
 |--------------------------------------------------------------------------
 |
 |
@@ -11,8 +11,8 @@
 class InfusePageBreadcrumb extends \SplDoublyLinkedList {
 
 
-	function __construct(\Illuminate\Http\Request $request, \Illuminate\Session\Store $session)
-	{	
+	function __construct(\Illuminate\Http\Request $request, \Illuminate\Session\SessionManager $session)
+	{
 		$this->session = $session;
 		//$this->sessio->forget('infuse_pages_breadcrumbs');
 		$this->request = $request;
@@ -23,21 +23,21 @@ class InfusePageBreadcrumb extends \SplDoublyLinkedList {
 	}
 
 	function __destruct()
-	{	
+	{
 		$this->session->put('infuse_pages_breadcrumbs', $this->serialize());
 	}
 
-	public function toArray() 
+	public function toArray()
 	{
 		$array = array();
-		foreach ($this as $k => $v) { 
+		foreach ($this as $k => $v) {
 		  $array[] = $v;
 		}
 		return $array;
 	}
 
 	public function reset()
-	{ 
+	{
 		$this->setIteratorMode(\SplDoublyLinkedList::IT_MODE_FIFO | \SplDoublyLinkedList::IT_MODE_DELETE);
 		foreach ($this as $k => $v) {}
 		$this->setIteratorMode(\SplDoublyLinkedList::IT_MODE_FIFO | \SplDoublyLinkedList::IT_MODE_KEEP);
@@ -49,7 +49,7 @@ class InfusePageBreadcrumb extends \SplDoublyLinkedList {
 		$nestedPageId = array_pop($nestedPageId);
 
 		$this->setIteratorMode(\SplDoublyLinkedList::IT_MODE_LIFO | \SplDoublyLinkedList::IT_MODE_KEEP);
-		
+
 		foreach ($this as $k => $v) {
 			if ($v['page_instance'] == $nestedPageId) {
 				$this->setIteratorMode(\SplDoublyLinkedList::IT_MODE_LIFO | \SplDoublyLinkedList::IT_MODE_DELETE);
@@ -59,7 +59,7 @@ class InfusePageBreadcrumb extends \SplDoublyLinkedList {
 	}
 
 	public function serialize()
-	{	
+	{
 		return $this->toArray();
 	}
 
@@ -73,8 +73,8 @@ class InfusePageBreadcrumb extends \SplDoublyLinkedList {
 	public function infusePageEdit(\InfusePage $infusePage, $pageInstance)
 	{
 		$breadcrumb = array(
-			"page_root_id" => $infusePage->id, 
-			"page_instance" => "page", 
+			"page_root_id" => $infusePage->id,
+			"page_instance" => "page",
 			"page_instance_title" => $pageInstance->pageProperties->pageTitle
 		);
 
@@ -85,8 +85,8 @@ class InfusePageBreadcrumb extends \SplDoublyLinkedList {
 	public function infusePageNestedEdit(\InfusePage $infusePage, $pageInstance, $pageInstanceId)
 	{
 		$breadcrumb = array(
-			"page_root_id" => $infusePage->id, 
-			"page_instance" => $pageInstanceId, 
+			"page_root_id" => $infusePage->id,
+			"page_instance" => $pageInstanceId,
 			"page_instance_title" => $pageInstance->pageProperties->pageTitle
 		);
 
