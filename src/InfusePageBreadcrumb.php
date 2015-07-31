@@ -16,15 +16,18 @@ class InfusePageBreadcrumb extends \SplDoublyLinkedList {
 		$this->session = $session;
 		//$this->sessio->forget('infuse_pages_breadcrumbs');
 		$this->request = $request;
-		if ($this->session->has('infuse_pages_breadcrumbs')) {
-			$this->unserialize($this->session->get('infuse_pages_breadcrumbs'));
+
+		$breadcrumbs = Util::flashArray('infuse_pages_breadcrumbs');
+
+		if ($breadcrumbs) {
+			$this->unserialize($breadcrumbs);
 		}
 		$this->setIteratorMode(\SplDoublyLinkedList::IT_MODE_FIFO | \SplDoublyLinkedList::IT_MODE_KEEP);
 	}
 
 	function __destruct()
 	{
-		$this->session->put('infuse_pages_breadcrumbs', $this->serialize());
+		Util::flashArray('infuse_pages_breadcrumbs', $this->serialize());
 	}
 
 	public function toArray()
@@ -60,14 +63,16 @@ class InfusePageBreadcrumb extends \SplDoublyLinkedList {
 
 	public function serialize()
 	{
-		return $this->toArray();
+		return json_encode($this->toArray());
 	}
 
 	public function unserialize($data)
 	{
+		$assoc = true;
+		$data = json_decode($data, $assoc);
 		foreach ($data as $item) {
-    	$this->push($item);
-  	}
+    		$this->push($item);
+  		}
 	}
 
 	public function infusePageEdit(\InfusePage $infusePage, $pageInstance)
