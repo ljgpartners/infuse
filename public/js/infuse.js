@@ -52,7 +52,7 @@ $(document).ready(function() {
 
 		  return mixed_var === +mixed_var && isFinite(mixed_var) && !(mixed_var % 1);
 		},
-		
+
 		// checking if a string is blank, null or undefined
 		isBlank: function (str) {
 		  return (!str || /^\s*$/.test(str));
@@ -67,7 +67,7 @@ $(document).ready(function() {
 		  	return false;
 		  }
 		},
-		
+
 	};
 
 	/*******************************************************
@@ -83,7 +83,7 @@ $(document).ready(function() {
 			bootstrapCollapse.addClass("active");
 			bootstrapCollapse.parent().parent().parent().addClass("in");
 			$(".sideNavSlideOut").toggle();
-		} 
+		}
 	});
 
 	$(".infuseManage").bind("click", function(event) {
@@ -110,27 +110,27 @@ $(document).ready(function() {
 	});
 
 	/*******************************************************
-   * Login Page 
+   * Login Page
    ********************************************************/
-	
+
 	$(".placeholder").placeholder();
 
 	$(".focusPassword").focus(function() {
   	$(this).attr("type", "password");
   });
-  
+
   $(".placeholder").placeholder();
   $(".infuseLogin form").submit( function() {
     var submitValidation = $(this).validate({errorClass: "errorInput"});
     return submitValidation.bool;
   });
-  
+
 
 	/*******************************************************
    * Twitter bootstrap - Collapse always one item open
    ********************************************************/
   $('.sideNavSlideOut .panel-heading a').on('click', function(event)
-  { 
+  {
     if($(this).parent().parent().find('.panel-collapse').hasClass('in'))	{
     	event.stopPropagation();
     	event.preventDefault();
@@ -179,10 +179,10 @@ if ($(".InfuseController").length > 0) {
 		if (typeof window[config] === "undefined") {
 			self.ckeditor();
 		} else {
-			self.ckeditor(window[config]); 
+			self.ckeditor(window[config]);
 		}
 	});
-	
+
 	$('.selectedDateTime').datetimepicker({ dateFormat: 'yy-mm-dd', timeFormat: 'HH:mm:ss', pickerTimeFormat: 'hh-mm-tt' });
 
 	$('.selectedDate').datepicker({ dateFormat: 'yy-mm-dd'});
@@ -201,13 +201,13 @@ if ($(".InfuseController").length > 0) {
 			type: 'POST',
 			url: $(this).data("url"),
 			data: data,
-			success: function (data) { 
+			success: function (data) {
 			 console.log(data);
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
 			  //console.log('AJAX call failed: ' + textStatus + ' ' + errorThrown);
 			}
-		}); // End of Ajax 
+		}); // End of Ajax
 	});
 
 
@@ -230,11 +230,11 @@ if ($(".InfuseController").length > 0) {
 				displayField: 'value',
 		    value: [self.data("filter-column"), 'contains'],
 		    data: [
-		    		{ id: self.data("filter-column"), value: self.text()}, 
+		    		{ id: self.data("filter-column"), value: self.text()},
 		    		{ id: 'contains', value: 'contains' },
-		    		{ id: 'equals', value: 'equals' }, 
-		    		{ id: 'less than', value: 'less than'}, 
-		    		{ id: 'greater than', value: 'greater than'}, 
+		    		{ id: 'equals', value: 'equals' },
+		    		{ id: 'less than', value: 'less than'},
+		    		{ id: 'greater than', value: 'greater than'},
 		    		{ id: 'not equal to', value: 'not equal to'}
 		      ]
 			});
@@ -254,7 +254,7 @@ if ($(".InfuseController").length > 0) {
 				second = self.data("filter-"+filterCount+"-second"),
 				third  = self.data("filter-"+filterCount+"-third"),
 				display = self.data("filter-"+filterCount+"-first-display");
-		
+
 		var input = $("<input class='filterInput"+filterCount+"' type='text' >");
 		$(".appendFilters").append(input.wrap("<div class='control-group'>"));
 		var magicSugggest = $(".filterInput"+filterCount).magicSuggest({
@@ -265,11 +265,11 @@ if ($(".InfuseController").length > 0) {
 				displayField: 'value',
 		    value: [first, second, third],
 		    data: [
-		    		{ id: first, value: display}, 
-		    		{ id: 'contains', value: 'contains' }, 
-		    		{ id: 'equals', value: 'equals' }, 
-		    		{ id: 'less than', value: 'less than'}, 
-		    		{ id: 'greater than', value: 'greater than'}, 
+		    		{ id: first, value: display},
+		    		{ id: 'contains', value: 'contains' },
+		    		{ id: 'equals', value: 'equals' },
+		    		{ id: 'less than', value: 'less than'},
+		    		{ id: 'greater than', value: 'greater than'},
 		    		{ id: 'not equal to', value: 'not equal to'},
 		    		{ id: third, value: third }
 		      ]
@@ -282,10 +282,10 @@ if ($(".InfuseController").length > 0) {
 	});
 
 	$(".clearFilters").click(function(event) {
-		$(".appendFilters").empty(); 
+		$(".appendFilters").empty();
 		$(".filtersForm").submit();
 	});
-	
+
 
 	$(".imageCrop").click(function() {
 		var self = $(this),
@@ -302,19 +302,19 @@ if ($(".InfuseController").length > 0) {
 		parent.find(".imagePreviewCropOn").prop('disabled', true).hide();
 		self.hide();
 
-			
+
 
 		var croppicContainerModalOptions = {
 			uploadUrl: path,
 			uploadData: {"action":"upload_temp_image"},
 			cropUrl: path,
-			cropData: {"action":"crop_image_send_back_url"}, 
+			cropData: {"action":"crop_image_send_back_url"},
 			modal: true,
 			imgEyecandyOpacity:0.4,
 			loaderHtml: loaderHtml,
-			width: width, 
+			width: width,
 			height: height,
-			onAfterImgCrop: function() { 
+			onAfterImgCrop: function() {
 				imagePreviewCrop.height(200);
 				$("#"+id+"CroppedImage").val(parent.find("#"+id+" .croppedImg").attr("src"));
 			},
@@ -327,11 +327,11 @@ if ($(".InfuseController").length > 0) {
 			}
 		}
 		var cropContainerModal = new Croppic(id, croppicContainerModalOptions);
-		
+
 		$("."+id+"_imgUploadForm").find('input[type="file"]').trigger('click');
 	});
 
-	
+
 
 	$('.childOrderColumn').on('click', ".childUpOrder", function(event){
 		event.preventDefault();
@@ -343,8 +343,8 @@ if ($(".InfuseController").length > 0) {
 				cssClass = self.parent().parent().data("class"),
 				row = self.closest('tr'),
 				prevId = row.prev().find(".childUpOrder").data("id");
-			
-		
+
+
 		if ($("tr."+cssClass).index(self.parent().parent()) != 0) {
 			$.ajax({
 				type: 'POST',
@@ -352,27 +352,27 @@ if ($(".InfuseController").length > 0) {
 				data: {
 					action: "swap_order",
 					column: column,
-					prevId: prevId, 
-					id: id, 
-					model: model, 
+					prevId: prevId,
+					id: id,
+					model: model,
 					column: column
 				},
-				success: function (data) { 
-				 
+				success: function (data) {
+
 				 if (data.success ) {
 					 row.prev().insertAfter(row);
 				 } else {
 				 	alert("Failed to reorder entries.");
 				 }
-				 
+
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 				  //console.log('AJAX call failed: ' + textStatus + ' ' + errorThrown);
 				}
-			}); // End of Ajax 
+			}); // End of Ajax
 		}
 
-		
+
 		return false;
 	});
 
@@ -385,7 +385,7 @@ if ($(".InfuseController").length > 0) {
 				column = self.data("column"),
 				row = self.closest('tr'),
 				prevId = row.next().find(".childUpOrder").data("id");
-				
+
 		if (row.next().length > 0) {
 			$.ajax({
 				type: 'POST',
@@ -393,26 +393,26 @@ if ($(".InfuseController").length > 0) {
 				data: {
 					action: "swap_order",
 					column: column,
-					prevId: prevId, 
-					id: id, 
-					model: model, 
+					prevId: prevId,
+					id: id,
+					model: model,
 					column: column
 				},
-				success: function (data) { 
-				 
+				success: function (data) {
+
 				 if (data.success ) {
 					 	row.insertAfter(row.next());
 				 } else {
 				 	alert("Failed to reorder entries.");
 				 }
-				 
+
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 				  //console.log('AJAX call failed: ' + textStatus + ' ' + errorThrown);
 				}
-			}); // End of Ajax 
+			}); // End of Ajax
 		}
-		
+
 		return false;
 	});
 
@@ -426,8 +426,8 @@ if ($(".InfuseController").length > 0) {
 				cssClass = self.parent().parent().data("class"),
 				row = self.closest('tr'),
 				prevId = row.prev().find(".upOrder").data("id");
-			
-		
+
+
 		if ($("tr."+cssClass).index(self.parent().parent()) != 0) {
 			$.ajax({
 				type: 'POST',
@@ -435,27 +435,27 @@ if ($(".InfuseController").length > 0) {
 				data: {
 					action: "swap_order",
 					column: column,
-					prevId: prevId, 
-					id: id, 
-					model: model, 
+					prevId: prevId,
+					id: id,
+					model: model,
 					column: column
 				},
-				success: function (data) { 
-				 
+				success: function (data) {
+
 				 if (data.success ) {
 					 window.location.href = url;
 				 } else {
 				 	alert("Failed to reorder entries.");
 				 }
-				 
+
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 				  //console.log('AJAX call failed: ' + textStatus + ' ' + errorThrown);
 				}
-			}); // End of Ajax 
+			}); // End of Ajax
 		}
 
-		
+
 		return false;
 	});
 
@@ -468,7 +468,7 @@ if ($(".InfuseController").length > 0) {
 				column = self.data("column"),
 				row = self.closest('tr'),
 				prevId = row.next().find(".upOrder").data("id");
-				
+
 		if (row.next().length > 0) {
 			$.ajax({
 				type: 'POST',
@@ -476,26 +476,26 @@ if ($(".InfuseController").length > 0) {
 				data: {
 					action: "swap_order",
 					column: column,
-					prevId: prevId, 
-					id: id, 
-					model: model, 
+					prevId: prevId,
+					id: id,
+					model: model,
 					column: column
 				},
-				success: function (data) { 
-				 
+				success: function (data) {
+
 				 if (data.success ) {
 					 	window.location.href = url;
 				 } else {
 				 	alert("Failed to reorder entries.");
 				 }
-				 
+
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 				  //console.log('AJAX call failed: ' + textStatus + ' ' + errorThrown);
 				}
-			}); // End of Ajax 
+			}); // End of Ajax
 		}
-		
+
 		return false;
 	});
 
@@ -528,7 +528,7 @@ if ($(".InfuseController").length > 0) {
 			}
 			value = tempArray;
 		}
-				
+
 		multiSelects[name] = self.magicSuggest({
 				allowFreeEntries: false,
 				name: name+multiSelectCount,
@@ -537,7 +537,7 @@ if ($(".InfuseController").length > 0) {
 				value: value,
 		    data: data
 		});
-		
+
 		$(multiSelects[name]).on('selectionchange', function(event, combo, selection){
 			$(".multiSelect"+name).val(multiSelects[name].getValue());
 		});
@@ -551,7 +551,7 @@ if ($(".InfuseController").length > 0) {
 			data: {
 				action: "clean_temp_folder",
 			},
-			success: function (data) { 
+			success: function (data) {
 			 if (data.status == "success") {
 				 	//console.log(data.message);
 			 }
@@ -568,7 +568,7 @@ if ($(".InfuseController").length > 0) {
 	**************************************************************************************/
 
   function resizeImportModal(self)
- 	{	
+ 	{
  		var newheight = self.height() - (self.find(".modal-header").height() + 18 + self.find(".modal-footer").height() + 30);
   	self.find(".modal-body").height(newheight);
  	}
@@ -578,10 +578,10 @@ if ($(".InfuseController").length > 0) {
 
 	var importModal = $(".importModal"),
 			activeForm = "form.search";
-			
+
 	importModal.on('show', function () {
 		var self = $(this);
-		if (parseInt(self.data("first"))) { 
+		if (parseInt(self.data("first"))) {
 			self.data("first", 0);
 			getImportData("", 1);
 		}
@@ -606,7 +606,7 @@ if ($(".InfuseController").length > 0) {
 		var self = $(this);
 		event.preventDefault();
 		if (parseInt(self.data("allow")) == 1) {
-			
+
 			if (activeForm == "form.search") {
 				var searchInput = importModal.find(" .searchBox form.search  .searchInput").val(); //AIzaSyAf3nSHLhtp3sscPuC27DOYdjcmC39ESvQ
 				getImportData(searchInput, parseInt(self.data("active_page")) - 1);
@@ -635,11 +635,11 @@ if ($(".InfuseController").length > 0) {
 					return false;
 				}
 
-				activeForm = "form.advancedSearch";  
-				getImportData(point, parseInt(self.data("active_page")) - 1); 
+				activeForm = "form.advancedSearch";
+				getImportData(point, parseInt(self.data("active_page")) - 1);
 			}
 		}
-	}); 
+	});
 
 	importModal.find('.loadMoreResultsNext').on("click", function(event)
 	{
@@ -674,9 +674,9 @@ if ($(".InfuseController").length > 0) {
 					alert("Latitude & Longitude format inccorect don't forget the comma.");
 					return false;
 				}
-				
-				activeForm = "form.advancedSearch";  
-				getImportData(point, parseInt(self.data("active_page")) + 1); 
+
+				activeForm = "form.advancedSearch";
+				getImportData(point, parseInt(self.data("active_page")) + 1);
 			}
 		}
 	});
@@ -690,10 +690,10 @@ if ($(".InfuseController").length > 0) {
 		// Regular search columns
 		if (self.hasClass("search")) {
 			var searchInput = self.find(".searchInput").val();
-			activeForm = "form.search"; 
+			activeForm = "form.search";
 			getImportData(searchInput, 1);
-			
-			// Submit for lat & long distance 
+
+			// Submit for lat & long distance
 		} else if (self.hasClass("advancedSearch")) {
 			var point = {}, temp = null;
 			point['search'] = self.find(".searchField").val(),
@@ -717,27 +717,27 @@ if ($(".InfuseController").length > 0) {
 				alert("Latitude & Longitude format inccorect don't forget the comma.");
 				return false;
 			}
-			
-			activeForm = "form.advancedSearch";  
-			getImportData(point, 1); 
+
+			activeForm = "form.advancedSearch";
+			getImportData(point, 1);
 		}
-		
+
 	});
 
 
-	
-		
+
+
 
 
   function getImportData(search, pg)
-  {	
+  {
   	search = typeof search !== 'undefined' ? search : "";
   	pg = typeof pg !== 'undefined' ? pg : 1;
   	var point = {};
 
   	if (typeof search == "object") {
   		point = search,
-  		search = point.search; 
+  		search = point.search;
   	} else {
   		point.latitude = "";
   		point.longitude = "";
@@ -750,8 +750,8 @@ if ($(".InfuseController").length > 0) {
 
   	var modal = $(".importModal"),
   			id = modal.attr('id');
-				list = modal.data("list"), 
-				map = modal.data("map"), 
+				list = modal.data("list"),
+				map = modal.data("map"),
 				child = modal.data("child"),
 				resource = modal.data("resource"),
 				loading = modal.find(".loading"),
@@ -759,12 +759,12 @@ if ($(".InfuseController").length > 0) {
 				modelImportingToId = modal.data("model-importing-to-id"),
 				foriegnKey = modal.data("related-foriegn-key"),
 				parentId = modal.data("related-parent-id");
-		
+
   	loading.show();
-  	
+
   	// Clear out old ones
   	modal.find(".modal-body .importModalAccordion, .modal-body .addedRow").remove();
-  	
+
   	// Refresh results
   	$.ajax({
 			type: 'POST',
@@ -778,19 +778,19 @@ if ($(".InfuseController").length > 0) {
 				map: map,
 				pg: pg,
 				id: id,
-				modelImportingToId: modelImportingToId, 
+				modelImportingToId: modelImportingToId,
 				modelImportingTo: modelImportingTo,
-				latitude: point.latitude, 
+				latitude: point.latitude,
 				longitude: point.longitude,
 				distance: point.distance,
-				foriegnKey: foriegnKey, 
+				foriegnKey: foriegnKey,
 				parentId: parentId
 			},
 			success: function (data, textStatus, jqXHR ) {
-			 
+
 			 var successModal = $(".importModal"),
 			 		 list = successModal.data("list");
-				
+
 			 if (data.status == "success") {
 				 successModal.find(".loading").hide();
 				 if (data.entries.length > 0) {
@@ -812,7 +812,7 @@ if ($(".InfuseController").length > 0) {
 			error: function (jqXHR, textStatus, errorThrown) {
 			  //console.log('AJAX call failed: ' + textStatus + ' ' + errorThrown);
 			}
-		}); // End of Ajax 
+		}); // End of Ajax
 
 		// Free up memory
 		id = null, list = null, map = null, child = null, resource = null, search = null,
@@ -824,7 +824,7 @@ if ($(".InfuseController").length > 0) {
   {
   	var times = Math.ceil(parseInt(pagination.count)/parseInt(pagination.limit));
   	modal.find(".loadMoreResultsPrev, .loadMoreResultsNext").data("active_page", pagination.active_page);
-  	
+
   	if (parseInt(pagination.active_page) != 1)
   		modal.find(".loadMoreResultsPrev").data("allow", 1).parent().removeClass("disabled");
   	else
@@ -848,7 +848,7 @@ if ($(".InfuseController").length > 0) {
 		tr = null, td = null, modal = null, pagination = null;
   }
 
-  
+
   $(document).on("click", ".addedRow", function()
   {
   	var self = $(this);
@@ -875,7 +875,7 @@ if ($(".InfuseController").length > 0) {
   		if (attachment == "image") {
   			var tempColumn = overiteColumn.split("@");
   					overiteColumn = tempColumn[0];
-  			originalEntryForm.find(".importReplace"+overiteColumn).attr("type", "text").val(value); 
+  			originalEntryForm.find(".importReplace"+overiteColumn).attr("type", "text").val(value);
   		} else if (String(attachment).indexOf("combine_") > -1) {
   			var tempColumn = overiteColumn.split("@");
   					overiteColumn = tempColumn[0],
@@ -887,7 +887,7 @@ if ($(".InfuseController").length > 0) {
   			} else {
   				combine[combineColumn] = new Array(overiteColumn+"#"+value);
   			}
-  			
+
 
   		} else if (attachment == "convert_text") {
   			var tempColumn = overiteColumn.split("@");
@@ -895,7 +895,7 @@ if ($(".InfuseController").length > 0) {
   					newInput = null,
   					oldInput = originalEntryForm.find(".importReplace"+overiteColumn);
 
-  			
+
 
   			// Transform from one input to text input
   			$(".importRemove"+overiteColumn).remove();
@@ -908,7 +908,7 @@ if ($(".InfuseController").length > 0) {
   			}
 
   			if (oldInput.is("input")) {
-  				originalEntryForm.find(".importReplace"+overiteColumn).attr("type", "text").val(value); 
+  				originalEntryForm.find(".importReplace"+overiteColumn).attr("type", "text").val(value);
   			} else if (oldInput.is("select")) {
   				originalEntryForm.find(".importReplace"+overiteColumn).find('option').remove().end().append('<option value="'+value+'">'+value+'</option>').val(value);
   			}
@@ -916,9 +916,9 @@ if ($(".InfuseController").length > 0) {
   		} else {
   			originalEntryForm.find(".importReplace"+overiteColumn).val(value);
   		}
-  		
+
   	});
-  	
+
   	$("#"+modalId).modal('hide');
 
 		var div = $("<div>").addClass("alert alert-success"),
@@ -928,12 +928,12 @@ if ($(".InfuseController").length > 0) {
 				h4 = $("<h4>").text("Successfully imported fields.");
 		div.append(buton).append(h4);
   	$(".page-header").append(div);
-  }); 
- 
+  });
+
 
 	$(".oneRolePerUser").change(function(){
 		var self = $(this);
-	  if(this.checked){ 
+	  if(this.checked){
 	      //unchecked to checked
 	      $(".oneRolePerUser").not(self).prop('checked', false);
 	  }	else	{
@@ -980,8 +980,5 @@ if ($(".InfuseController").length > 0) {
 /*******************************************************
  * END OF Infuse resource action
  ********************************************************/
-	
+
 });
-
-
-

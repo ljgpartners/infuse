@@ -66,10 +66,11 @@ window.InfusePages  = {
 			$(".infuseSubPageCreateId").val(chance.hash({length: 15}));
 
 			$('[data-method]').append(function(){
-				return "\n"+
-				"<form action='"+$(this).attr('href')+"' method='POST' style='display:none'>\n"+
-				"   <input type='hidden' name='_method' value='"+$(this).attr('data-method')+"'>\n"+
-				"</form>\n"
+				return "\n" +
+				"<form action='" + $(this).attr('href') + "' method='POST' style='display:none'>\n" +
+				"   <input type='hidden' name='_method' value='" + $(this).attr('data-method') + "'>\n" +
+				"   <input type='hidden' name='_token' value='" + $('meta[name="csrf-token"]').attr('content') + "'>\n" +
+				"</form>\n";
 			})
 			.removeAttr('href')
 			.attr('style','cursor:pointer;')
@@ -526,10 +527,10 @@ window.InfusePages  = {
 				//console.log(pageItem);
 				switch(pageItem.data("serialize-tag")) {
 					case "pageTitle":
-						self.pageData.pageProperties.pageTitle = pageItem.text().trim();
+						self.pageData.pageProperties.pageTitle = pageItem.text();
 						break;
 					case "pageDescription":
-						self.pageData.pageProperties.pageDescription = pageItem.text().trim();
+						self.pageData.pageProperties.pageDescription = pageItem.text();
 						break;
 					default:
 						var temp = self.infusePageSerializePrepItem(pageItem);
@@ -553,11 +554,11 @@ window.InfusePages  = {
 
 				if (tempItems.length > 0 && panel.data("serialize-page-value") == 1) {
 					var group = {
-						"id": panel.data("serialize-page-value-id").trim(),
+						"id": panel.data("serialize-page-value-id"),
 						"type": "group",
-						"name": panel.data("serialize-page-value-name").trim(),
+						"name": panel.data("serialize-page-value-name"),
 						"value": tempItems,
-						"description": panel.data("serialize-page-value-description").trim(),
+						"description": panel.data("serialize-page-value-description"),
 					};
 					self.pageData.pageValues.push(group);
 				}
@@ -569,10 +570,10 @@ window.InfusePages  = {
 			var tempPageObject = {"id": "", "type": "", "name":"", "value": "", "description": ""};
 
 			if (pageItem.data("serialize-page-value") == 1) {
-				tempPageObject.id = pageItem.data("serialize-page-value-id").trim();
-				tempPageObject.name = pageItem.data("serialize-page-value-name").trim();
-				tempPageObject.description = pageItem.data("serialize-page-value-description").trim();
-				tempPageObject.value = pageItem.val().trim();
+				tempPageObject.id = pageItem.data("serialize-page-value-id");
+				tempPageObject.name = pageItem.data("serialize-page-value-name");
+				tempPageObject.description = pageItem.data("serialize-page-value-description");
+				tempPageObject.value = pageItem.val();
 
 				if (pageItem.is("input")) {
 					if (pageItem.attr("type") == "text") {

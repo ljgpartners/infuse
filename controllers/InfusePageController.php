@@ -34,12 +34,38 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 
 		$this->breadcrumbs = new InfusePageBreadcrumb($this->request, $this->session);
 
+
+		/**********************************************
+		 * Group selector a way to switch between
+		 * using infuse_pages_section and new
+		 * unique ability for selecting group. Both ways
+		 * kept for backwards capability
+		 **********************************************/
+		$this->groupSelector = "navigation_section";
+		$this->groupSelectorValue = null;
+
 		if (Input::has("infuse_pages_section")) {
 			$infusePagesSection = Input::get("infuse_pages_section");
 			$this->session->put('infuse_pages_section', $infusePagesSection);
 			$this->breadcrumbs->reset();
-		}
 
+			$this->groupSelectorValue = $infusePagesSection;
+
+			// Check if unique present
+
+			$upi = Input::get("upi", false);
+			$this->session->put('infuse_pages_unique', $upi);
+
+			if (Input::has("upi")) {
+				$this->groupSelector = "unique";
+				$this->groupSelectorValue = $upi;
+			}
+
+		} else {
+			$this->groupSelector = ($this->session->get('infuse_pages_unique')) ?  "unique" : "navigation_section";
+			$this->groupSelectorValue = ($this->session->get('infuse_pages_unique')) ?
+				$this->session->get('infuse_pages_unique') : $this->session->get('infuse_pages_section');
+		}
 
 	}
 
@@ -52,14 +78,13 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	 */
 	public function index()
 	{
-		$infusePagesSection = $this->session->get('infuse_pages_section');
-		$this->layout->infusePagesSection = $infusePagesSection;
-
 		try {
+
 			$infusePage = InfusePage::select(DB::raw("id, title, page_data->'page' as page_data"))
-				->where("navigation_section", "=", $infusePagesSection)
+				->where($this->groupSelector, "=", $this->groupSelectorValue)
 				->orderBy(DB::raw("display_order = 0, display_order"))
 				->firstOrFail();
+
 		} catch (ModelNotFoundException $e) {
 			return Redirect::route('admin.page.create');
 		}
@@ -77,14 +102,16 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	{
 		$this->layout->title = "Create Infuse Page | Infuse";
 		$infusePagesSection = $this->session->get('infuse_pages_section');
+		$infusePagesUnique = $this->session->get('infuse_pages_unique');
 		$this->layout->infusePagesSection = $infusePagesSection;
+		$this->layout->infusePagesUnique = $infusePagesUnique;
 
 		$resource = array();
 		$resource['method'] = "POST";
 		$nested = (Input::has("pri") && Input::has("pip"))? true : false;
 
 		// Get all top level pages
-		$resource['infusePages'] = InfusePage::where("navigation_section", "=", $infusePagesSection)
+		$resource['infusePages'] = InfusePage::where($this->groupSelector, "=", $this->groupSelectorValue)
 			->orderBy(DB::raw("display_order = 0, display_order"))
 			->get();
 
@@ -117,6 +144,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	{
 		$resource = array();
 		$infusePagesSection = $this->session->get('infuse_pages_section');
+		$infusePagesUnique = $this->session->get('infuse_pages_unique');
 		$nested = (Input::has("pri") && Input::has("pip"))? true : false;
 
 		// Update page
@@ -128,6 +156,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 
 				$infusePage = new InfusePage;
 				$infusePage->navigation_section = $infusePagesSection;
+				$infusePage->unique = $infusePagesUnique;
 				$path = Config::get('view.paths');
 				$path = $path[0];
 				$infusePage->page_data = \File::get(public_path('bpez/infuse').'/other/page_template.json');
@@ -164,7 +193,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 
 				try {
 					$infusePage = InfusePage::select(DB::raw("id, title, page_data, {$psqlSelectOnlyNestedInstance}"))
-						->where("navigation_section", "=", $infusePagesSection)
+						->where($this->groupSelector, "=", $this->groupSelectorValue)
 						->where("id", "=", $pri)
 						->firstOrFail();
 					$fullJsonColumn = $infusePage->page_data;
@@ -257,7 +286,9 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	{
 		$this->layout->title = "Edit Infuse Page | Infuse";
 		$infusePagesSection = $this->session->get('infuse_pages_section');
+		$infusePagesUnique = $this->session->get('infuse_pages_unique');
 		$this->layout->infusePagesSection = $infusePagesSection;
+		$this->layout->infusePagesUnique = $infusePagesUnique;
 		$nested = (Input::has("pip"))? true : false;
 
 		if (Input::has("pop")) {
@@ -272,7 +303,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 		$resource['method'] = "PUT";
 
 		// Get all top level pages
-		$resource['infusePages'] = InfusePage::where("navigation_section", "=", $infusePagesSection)
+		$resource['infusePages'] = InfusePage::where($this->groupSelector, "=", $this->groupSelectorValue)
 			->orderBy(DB::raw("display_order = 0, display_order"))
 			->get();
 
@@ -280,7 +311,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 		if (!$nested) {
 			try {
 				$resource['infusePage'] = InfusePage::select(DB::raw("id, title, page_data->'page'  as page_data"))
-					->where("navigation_section", "=", $infusePagesSection)
+					->where($this->groupSelector, "=", $this->groupSelectorValue)
 					->where("id", "=", $id)
 					->firstOrFail();
 
@@ -309,7 +340,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 			$psqlSelectOnlyNestedInstance .= " as page_instance ";
 
 			$resource['infusePage'] = InfusePage::select(DB::raw("id, title, {$psqlSelectOnlyNestedInstance}"))
-				->where("navigation_section", "=", $infusePagesSection)
+				->where($this->groupSelector, "=", $this->groupSelectorValue)
 				->where("id", "=", $id)->firstOrFail();
 
 			$resource['pageInstance'] = json_decode($resource['infusePage']->page_instance);
@@ -341,6 +372,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	{
 		$resource = array();
 		$infusePagesSection = $this->session->get('infuse_pages_section');
+		$infusePagesUnique = $this->session->get('infuse_pages_unique');
 		$nested = (Input::has("pip"))? true : false;
 
 		// Update page
@@ -367,7 +399,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 
 			try {
 				$infusePage =  InfusePage::select(DB::raw("id, title, page_data, {$select}"))
-					->where("navigation_section", "=", $infusePagesSection)
+					->where($this->groupSelector, "=", $this->groupSelectorValue)
 					->where("id", "=", $id)
 					->firstOrFail();
 			} catch (ModelNotFoundException $e) {
@@ -541,12 +573,13 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 	{
 		$resource = array();
 		$infusePagesSection = $this->session->get('infuse_pages_section');
+		$infusePagesUnique = $this->session->get('infuse_pages_unique');
 		$nested = (Input::has("pip"))? true : false;
 
 
 		if (!$nested) {
 
-			$infusePage =  InfusePage::where("navigation_section", "=", $infusePagesSection)
+			$infusePage =  InfusePage::where($this->groupSelector, "=", $this->groupSelectorValue)
 					->where("id", "=", $id)
 					->firstOrFail();
 			if ($infusePage->delete()) {
@@ -578,7 +611,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 
 			try {
 				$infusePage = InfusePage::select(DB::raw("id, title, page_data, {$psqlSelectOnlyNestedInstance}"))
-					->where("navigation_section", "=", $infusePagesSection)
+					->where($this->groupSelector, "=", $this->groupSelectorValue)
 					->where("id", "=", $id)
 					->firstOrFail();
 				$fullJsonColumn = $infusePage->page_data;

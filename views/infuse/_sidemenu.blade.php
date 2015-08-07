@@ -18,8 +18,8 @@
 		</div>
 	</a>
 
-	
-	
+
+
 
 	<div class="sideNavSlideOut">
 		<?php $count = 0; ?>
@@ -28,7 +28,7 @@
 			@foreach ($navigation as $firstNavLevel => $topLevel )
 
 
-				
+
 			  <div class="panel panel-default">
 
 			    <div class="panel-heading" role="tab" id="heading{{$count}}">
@@ -44,24 +44,36 @@
 			        <ul class="list-group">
 
 								@foreach ($topLevel as $secondNavLevel => $secondLevel )
-									
-									@if (is_array($secondLevel)) 
-										@if (($superAdmin && $databaseConnectionType == "pgsql")  || (isset($databaseConnectionType) && $databaseConnectionType == "pgsql" && Util::checkPsqlPagesExist($countInner+1))) 
-							    	<li class="list-group-item" data-active="{{$firstNavLevel}}{{$secondNavLevel}}">
-							    		<a href="/admin/page?infuse_pages_section={{$countInner+1}}">{{$secondLevel['name']}}</a>
-							    	</li>
-							    	@elseif (count($secondLevel) > 1)
-							    	<?php 
-								    	$keys = array_keys($secondLevel);
-											$key = $keys[2];
-											$value = $secondLevel[$key]
-										?>
-							    	<li class="list-group-item"  data-active="{{$firstNavLevel}}{{$secondNavLevel}}">
-							    		<a href="/admin/resource/{{$firstNavLevel}}/{{$secondNavLevel}}/{{$value}}">{{$secondLevel['name']}}</a>
-							    	</li>
+
+									@if (is_array($secondLevel))
+
+
+										@if (($superAdmin && $databaseConnectionType == "pgsql") ||
+											(isset($databaseConnectionType) &&
+											$databaseConnectionType == "pgsql" &&
+											Util::checkPsqlPagesExist($countInner+1))
+										)
+
+										{{-- Only unique if present to support past versions of infuse pages --}}
+										<?php $uniquePageIdentifier = (isset($secondLevel['unique'])) ? "&upi={$secondLevel['unique']}" : ""; ?>
+
+								    	<li class="list-group-item" data-active="{{$firstNavLevel}}{{$secondNavLevel}}">
+								    		<a href="/admin/page?infuse_pages_section={{$countInner+1}}{{$uniquePageIdentifier}}">{{$secondLevel['name']}}</a>
+								    	</li>
+
+								    	@elseif (count($secondLevel) > 1)
+								    	<?php
+									    	$keys = array_keys($secondLevel);
+												$key = $keys[2];
+												$value = $secondLevel[$key]
+											?>
+								    	<li class="list-group-item"  data-active="{{$firstNavLevel}}{{$secondNavLevel}}">
+								    		<a href="/admin/resource/{{$firstNavLevel}}/{{$secondNavLevel}}/{{$value}}">{{$secondLevel['name']}}</a>
+								    	</li>
+								    	@endif
+
+							    		<?php $countInner++; ?>
 							    	@endif
-							    	<?php $countInner++; ?>
-							    @endif
 
 								@endforeach
 							</ul>
@@ -114,7 +126,7 @@
 		</a>
 	@endif
 
-	@if ($superAdmin && $databaseConnectionType == "pgsql")  
+	@if ($superAdmin && $databaseConnectionType == "pgsql")
 		<a class="navLink" href="/admin/resource/infuse/page/infuse_page">
 			<div class="inner">
 				<span class="glyphicon glyphicon-file"></span> Infuse pages
@@ -125,7 +137,6 @@
 	<div class="logoSideNav">
 		<img src="/bpez/infuse/images/infuseLogo.png" alt="">
 	</div>
-	
+
 
 </nav>
-

@@ -23,7 +23,7 @@ return array(
 	'modelDescription' => "Pages for infuse",
 	'limit' => 10,
 	'order' => array("order" => "desc", "column" => "created_at"),
-	'listColumns' => array("title", "display_order"),
+	'listColumns' => array("title", "display_order", "unique"),
 	'addSelect' => array("column" => 'navigation_section', "array" => $navigationSection),
 
 );
