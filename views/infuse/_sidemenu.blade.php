@@ -47,15 +47,16 @@
 
 									@if (is_array($secondLevel))
 
+										<?php $uniqueCheck = (isset($secondLevel['unique']))? $secondLevel['unique'] : false; ?>
 
 										@if (($superAdmin && $databaseConnectionType == "pgsql") ||
 											(isset($databaseConnectionType) &&
 											$databaseConnectionType == "pgsql" &&
-											Util::checkPsqlPagesExist($countInner+1))
+											Util::checkPsqlPagesExist($countInner+1, $uniqueCheck))
 										)
 
 										{{-- Only unique if present to support past versions of infuse pages --}}
-										<?php $uniquePageIdentifier = (isset($secondLevel['unique'])) ? "&upi={$secondLevel['unique']}" : ""; ?>
+										<?php $uniquePageIdentifier = ($uniqueCheck) ? "&upi={$uniqueCheck}" : ""; ?>
 
 								    	<li class="list-group-item" data-active="{{$firstNavLevel}}{{$secondNavLevel}}">
 								    		<a href="/admin/page?infuse_pages_section={{$countInner+1}}{{$uniquePageIdentifier}}">{{$secondLevel['name']}}</a>
@@ -64,9 +65,15 @@
 								    	@elseif (count($secondLevel) > 1)
 								    	<?php
 									    	$keys = array_keys($secondLevel);
-												$key = $keys[2];
-												$value = $secondLevel[$key]
-											?>
+											$value = null;
+
+											foreach($keys as $key) {
+												if ($key != "name" && $key != "description" && $key != "unique") {
+													$value = $secondLevel[$key];
+													break;
+												}
+											}
+										?>
 								    	<li class="list-group-item"  data-active="{{$firstNavLevel}}{{$secondNavLevel}}">
 								    		<a href="/admin/resource/{{$firstNavLevel}}/{{$secondNavLevel}}/{{$value}}">{{$secondLevel['name']}}</a>
 								    	</li>

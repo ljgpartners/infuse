@@ -5,9 +5,9 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /*
 |--------------------------------------------------------------------------
-| Util 
+| Util
 |--------------------------------------------------------------------------
-| This class contains helper methods used by infuse 
+| This class contains helper methods used by infuse
 |
 */
 
@@ -16,7 +16,7 @@ class Util {
 	protected $request;
 
 	public function __construct(\Illuminate\Http\Request $request)
-	{	
+	{
 		$this->request = $request;
 	}
 
@@ -28,7 +28,7 @@ class Util {
 
 	public static function get($name)
 	{
-		return (isset($_POST["{$name}"]))? $_POST["{$name}"] : 
+		return (isset($_POST["{$name}"]))? $_POST["{$name}"] :
 			((isset($_GET["{$name}"]))? $_GET["{$name}"] : false);
 	}
 
@@ -38,7 +38,7 @@ class Util {
 	}
 
 
-	public static function truncateText($text, $nbrChar, $append = '...') 
+	public static function truncateText($text, $nbrChar, $append = '...')
 	{
 		if (strlen($text) > $nbrChar) {
 	  	$text = substr($text, 0, $nbrChar);
@@ -47,27 +47,27 @@ class Util {
 	  return $text;
 	}
 
-	public static function cleanName($name) 
+	public static function cleanName($name)
 	{
 		return ucfirst(str_replace('_', ' ', $name));
 	}
 
-	public static function getForeignKeyString($class) 
+	public static function getForeignKeyString($class)
 	{
 		return strtolower(self::camel2under(get_class($class)))."_id";
 	}
 
-	public static function foreignKeyString($modelString) 
+	public static function foreignKeyString($modelString)
 	{
 		return strtolower(self::camel2under($modelString))."_id";
 	}
 
-	public static function foreignKeyStringToCleanName($modelString) 
-	{	
+	public static function foreignKeyStringToCleanName($modelString)
+	{
 		return self::cleanName(str_replace('_id', '', $modelString));
 	}
 
-	public static function createForeignKeyString($modelString) 
+	public static function createForeignKeyString($modelString)
 	{
 		return strtolower(self::camel2under($modelString))."_id";
 	}
@@ -106,7 +106,7 @@ class Util {
 		} else {
 			return false;
 		}
-		
+
 	}
 
 	public static function flashArray($index, $message = null)
@@ -121,7 +121,7 @@ class Util {
 		} else {
 			return false;
 		}
-		
+
 	}
 
 
@@ -221,7 +221,7 @@ class Util {
 	public static function childActionLink($model, $action, $id = null)
 	{
 		$model = self::camel2under($model);
-		
+
 		if (self::stackSize() == 1) {
 			$top = self::stackPop();
 			$baseUri  = $top[2]."/child";
@@ -230,38 +230,38 @@ class Util {
 			$baseUri  = $top[2];
 		}
 		self::stackPush($top[0], $top[1], $top[2]);
-		
+
 		if ($id == null) {
 			return "/{$baseUri}?stack={$model}&action=c";
 		} else {
 			return "/{$baseUri}?stack={$model}&action={$action}&id={$id}";
 		}
-		 
+
 	}
-	
+
 	public static function childBackLink($action = "e", $overrideId = null)
 	{
-		if (self::stackSize() == 2) { 
+		if (self::stackSize() == 2) {
 			$parent = self::stackParent();
 			$id = $parent[1];
 			$baseUri = $parent[2];
 		 	return "/{$baseUri}?action=e&id={$id}";
-		} else { 
+		} else {
 			$parent = self::stackParent();
 			$model = $parent[0];
 			$id = $parent[1];
 			$baseUri = $parent[2];
 			return "/{$baseUri}?stack={$model}&action=e&id={$id}";
 		}
-			
+
 	}
 
 	public static function redirectUrlChildSaveFailed($id = false)
 	{
-		$parent = self::stackPop(); 
+		$parent = self::stackPop();
 		$model = $parent[0];
 		$baseUri = $parent[2];
-		if ($id) 
+		if ($id)
 			return "/{$baseUri}?stack={$model}&action=e&id={$id}";
 		else
 			return "/{$baseUri}?stack={$model}&action=c";
@@ -292,7 +292,7 @@ class Util {
 		return $path;
 	}
 
-	public static function classToString($instance) 
+	public static function classToString($instance)
 	{
 		return strtolower(self::camel2under(get_class($instance)));
 	}
@@ -315,7 +315,7 @@ class Util {
 			case 'e':
 					$return = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'])."?action=e&id={$overrideId}";
 					break;
-			
+
 			default:
 				$return = str_replace("?".$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
 				break;
@@ -366,33 +366,33 @@ class Util {
 	}
 
 
-	public static function camel2under($str) 
-  { 
-     /* The e modifier is deprecated as of PHP 5.5.0 . 
-     		Replace preg_replace() e modifier with preg_replace_callback 
-	     $regexp = '#(?<!=^)[A-Z]#e'; 
-	     $str = preg_replace($regexp, "'_'.strtolower('\\0')", $str); 
+	public static function camel2under($str)
+  {
+     /* The e modifier is deprecated as of PHP 5.5.0 .
+     		Replace preg_replace() e modifier with preg_replace_callback
+	     $regexp = '#(?<!=^)[A-Z]#e';
+	     $str = preg_replace($regexp, "'_'.strtolower('\\0')", $str);
      */
-	   $regexp = '#(?<!=^)[A-Z]#'; 
+	   $regexp = '#(?<!=^)[A-Z]#';
      $str = preg_replace_callback($regexp, function($matches){ return '_'.strtolower($matches[0]); }, $str);
 
      if (substr($str, 0, 1) == "_"){
      	return  substr($str, 1);
      } else {
-     	return $str; 
+     	return $str;
      }
-  } 
+  }
 
-  public static function under2camel($str)  
-  { 
-  	/* The e modifier is deprecated as of PHP 5.5.0 . 
-     	 Replace preg_replace() e modifier with preg_replace_callback 
-       $regexp = '#_(.)#e'; 
-       return preg_replace($regexp, "strtoupper('\\1')", $str); 
+  public static function under2camel($str)
+  {
+  	/* The e modifier is deprecated as of PHP 5.5.0 .
+     	 Replace preg_replace() e modifier with preg_replace_callback
+       $regexp = '#_(.)#e';
+       return preg_replace($regexp, "strtoupper('\\1')", $str);
     */
     $regexp = '#_(.)#';
     return ucfirst(preg_replace_callback($regexp, function($matches){ return strtoupper($matches[1]); }, $str));
-  } 
+  }
 
 
 	 /**
@@ -464,7 +464,7 @@ class Util {
 
 
   public static function fuseAlerts($message)
-	{	
+	{
 		if ($message) {
 			switch ($message['type']) {
 				case 'warning':
@@ -489,14 +489,14 @@ class Util {
 					    '.$message['message'].'
 					  </div>';
 		}
-		
+
 	}
-	
-
-	
 
 
-	public static function outputCSV($data) 
+
+
+
+	public static function outputCSV($data)
 	{
       $outputBuffer = fopen("php://output", 'w');
       foreach($data as $val) {
@@ -506,7 +506,7 @@ class Util {
   }
 
 
-  public static function returnCSVDataAsFile($filename, $data) 
+  public static function returnCSVDataAsFile($filename, $data)
 	{
       header("Content-type: text/csv");
 	    header("Content-Disposition: attachment; filename={$filename}.csv");
@@ -516,11 +516,11 @@ class Util {
 	    exit();
   }
 
-  public static function importCSV($filename, $keysOnly = false) 
+  public static function importCSV($filename, $keysOnly = false)
 	{
 	  $header = false;
 		$data = array();
-		
+
 		ini_set('auto_detect_line_endings', true);
 		if(($handle = fopen($filename, "r")) !== FALSE)	{
 			while(($row = fgetcsv($handle, 1000, ",")) !== FALSE)	{
@@ -547,10 +547,10 @@ class Util {
   {
   	return (isset($column['readOnly']))? 'disabled="disabled"' : "";
   }
-  
 
 
-  public static function checkInfuseLoginFields($infuseLogin, $column) 
+
+  public static function checkInfuseLoginFields($infuseLogin, $column)
 	{
       if ($infuseLogin && $column['field'] == 'password')
       	return false;
@@ -565,9 +565,9 @@ class Util {
 
       return true;
   }
-  
+
 	public static function checkPermission($user, $model, $action)
-	{	
+	{
 		return (\Config::get("infuse::role_permission"))? $user->can(self::classToString($model)."_".$action) : true;
 	}
 
@@ -600,12 +600,19 @@ STRING;
 		}
 	}
 
-	public static function checkPsqlPagesExist($index)
+	public static function checkPsqlPagesExist($index, $unique = false)
 	{
-		try { 
-			\InfusePage::select("id")
-				->where("navigation_section", "=", $index)
-				->firstOrFail();
+		try {
+			if ($unique) {
+				\InfusePage::select("id")
+					->where("unique", "=", $unique)
+					->firstOrFail();
+			} else {
+				\InfusePage::select("id")
+					->where("navigation_section", "=", $index)
+					->firstOrFail();
+			}
+
 			$infusePage = true;
 		} catch (ModelNotFoundException $e) {
 			$infusePage = false;
