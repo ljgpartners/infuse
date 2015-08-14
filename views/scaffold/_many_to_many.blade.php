@@ -1,4 +1,4 @@
-<?php 
+<?php
 function convert($size)
 		{
 		    $unit=array('b','kb','mb','gb','tb','pb');
@@ -39,13 +39,13 @@ $model = get_class($entry);
 			if (isset($extraConfig['sectionName'])) {
 				$sectionName = $extraConfig['sectionName'];
 			}
-			
+
 		} else {
 			$callBackDisplayCheck = function() { return true; };
 		}
 
-		
-		 
+
+
 
 		if ($model == $firstModel) {
 			$belongsToModel = $secondModel;
@@ -64,7 +64,7 @@ $model = get_class($entry);
 	<table class="table table-striped table-bordered manyToManyAssociations">
 		<tr>
 			<td>
-				<h4>{{(isset($sectionName))? $sectionName  : Util::cleanName(Util::camel2under($belongsToModel)) }}</h4>  
+				<h4>{{(isset($sectionName))? $sectionName  : Util::cleanName(Util::camel2under($belongsToModel)) }}</h4>
 			</td>
 		</tr>
 
@@ -98,12 +98,12 @@ $model = get_class($entry);
 					Debugbar::addMessage(convert(memory_get_usage(true)), 'mem end ids');
 				?>
 
-				
-			    
 
-			  
 
-			  <?php 
+
+
+
+			  <?php
 			  $count = count($allPossible);
 			  $perColumn = ceil($count/4);
 			  $count = 1;
@@ -111,44 +111,44 @@ $model = get_class($entry);
 			  Debugbar::addMessage(convert(memory_get_usage(true)), 'mem after oneRolePerUser');
 
 
-			  $role = $user->roles()->orderBy("level", "asc")->limit(1)->first(); 
+			  $role = $user->roles()->orderBy("level", "asc")->limit(1)->first();
 				$level = (count($role) == 1)? (int)$role->level : 0;
 				Debugbar::addMessage(convert(memory_get_usage(true)), 'mem after role level');
 			  ?>
-			  <div class="form-group"> 
+			  <div class="form-group">
 				@foreach ($allPossible as $a)
 					@if (!($belongsToModel == "InfuseUser" && $a->id == 1) && !($belongsToModel == "InfuseRole" && $a->id == 1)  && !($belongsToModel == "InfusePermission" && $a->id == 1) )
 					<?php Debugbar::addMessage(convert(memory_get_usage(true)), 'mem foreach 1'); ?>
 						<?php $count = ($count > $perColumn)? 1 : $count; ?>
 
 						@if ($count == 1)
-						 <div class="controls span2">
+						 <div class="controls span2 truncate">
 						@endif
 
-						@if ($belongsToModel == "InfuseRole") 
+						@if ($belongsToModel == "InfuseRole")
 
 							@if ($user->level($a->level, '<') || $user->level(1, '=') && $callBackDisplayCheck($a, $user))
 
-							<label class="checkbox">
+							<label class="checkbox truncate">
 							  <input class="{{$oneRolePerUser}}" type="checkbox" {{((in_array($a->id, $ids))? "checked='checked'" : "" )}} name="{{$manyToManyTable}}[]" value="{{$a->id}}"> {{$a->{$columnName} }}
 							</label>
-							@elseif (in_array($a->id, $ids)) 
+							@elseif (in_array($a->id, $ids))
 								<input type="hidden" name="{{$manyToManyTable}}[]"  value="{{$a->id}}">
 							@endif
 
-						@elseif ($belongsToModel == "InfuseUser") 
+						@elseif ($belongsToModel == "InfuseUser")
 
 							@if (($a->level($level, ">") || $user->level(1, '='))  && $callBackDisplayCheck($a, $user))
 							<?php Debugbar::addMessage(convert(memory_get_usage(true)), 'mem foreach after level check'); ?>
-							<label class="checkbox">
+							<label class="checkbox truncate">
 							  <input type="checkbox" {{((in_array($a->id, $ids))? "checked='checked'" : "" )}} name="{{$manyToManyTable}}[]" value="{{$a->id}}"> {{$a->{$columnName} }}
 							</label>
-							@elseif (in_array($a->id, $ids)) 
+							@elseif (in_array($a->id, $ids))
 								<input type="hidden" name="{{$manyToManyTable}}[]"  value="{{$a->id}}">
 							@endif
 
 						@else
-							<label class="checkbox">
+							<label class="checkbox truncate">
 							  <input type="checkbox" {{((in_array($a->id, $ids))? "checked='checked'" : "" )}} name="{{$manyToManyTable}}[]" value="{{$a->id}}"> {{$a->{$columnName} }}
 							</label>
 						@endif
@@ -181,5 +181,3 @@ $model = get_class($entry);
 </div>
 <?php Debugbar::addMessage(convert(memory_get_usage(true)), 'mem end');  ?>
 @endif
-
-
