@@ -1,7 +1,7 @@
 <?php
 $navItems = array();
 
-if (isset($infusePagesUnique)) {
+if (isset($infusePagesUnique) && $infusePagesUnique) {
 	$count = 1;
 	foreach ($navigation as $topKey => $set) {
 		$firstNavLevel = $topKey;
