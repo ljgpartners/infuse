@@ -82,7 +82,7 @@ if (isset($infusePagesUnique) && $infusePagesUnique) {
   	@endif
 
 		@foreach ($navItems as $title => $link )
-			@if ($title != "name" && $title != "description" && $title != "unique")
+			@if ($title != "name" && $title != "description" && $title != "unique" && $title != "permission")
 			@if ((strpos($link,'::') !== false) || !$rolePermission || ($rolePermission && $user->can("{$link}_view")) )
 				@if ((strpos($link,'::') !== false))
 					<?php

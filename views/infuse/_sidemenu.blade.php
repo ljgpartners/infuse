@@ -28,6 +28,17 @@
 			@foreach ($navigation as $firstNavLevel => $topLevel )
 
 
+				{{-- Permission functionaliy for nav group top level --}}
+				<?php
+				if ($rolePermission && isset($topLevel['permission'])) {
+					$permissionFunc = $topLevel['permission'];
+					if (!$permissionFunc($user)) {
+						continue;
+					}
+				}
+				?>
+
+
 
 			  <div class="panel panel-default">
 
@@ -44,6 +55,9 @@
 			        <ul class="list-group">
 
 								@foreach ($topLevel as $secondNavLevel => $secondLevel )
+
+
+
 
 									@if (is_array($secondLevel))
 
@@ -62,13 +76,19 @@
 								    		<a href="/admin/page?infuse_pages_section={{$countInner+1}}{{$uniquePageIdentifier}}">{{$secondLevel['name']}}</a>
 								    	</li>
 
-								    	@elseif (count($secondLevel) > 1)
+										{{-- Permission functionaliy for nav group nested level --}}
+								    	@elseif (
+											(!$rolePermission && count($secondLevel) > 1)  ||
+											($rolePermission && isset($secondLevel['permission']) && $secondLevel['permission']($user)) ||
+											($rolePermission && !isset($secondLevel['permission']))
+										)
+
 								    	<?php
 									    	$keys = array_keys($secondLevel);
 											$value = null;
 
 											foreach($keys as $key) {
-												if ($key != "name" && $key != "description" && $key != "unique") {
+												if ($key != "name" && $key != "description" && $key != "unique" && $key != "permission") {
 													$value = $secondLevel[$key];
 													break;
 												}
