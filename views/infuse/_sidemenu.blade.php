@@ -32,7 +32,7 @@
 				<?php
 				if ($rolePermission && isset($topLevel['permission'])) {
 					$permissionFunc = $topLevel['permission'];
-					if (!$permissionFunc($user)) {
+					if (!$superAdmin && !$permissionFunc($user)) {
 						continue;
 					}
 				}
@@ -78,7 +78,7 @@
 
 										{{-- Permission functionaliy for nav group nested level --}}
 								    	@elseif (
-											(!$rolePermission && count($secondLevel) > 1)  ||
+											(!$rolePermission || $superAdmin)  ||
 											($rolePermission && isset($secondLevel['permission']) && $secondLevel['permission']($user)) ||
 											($rolePermission && !isset($secondLevel['permission']))
 										)
