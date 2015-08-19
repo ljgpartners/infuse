@@ -1,6 +1,7 @@
 <?php namespace Bpez\Infuse;
 
 use Bpez\Infuse\Exceptions\ScaffoldConfigurationException;
+use Bpez\Infuse\Exceptions\ScaffoldUnknownConfigurationIndexException;
 
 trait ScaffoldAPI {
 
@@ -132,7 +133,7 @@ trait ScaffoldAPI {
 		return $this;
 	}
 
-	
+
 
 	public function name($name)
 	{
@@ -140,14 +141,14 @@ trait ScaffoldAPI {
 		return $this;
 	}
 
-	public function columnName($info) 
+	public function columnName($info)
 	{
 		$base = 'columnName(array(array("column" => someColumn, "newName" => "someName")));';
 
 		if (!is_array($info) ) {
 			throw new ScaffoldConfigurationException($base.' Must be an array.');
 		}
-		
+
 
 		/** If only one. */
 		if ( isset($info['column']) && isset($info['newName']) ) {
@@ -170,11 +171,11 @@ trait ScaffoldAPI {
 				if (!isset($i['column']) && !isset($i['column'])) {
 					throw new ScaffoldConfigurationException($base.' First argument should name of column. Second argument should be replacement name.');
 				}
-				
+
 				if (!is_string($i['column']) || !is_string($i['newName'])) {
 					throw new ScaffoldConfigurationException($base.' First aand second argument should be strings');
 				}
-				
+
 				if (array_key_exists($i['column'], $this->columns)) {
 					$this->columnNames["{$i['column']}"] = $i['newName'];
 				} else {
@@ -186,7 +187,7 @@ trait ScaffoldAPI {
 		return $this;
 	}
 
-	
+
 	public function limit($limit)
 	{
 		$this->limit = (is_int($limit))? $limit : $this->limit;
@@ -214,8 +215,8 @@ trait ScaffoldAPI {
 	}
 
 
-	public function addSelect($info) 
-	{	
+	public function addSelect($info)
+	{
 		$base = 'addSelect(array(array("column" => $columnName, "array" => array(), "insertBlank" => false, "topSelect" => false, "nested" => array("Model1", "Model2"), "nestedLastArray" => array() )));';
 
 		if (!is_array($info)) {
@@ -244,7 +245,7 @@ trait ScaffoldAPI {
 				if (isset($info['nestedLastArray']) && $info['nestedLastArray'] == true) {
 					$this->columns["{$info['column']}"]["nested_last_array"] = $info['nestedLastArray'];
 				}
-			
+
 
 			} else {
 
@@ -260,31 +261,31 @@ trait ScaffoldAPI {
 				if (is_array($i) && (!isset($i['column']) || !isset($i['array']))) {
 					throw new ScaffoldConfigurationException($base.' First argument must an array. column and array must be set. ');
 				}
-				
+
 				if (!is_string($i['column']) || !is_array($i['array'])) {
-					throw new ScaffoldConfigurationException($base.' Column must be a string. Array index must be an array.');	
+					throw new ScaffoldConfigurationException($base.' Column must be a string. Array index must be an array.');
 				}
-				
-				
+
+
 				if (array_key_exists($i['column'], $this->columns)) {
 
 					$this->columns["{$i['column']}"]["select"] = $i['array'];
 					if (isset($i['insertBlank']) && $i['insertBlank'] == true) {
 						$this->columns["{$i['column']}"]["select_blank"] = true;
 					}
-					
+
 					if (isset($i['topSelect']) && $i['topSelect'] == true) {
 						$this->columns["{$i['column']}"]["top_select"] = true;
 					}
-					
+
 					if (isset($i['nested']) && $i['nested'] == true) {
 						$this->columns["{$i['column']}"]["nested"] = $i['nested'];
 					}
-					
+
 					if (isset($i['nestedLastArray']) && $i['nestedLastArray'] == true) {
 						$this->columns["{$i['column']}"]["nested_last_array"] = $i['nestedLastArray'];
 					}
-				
+
 
 				} else {
 
@@ -304,11 +305,11 @@ trait ScaffoldAPI {
 		if (!is_array($info)) {
 			throw new ScaffoldConfigurationException($base.' Must be an array.');
 		}
-		
+
 		if (!is_string($info[0]) || !is_string($info[1])) {
 			throw new ScaffoldConfigurationException($base.' First and second argument should name of type string in each import array. ');
 		}
-		
+
 		if (!is_array($info[2])) {
 			throw new ScaffoldConfigurationException($base.' Third argument can only be an array in each import array. ');
 		}
@@ -319,7 +320,7 @@ trait ScaffoldAPI {
 	}
 
 	public function addMultiSelect($info)
-	{	
+	{
 		$base = 'addMultiSelect(array("column" => $columnName, "array" => array()));';
 
 		if (!is_array($info)) {
@@ -347,11 +348,11 @@ trait ScaffoldAPI {
 				if (!is_array($i) && isset($i['column']) && isset($i['array'])) {
 					throw new ScaffoldConfigurationException($base.' First argument must an array. column and array must be set. ');
 				}
-				
+
 				if (!is_string($i['column']) || !is_array($i['array'])) {
 					throw new ScaffoldConfigurationException($base.' column index must be a string and array index must be an array.');
 				}
-			
+
 				if (array_key_exists($i['column'], $this->columns)) {
 					$this->columns["{$i['column']}"]["multi_select"] = $i['array'];
 				} else {
@@ -377,7 +378,7 @@ trait ScaffoldAPI {
 			if (!is_string($i)) {
 				throw new ScaffoldConfigurationException($base.' Column must be a string. Array index must be an array.');
 			}
-		
+
 			if (array_key_exists($i, $this->columns)) {
 				$this->columns["{$i}"]["ckeditor"] = $i;
 			} else {
@@ -389,12 +390,12 @@ trait ScaffoldAPI {
 		return $this;
 	}
 
-	/* 
+	/*
 		To activate Image croping pass in the following
-		$imageCrop = array("image_crop" => true, "width" => 98, "height" => 98) 
+		$imageCrop = array("image_crop" => true, "width" => 98, "height" => 98)
 		Note if image crop is used then file validation will be applied
 	*/
-	public function fileUpload($uploads) 
+	public function fileUpload($uploads)
 	{
 		$base = 'fileUpload(array(array("column" => $columnName)));';
 
@@ -405,10 +406,10 @@ trait ScaffoldAPI {
 		// If only one
 		if (is_array($uploads) && isset($uploads['column']) && is_string($uploads['column'])) {
 
-			if (array_key_exists($uploads['column'], $this->columns)) { 
+			if (array_key_exists($uploads['column'], $this->columns)) {
 
 				$validations = (isset($uploads['validations']))? $uploads['validations'] : array();
-				$imageCrop = (isset($uploads['imageCrop']))? $uploads['imageCrop'] : false; 
+				$imageCrop = (isset($uploads['imageCrop']))? $uploads['imageCrop'] : false;
 				$this->columns["{$uploads['column']}"]["upload"] = array("validations" => $validations, "imageCrop" => $imageCrop);
 
 			} else {
@@ -430,10 +431,10 @@ trait ScaffoldAPI {
 					throw new ScaffoldConfigurationException($base.' First argument should name of column. ');
 				}
 
-				if (array_key_exists($info['column'], $this->columns)) { 
+				if (array_key_exists($info['column'], $this->columns)) {
 
 					$validations = (isset($info['validations']))? $info['validations'] : array();
-					$imageCrop = (isset($info['imageCrop']))? $info['imageCrop'] : false; 
+					$imageCrop = (isset($info['imageCrop']))? $info['imageCrop'] : false;
 					$this->columns["{$info['column']}"]["upload"] = array("validations" => $validations, "imageCrop" => $imageCrop);
 
 				} else {
@@ -445,26 +446,26 @@ trait ScaffoldAPI {
 		}
 
 		return $this;
-	} 
+	}
 
 	public function hasMany($models)
-	{	
+	{
 		if (!is_array($models)) {
-			throw new ScaffoldConfigurationException('hasMany( array(array("SomeModelName", "model_title", array("column_1", "column_2"))) ); First argument should be an array with all the info of the model. 
+			throw new ScaffoldConfigurationException('hasMany( array(array("SomeModelName", "model_title", array("column_1", "column_2"))) ); First argument should be an array with all the info of the model.
 		First index in the array should be the model name, second should be the wanted model title and third should be the column names to list.');
 		}
-		
+
 		$this->hasMany = $models;
 		return $this;
 	}
 
 	public function hasOne($model)
-	{	
+	{
 		if (!is_array($model)) {
-			throw new ScaffoldConfigurationException('hasOne( array(array("SomeModelName", "model_title", array("column_1", "column_2"))) ); First argument should be an array of the model. 
+			throw new ScaffoldConfigurationException('hasOne( array(array("SomeModelName", "model_title", array("column_1", "column_2"))) ); First argument should be an array of the model.
 		With name as the index and another array with the title as the first and the second array with columns to list.');
 		}
-		
+
 		$this->hasOne = $model;
 		return $this;
 	}
@@ -474,7 +475,7 @@ trait ScaffoldAPI {
 		if (!is_array($models)) {
 			throw new ScaffoldConfigurationException('manyToMany(array(array("FirstModelName", "FirstForeignId", "SecondModelName", "SecondForeignId", "many_to_many_table", "FirstColumnName", "SecondColumnName"))); ');
 		}
-		
+
 		$this->manyToMany = $models;
 		return $this;
 	}
@@ -486,8 +487,8 @@ trait ScaffoldAPI {
 	}
 
 
-	public function describeColumn($describes) 
-	{	
+	public function describeColumn($describes)
+	{
 		if (!is_array($describes)) {
 			throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here"))); Must pass array in. ');
 		}
@@ -496,11 +497,11 @@ trait ScaffoldAPI {
 		// If only one
 		if ( is_array($describes) && isset($describes['column']) && isset($describes['desc'])) {
 
-			if (array_key_exists($describes['column'], $this->columns)) { 
+			if (array_key_exists($describes['column'], $this->columns)) {
 
-				$this->columns["{$describes['column']}"]["description"] = (is_string($describes['desc']))? $describes['desc'] : ""; 
+				$this->columns["{$describes['column']}"]["description"] = (is_string($describes['desc']))? $describes['desc'] : "";
 				if (isset($describes['popover'])) {
-					$this->columns["{$describes['column']}"]["description_popover"] = $describes['popover']; 
+					$this->columns["{$describes['column']}"]["description_popover"] = $describes['popover'];
 				}
 
 			} else {
@@ -518,12 +519,12 @@ trait ScaffoldAPI {
 				throw new ScaffoldConfigurationException('describeColumn(array(array("column" => "columnName", "desc" => "description here"))); Both argument are required');
 			}
 
-			if (array_key_exists($d['column'], $this->columns)) { 
+			if (array_key_exists($d['column'], $this->columns)) {
 
-				$this->columns["{$d['column']}"]["description"] = (is_string($d['desc']))? $d['desc'] : ""; 
+				$this->columns["{$d['column']}"]["description"] = (is_string($d['desc']))? $d['desc'] : "";
 				if (isset($d['popover'])) {
-					$this->columns["{$d['column']}"]["description_popover"] = $d['popover']; 
-				} 
+					$this->columns["{$d['column']}"]["description_popover"] = $d['popover'];
+				}
 
 			} else {
 
@@ -547,7 +548,7 @@ trait ScaffoldAPI {
 
 
 		foreach ($columns as $column) {
-			if (array_key_exists($column, $this->columns)) { 
+			if (array_key_exists($column, $this->columns)) {
 				$this->columns["{$column}"]["display_order"] = true;
 			} else {
 				throw new ScaffoldConfigurationException($base.'  Column doesn\'t exist.');
@@ -563,7 +564,7 @@ trait ScaffoldAPI {
 		if (!is_array($list)) {
 			throw new ScaffoldConfigurationException('list(array("name", "count", "active")); First argument should be an array of the names of the columns wanted listed on landing page.');
 		}
-		
+
 		array_push($list, "updated_at");
 		$this->list = $list;
 		return $this;
@@ -574,7 +575,7 @@ trait ScaffoldAPI {
 		if (!is_array($list)) {
 			throw new ScaffoldConfigurationException('filterListColumns(array("name", "count", "active")); First argument should be an array of the names of the columns allowed to be filtered on landing page.');
 		}
-		
+
 		$this->filterList = $list;
 		return $this;
 	}
@@ -584,7 +585,7 @@ trait ScaffoldAPI {
 		if (!is_array($list)) {
 			throw new ScaffoldConfigurationException('queryScopes(array("display_name" => "function_name")); First argument should be an array. Index as the display name and value as the function name.');
 		}
-		
+
 		$this->queryScopes = $list;
 		return $this;
 	}
@@ -596,7 +597,7 @@ trait ScaffoldAPI {
 	}
 
 	public function deleteAction($bool)
-	{	
+	{
 		$this->deleteAction = $bool;
 		return $this;
 	}
@@ -614,7 +615,7 @@ trait ScaffoldAPI {
 		if (!is_array($info)) {
 			throw new ScaffoldConfigurationException($base.' Must be an array.');
 		}
-		
+
 		foreach ($info as $i) {
 			if (array_key_exists($i, $this->columns)) {
 				$this->columns["{$i}"]["readOnly"] = true;
@@ -624,35 +625,35 @@ trait ScaffoldAPI {
 		}
 		return $this;
 	}
-	
+
 	public function associateToSameParentOfUserRelatedBy($foreignKey)
 	{
 		$this->associateToSameParentOfUserRelatedBy = $foreignKey;
 		return $this;
 	}
 
-	public function onlyLoadSiblingsOfUserRelatedBy($foreignKey) 
+	public function onlyLoadSiblingsOfUserRelatedBy($foreignKey)
 	{
 		$this->onlyLoadSiblingsOfUserRelatedBy = $foreignKey;
 		return $this;
 	}
 
-	public function siblingOfUserParentOnly($info) 
-	{	
+	public function siblingOfUserParentOnly($info)
+	{
 		$base = 'siblingOfUserParentOnly(array("parent_model" => "SomeModel", "parent_foriegn_id" => "some_id", "foreign_id" => "some_id"));';
 
 		if (!is_array($info)) {
 			throw new ScaffoldConfigurationException($base.' First argument should be an array. ');
 		}
-		
+
 		if (!array_key_exists("parent_model", $info)) {
 			throw new ScaffoldConfigurationException($base.' parent_model index should be set. ');
 		}
-		
+
 		if (!array_key_exists("parent_foriegn_id", $info)) {
 			throw new ScaffoldConfigurationException($base.' parent_foriegn_id index should be set. ');
 		}
-		
+
 		if (!array_key_exists("foreign_id", $info)) {
 			throw new ScaffoldConfigurationException($base.' foreign_id index should be set. ');
 		}
@@ -661,32 +662,32 @@ trait ScaffoldAPI {
 		return $this;
 	}
 
-	public function defaultColumnValues($info) 
-	{ 
+	public function defaultColumnValues($info)
+	{
 		$base = 'defaultColumnValues(array("column" => "column_value", ...));';
 
 		if (!is_array($info)) {
 			throw new ScaffoldConfigurationException($base.' Must be an array.');
 		}
-		
+
 
 		foreach ($info as $i => $value) {
 			if (!array_key_exists($i, $this->columns)) {
 				throw new ScaffoldConfigurationException($base.' First argument must an array. column and value must be set. ');
 			}
-			
+
 			$this->defaultColumnValues["{$i}"] = $value;
 		}
 
 		return $this;
 	}
 
-	
-	public function callFunction($info) 
-	{	
+
+	public function callFunction($info)
+	{
 		$base = 'callFunction(array("function" => "duplicate", "display_name" => "Duplicate")); Optional: target (anchor tag target), long_process (UI Block Screen and message shown).';
-		
-		if (!is_array($info) ) 
+
+		if (!is_array($info) )
 			throw new ScaffoldConfigurationException($base.' Must be an array.');
 
 		// If only one
@@ -697,23 +698,23 @@ trait ScaffoldAPI {
 		// If more then one
 		} else {
 			foreach ($info as $i) {
-				if (is_array($i) && (!isset($i['function']) || !isset($i['display_name']))) 
+				if (is_array($i) && (!isset($i['function']) || !isset($i['display_name'])))
 					throw new ScaffoldConfigurationException($base.' First argument must an array. column and array must be set. ');
 				array_push($this->callFunctions, $i);
 			}
 		}
-		
+
 		return $this;
 	}
 
-	public function addOtherAction($info) 
-	{	
+	public function addOtherAction($info)
+	{
 		$base = 'addOtherAction(array("function" => "generateReport", "display_name" => "Generate Report"));';
 
 		if (!is_array($info)) {
 			throw new ScaffoldConfigurationException($base.' Must be an array.');
 		}
-		
+
 
 		// If only one
 		if ( isset($info['function']) && isset($info['display_name']) ) {
@@ -734,8 +735,8 @@ trait ScaffoldAPI {
 		return $this;
 	}
 
-	public function beforeEdit($info) 
-	{  
+	public function beforeEdit($info)
+	{
 		$base = 'beforeEdit(function(){});';
 
 		if (!is_callable($info)) {
@@ -746,7 +747,7 @@ trait ScaffoldAPI {
 
 		return $this;
 	}
-   
+
 
 	public function belongsToUserManyToMany($info)
 	{
@@ -755,18 +756,18 @@ trait ScaffoldAPI {
 		if (!is_array($info)) {
 			throw new ScaffoldConfigurationException($base.' Must be an array.');
 		}
-		
+
 		if (count($info) != 4) {
 			throw new ScaffoldConfigurationException($base.' Should have the laravel belongsToMany four parameters.'. count($info));
 		}
-		
+
 		$this->belongsToUserManyToMany = $info;
 
 		return $this;
 	}
 
-	public function addPermanentFilters($info) 
-	{	
+	public function addPermanentFilters($info)
+	{
 		$base = 'addPermanentFilters(array("column" => "columnName", "operator" => "=", "value" => 34));';
 
 		if (!is_array($info)) {
@@ -785,7 +786,7 @@ trait ScaffoldAPI {
 				if (is_array($i) && (!isset($i['column']) || !isset($i['operator']) || !isset($i['value']))) {
 					throw new ScaffoldConfigurationException($base.' First argument must an array. column and array must be set. ');
 				}
-				
+
 				array_push($this->permanentFilters, $i);
 			}
 
