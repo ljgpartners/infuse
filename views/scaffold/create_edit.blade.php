@@ -41,7 +41,7 @@
 		{{-- Laravel csrf token --}}
 		<input type="hidden" name="_token" value="{!! csrf_token() !!}" />
 
-		{{-- Tells infuse what type of save (save, save & return, save & create another)--}}
+		{{-- Tells infuse what type of save (save, save & edit, save & create another)--}}
 		<input type="hidden" id="typeSubmit" name="typeSubmit" value="save">
 
 		{{-- Added infuse action and id to the form --}}
@@ -475,7 +475,7 @@
 
 				<div class="submitGroup">
 					<input type="submit" value="save" data-type-submit="save" class="saveSubmitButton">
-					<input type="submit" value="save & return" data-type-submit="save_and_return" class="saveSubmitButton">
+					<input type="submit" value="save & edit" data-type-submit="save_and_return" class="saveSubmitButton">
 					@if (Util::get("action") == "c")
 					<input type="submit" value="save & create another" data-type-submit="save_and_create_another" class="saveSubmitButton">
 					@endif
