@@ -689,7 +689,13 @@ class Scaffold
         }
 
         foreach ($this->permanentFilters as $where) {
-            $modelInstance = $modelInstance->where($where['column'], $where['operator'], $where['value']);
+
+            if ($where['operator'] == "IN") {
+                $modelInstance = $modelInstance->whereIn($where['column'], $where['value']);
+            } else {
+                $modelInstance = $modelInstance->where($where['column'], $where['operator'], $where['value']);
+            }
+
         }
 
         foreach ($this->defaultColumnValues as $index => $value) {

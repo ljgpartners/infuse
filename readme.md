@@ -204,7 +204,7 @@ addPermanentFilters(array(
 ```
 #### Parameters
 - column - (Required) [string] Database table field name
-- operator - (Required) [string] SQL comparison opertator
+- operator - (Required) [string] SQL comparison opertator. If 'IN' is used for the operator then it use elequents whereIn($column, $value)
 - value - (Required) [string | number] Value to be compared to
 
 ## defaultColumnValues
