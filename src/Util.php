@@ -468,7 +468,7 @@ class Util {
 		if ($message) {
 			switch ($message['type']) {
 				case 'warning':
-					$message['type'] = "alert-block";
+					$message['type'] = "alert-warning";
 					break;
 				case 'error':
 					$message['type'] = "alert-danger";
