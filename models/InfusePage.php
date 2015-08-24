@@ -6,6 +6,8 @@ class InfusePage extends Bpez\Infuse\InfuseModel {
 
   use Bpez\Infuse\InfuseModelLibrary;
 
+  const INTERFACE_MODEL = false;
+
   protected $table = 'pages';
 
   public $uploadFolder = "/uploads";
@@ -42,7 +44,7 @@ class InfusePage extends Bpez\Infuse\InfuseModel {
               } else {
                 $temp[$count] = array(self::processType($item));
               }
-              
+
             }
           }
 
@@ -50,10 +52,10 @@ class InfusePage extends Bpez\Infuse\InfuseModel {
             $temp = $temp[$count];
           }
         }
-        
+
         $return = $temp;
         break;
-      
+
       default:
         $return = "";
         break;
@@ -65,15 +67,15 @@ class InfusePage extends Bpez\Infuse\InfuseModel {
   // $pip = page instance path
   // $jsonQuery .= "->'page'";
   public static function extract($id, $pip, $target, $label)
-  { 
-    if (!Session::has('infuse_page_values')) { 
+  {
+    if (!Session::has('infuse_page_values')) {
       $jsonQuery = "page_data";
       $parent = explode(";", $pip);
       foreach ($parent as $p) {
         $jsonQuery .= "->'{$p}'->'pages'";
       }
       $jsonQuery = preg_replace('/->\'pages\'$/', '', $jsonQuery);
-      
+
       try {
         $infusePage =  self::select(DB::raw("{$jsonQuery}->'pageValues' as page_values"))
           ->where("id", "=", $id)
@@ -81,7 +83,7 @@ class InfusePage extends Bpez\Infuse\InfuseModel {
       } catch (ModelNotFoundException $e) {
         return "";
       }
-      
+
       $pageValues = json_decode($infusePage->page_values, true);
       $temp = array();
       foreach ($pageValues as $value) {
@@ -114,7 +116,3 @@ class InfusePage extends Bpez\Infuse\InfuseModel {
   }
 
 }
-
-
-
-

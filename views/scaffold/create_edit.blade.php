@@ -28,7 +28,9 @@
 
 	<div class="row">
 		<div class="col-sm-12 col-xs-12">
+			<div class="form-group">
 			@include('infuse::scaffold._import_from_models')
+			</div>
 		</div>
 	</div>
 

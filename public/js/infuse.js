@@ -579,7 +579,7 @@ if ($(".InfuseController").length > 0) {
 	var importModal = $(".importModal"),
 			activeForm = "form.search";
 
-	importModal.on('show', function () {
+	importModal.on('show.bs.modal', function () { console.log("showing");
 		var self = $(this);
 		if (parseInt(self.data("first"))) {
 			self.data("first", 0);
@@ -587,13 +587,13 @@ if ($(".InfuseController").length > 0) {
 		}
 	});
 
-	importModal.on('shown', function () {
+	importModal.on('shown.bs.modal', function () {
 		var self = $(this);
 		resizeImportModal(self);
 		$(window).resize(function() { resizeImportModal(self); });
 	});
 
-	importModal.on('hide', function () {
+	importModal.on('hide.bs.modal', function () {
 		var self = $(this);
 		self.find(".modal-body .importModalAccordion, .modal-body .addedRow").remove();
 		self.data("first", 1);

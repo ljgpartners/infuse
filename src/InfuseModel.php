@@ -1,19 +1,21 @@
 <?php namespace Bpez\Infuse;
 
 // Provides validation rules for all models
- // Also adds functionailty for files
+// Also adds functionailty for files
 
 class InfuseModel extends \Illuminate\Database\Eloquent\Model {
 
-  protected $rules = array();
+    const INTERFACE_MODEL = false;
 
-  protected $errors;
-  
-  public $uploadFolder = "/uploads";
+    protected $rules = array();
 
-  public $timestamps = true;
+    protected $errors;
 
-  public $hstore = array();
+    public $uploadFolder = "/uploads";
 
-  
+    public $timestamps = true;
+
+    public $hstore = array();
+
+
 }

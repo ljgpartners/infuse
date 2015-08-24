@@ -5,6 +5,8 @@ class InfusePermission extends VerifyPermission {
 
     use Bpez\Infuse\InfuseModelLibrary;
 
+    const INTERFACE_MODEL = false;
+
     protected $table = 'permissions';
 
     protected $rules = array();

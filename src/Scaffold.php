@@ -271,6 +271,7 @@ class Scaffold
             || is_subclass_of($this->model, 'Toddish\Verify\Models\User')
             || is_subclass_of($this->model, 'Toddish\Verify\Models\Role')
             || is_subclass_of($this->model, 'Toddish\Verify\Models\Permission')
+            || (in_array("Bpez\Infuse\ImportFromServiceModelInterface", class_implements($this->model)) && is_subclass_of($this->model, 'Bpez\Infuse\ImportFromServiceModel'))
         ) {
             $this->name = get_class($this->model);
             $this->boot();
@@ -278,7 +279,7 @@ class Scaffold
         }
 
         throw new ScaffoldModelNotRecognizedException(
-            get_parent_class($this->model)." is the wrong model to inherit from. Extend from InfuseEloquent."
+            get_parent_class($this->model)." is the wrong model to inherit from. Extend from InfuseEloquent or be an interface of ImportFromServiceModelInterface & extend from ImportFromServiceModel."
         );
     }
 
@@ -292,15 +293,26 @@ class Scaffold
 
         $this->checkIfOverUploadLimit();
         $this->action = Util::get("action");
-        $table = $this->model->getTable();
 
-        $columns = $db::select("select column_name as field, data_type as type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name = '".$table."'");
+        $model = $this->model;
+        if ($model::INTERFACE_MODEL === false) {
 
-        $atLeastOneExist = ($db::table($table)->count() > 0)? true : false;
+            $table = $this->model->getTable();
 
-        $this->order['column'] = $this->model->getKeyName();
+            $columns = $db::select("select column_name as field, data_type as type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name = '".$table."'");
 
-        $this->primaryKey = $this->model->getKeyName();
+            $atLeastOneExist = ($db::table($table)->count() > 0)? true : false;
+
+            $this->order['column'] = $this->model->getKeyName();
+
+            $this->primaryKey = $this->model->getKeyName();
+
+        } else {
+
+            $columns = $this->model->getColumns();
+
+        }
+
 
         if ($this->databaseConnection == "pgsql" && count($this->model->hstore) > 0) {
             $hstoreColumns = $this->model->hstore;

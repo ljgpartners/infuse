@@ -6,7 +6,7 @@ use Bpez\Infuse\Util;
 
 /*
 |--------------------------------------------------------------------------
-| WebService 
+| WebService
 |--------------------------------------------------------------------------
 | All infuse ajax functions hit this web service class to process
 |
@@ -18,10 +18,18 @@ class WebService {
 	private $db;
 
 	public function __construct(\Illuminate\Support\Facades\DB $db)
-	{	
+	{
 	  $this->action = Util::get('action');
 	  $this->db = $db;
 	}
+
+	public function loadResource($resource)
+    {
+        $app = app();
+        $packageConfigFile = app_path()."/Infuse/{$resource}.php";
+        $config = $app['files']->getRequire($packageConfigFile);
+        $app['config']->set("infuse::{$resource}", $config);
+    }
 
 	public function process()
 	{
@@ -74,7 +82,7 @@ class WebService {
 
 		$entry1->save();
 		$entry2->save();
-		
+
 		$swaps = array(
 			"{$entry1->id}" => $entry1->{$column},
 			"{$entry2->id}" => $entry2->{$column}
@@ -120,7 +128,7 @@ class WebService {
 	{
 		ini_set('memory_limit','64M');
 		$file = \Input::all();
-		$preserveRatio = true;  
+		$preserveRatio = true;
 		$upsize = true;
 
 		$destinationPath = $_SERVER['DOCUMENT_ROOT'].'/uploads/tmp/';
@@ -156,19 +164,19 @@ class WebService {
 						unlink($file);
 				}
 			}
-			
+
 			return array("status" => 'success', "message" => 'Files cleaned up.');
 		} else {
 			return array("status" => 'success', "message" => 'No files cleaned up.');
 		}
-		
+
 	}
 
 	protected function fetchImportBatch()
 	{
 		$child = Util::camel2under(Util::get('child'));
 		$resource = Util::camel2under(Util::get('resource'));
-		
+
 		$search =  Util::get('search');
 		$search = (empty($search))? false : $search;
 
@@ -194,7 +202,8 @@ class WebService {
 		$parentId = Util::get('parentId');
 		$parentId = (empty($parentId))? false : $parentId;
 
-		$config = \Config::get("infuse::{$resource}.children.{$child}");
+		$this->loadResource($resource);
+		$config = \Config::get("infuse::{$resource}.children.{$child}");;
 		$scaffold = Scaffold::model($config['model'])
 									->mapConfig($config);
 
@@ -202,7 +211,7 @@ class WebService {
 		if ($redirect)
 			return array("status" => 'error', "flash" => Util::flash());
 
-		 
+
 		if ($foriegnKey){
 			if ($parentId) {
 				$scaffold->search($parentId, array($foriegnKey));
@@ -210,28 +219,28 @@ class WebService {
 				$scaffold->search("no_value", array($foriegnKey));
 			}
 		}else if (!empty($latitude) && !empty($longitude)) {
-			$scaffold->closestLocationsWithinRadius($search, $columns, $latitude, $longitude, $distance); 
-		} else if ($search){ 
+			$scaffold->closestLocationsWithinRadius($search, $columns, $latitude, $longitude, $distance);
+		} else if ($search){
 			$scaffold->search($search, $columns);
 		} else {
 			$scaffold->route();
 		}
-			
+
 
 		$data = $scaffold->processDataOnly();
 
-		if ($modelImportingToId) { 
+		if (!$config['model']::INTERFACE_MODEL && $modelImportingToId) {
 			$modelImportingTo = "\\$modelImportingTo";
 			$updatedAt = new $modelImportingTo();
 			$updatedAt = $updatedAt::findOrFail($modelImportingToId)->updated_at;
 		} else {
 			$updatedAt = false;
 		}
-		
+
 
 		$entriesHtml = \View::make("infuse::web_service.fetch_import_batch", array(
 			"entries" => $data['entries'],
-			"columns" => $columns, 
+			"columns" => $columns,
 			"map" => $map,
 			"id" => $id,
 			"updatedAt" => $updatedAt
@@ -239,7 +248,7 @@ class WebService {
 
 		$response = array(
 			"status" => 'success',
-			"entries" => $data['entries']->toArray(),
+			"entries" => (is_array($data['entries'])) ? $data['entries'] : $data['entries']->toArray(),
 			"pagination" => $data['header']['pagination'],
 			"entries_html" => $entriesHtml
 		);
@@ -250,14 +259,14 @@ class WebService {
 		return $response;
 	}
 
-	
+
 
 	protected function noAction()
 	{
 		return array("response" => "Action does not exist.");
 	}
-	
-	
+
+
 	protected function log()
 	{
 		Util::debug(Util::get('message'), true);
@@ -265,7 +274,7 @@ class WebService {
 	}
 
 	protected function nestedSelectBatch()
-	{ 
+	{
 		$model = Util::get('model');
 		$model = new $model();
 		$foreignKey = Util::get('foreign_key');
@@ -278,7 +287,7 @@ class WebService {
 		$return = $model::where($foreignKey, "=", $value)
 			->orderBy($column, "asc");
 
-		if ($notColumn) { 
+		if ($notColumn) {
 			$notColumn = explode(",", $notColumn);
 			//print_r($notColumn); die();
 			$return = $return->where($notColumn[0], "!=", $notColumn[1]);
@@ -286,7 +295,7 @@ class WebService {
 
 		$return = $return->get(array('id', $column))
 			->toArray();
-			
+
 
 		$returnArray = array();
 
@@ -294,9 +303,9 @@ class WebService {
 			$columnName = end($item);
 			$returnArray[] = array($item["id"], $columnName);
 		}
-		
+
 		return $returnArray;
-		
+
 	}
 
 }

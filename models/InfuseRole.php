@@ -5,6 +5,8 @@ class InfuseRole extends VerifyRole {
 
     use Bpez\Infuse\InfuseModelLibrary;
 
+    const INTERFACE_MODEL = false;
+
     protected $table = 'roles';
 
     protected $rules = array();

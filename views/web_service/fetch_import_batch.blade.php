@@ -1,4 +1,12 @@
-@foreach ($entries as $entry) 
+@foreach ($entries as $entry)
+
+<?php
+// If from an API and result is an array convert to object
+if (is_array($entry)) {
+	$entry = (object)$entry;
+}
+
+?>
 
 <tr class="addedRow">
 	@foreach ($columns as $column)
@@ -9,7 +17,7 @@
 		{{$entry->{$column} }}
 	</td>
 	@endforeach
-	
+
 	@if ($updatedAt)
 		@if ($updatedAt <= $entry->updated_at)
 		<td class="alert-info">
@@ -24,8 +32,8 @@
 		<div class="alert-info importedUpdatedFlag">Newly Updated  </div>
 	</td>
 	@endif
-	
-	
+
+
 </tr>
 
 
@@ -39,9 +47,9 @@
 
 						@if (Util::splitReturnSecond($key, "@") == "image")
 
-							@if (!empty($entry->{Util::splitReturnFirst($key, "@")})) 
+							@if (!empty($entry->{Util::splitReturnFirst($key, "@")}))
 							<div class="previewImage">
-								<input type="checkbox" checked="checked" class="checkAll" data-value="{{$entry->url(Util::splitReturnFirst($key, "@")) }}" data-overite-column="{{$value}}" data-attachment="image"> 
+								<input type="checkbox" checked="checked" class="checkAll" data-value="{{$entry->url(Util::splitReturnFirst($key, "@")) }}" data-overite-column="{{$value}}" data-attachment="image">
 							</div>
 							@endif
 
@@ -49,31 +57,31 @@
 							<input type="checkbox" checked="checked" class="checkAll" data-value="{{$entry->{Util::splitReturnFirst($key, "@")} }}" data-overite-column="{{$value}}" data-attachment="{{Util::splitReturnSecond($key, "@")}}">
 						@endif
 
-					@else 
+					@else
 						<input type="checkbox" checked="checked" class="checkAll" data-value="{{$entry->{$key} }}" data-overite-column="{{$value}}" data-attachment="0">
 					@endif
-					
+
 				</td>
 				<th>
 					@if (Util::splitReturnFirst($key, "@"))
 						<span>{{Util::cleanName(Util::splitReturnFirst($key, "@"))}}</span>
-					@else 
+					@else
 						<span>{{Util::cleanName($key)}}</span>
 					@endif
 				</th>
 				<td>
 					@if (Util::splitReturnFirst($key, "@"))
 						@if (Util::splitReturnSecond($key, "@") == "image")
-							@if (!empty($entry->{Util::splitReturnFirst($key, "@")})) 
+							@if (!empty($entry->{Util::splitReturnFirst($key, "@")}))
 							<div class="previewImage">
-								<img src="{{$entry->url(Util::splitReturnFirst($key, "@"))}}" alt="">  
+								<img src="{{$entry->url(Util::splitReturnFirst($key, "@"))}}" alt="">
 							</div>
 							@endif
 						@else
 							{{$entry->{Util::splitReturnFirst($key, "@")} }}
 						@endif
 
-					@else 
+					@else
 						{{$entry->{$key} }}
 					@endif
 

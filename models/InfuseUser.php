@@ -8,6 +8,8 @@ class InfuseUser extends VerifyUser {
 
     use Bpez\Infuse\InfuseModelLibrary, Bpez\Infuse\InfuseUserLibrary;
 
+    const INTERFACE_MODEL = false;
+
     protected $table = 'users';
 
     public $timestamps = true;
