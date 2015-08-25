@@ -12,7 +12,7 @@ if (is_array($entry)) {
 	@foreach ($columns as $column)
 	<td>
 		@if ($columns[0] == $column)
-			<span class="iconImportAccordion glyphicon .glyphicon-chevron-right"></span>
+			<span class="iconImportAccordion glyphicon glyphicon-chevron-right"></span>
 		@endif
 		{{$entry->{$column} }}
 	</td>

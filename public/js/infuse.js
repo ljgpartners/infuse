@@ -852,8 +852,8 @@ if ($(".InfuseController").length > 0) {
   $(document).on("click", ".addedRow", function()
   {
   	var self = $(this);
-  	$(".iconImportAccordion").removeClass("icon-chevron-down").addClass("icon-chevron-right")
-  	self.find(".iconImportAccordion").addClass("icon-chevron-down")
+  	$(".iconImportAccordion").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right")
+  	self.find(".iconImportAccordion").addClass("glyphicon-chevron-down")
   	$(".importModalAccordion").hide();
   	self.next(".importModalAccordion").slideDown();
   });
