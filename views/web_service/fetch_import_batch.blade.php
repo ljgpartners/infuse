@@ -28,8 +28,7 @@ if (is_array($entry)) {
 		@endif
 
 	@else
-	<td class="alert-info">
-		<div class="alert-info importedUpdatedFlag">Newly Updated  </div>
+	<td>
 	</td>
 	@endif
 
