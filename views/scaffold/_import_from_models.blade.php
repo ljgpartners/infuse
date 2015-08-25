@@ -111,18 +111,3 @@
 
 </div>
 @endif
-
-
-<style media="screen">
-
-	.importModal  {
-		width:90%;
-		height: 90%;
-		left: 5%;
-		top: 5%;
-		background-color: #F2F2F2;
-	}
-
-
-
-</style>

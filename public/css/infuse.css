@@ -11113,3 +11113,17 @@ ul.dropdown-menu-form label.checkbox input[type="checkbox"] {
   text-align: left;
   text-indent: 0;
 }
+.importModal {
+  width: 90%;
+  height: 90%;
+  left: 5%;
+  top: 5%;
+  background-color: #F2F2F2;
+}
+.importModal .modal-body .loading {
+  height: 30px;
+  text-align: center;
+}
+.importModal .modal-body .loading img {
+  height: 100%;
+}
