@@ -1,6 +1,6 @@
 
 <div class="jumbotron infuseLogin">
-  
+
 	@if (Config::get('infuse::config.company_logo') != "")
 		<img class="logo" src="{{Config::get('infuse::config.company_logo')}}">
 	@else
@@ -20,15 +20,15 @@
 	@else
 	  <p class="normalMessage">Request password reset email link below.</p>
 	@endif
-	
+
   <form action="{{ action('\RemindersController@postRemind') }}" class="form-horizontal" method="POST" role="form">
   	<div class="form-group">
-	  	<input type="text" name="email" value="Email" data-reset-name="Email" data-reset="1" class="infuseU placeholder validate form-control" data-validate='["presence","email"]'  autocomplete="off">
+	  	<input type="text" name="email" placeholder="Email" value="" data-reset-name="" data-reset="1" class="infuseU validate form-control" data-validate='["presence","email"]'  autocomplete="off">
 		</div>
 		<div class="form-group">
 			{{-- Laravel csrf token --}}
 			<input type="hidden" name="_token" value="{!! csrf_token() !!}" />
-  		<input type="submit" name="infuseLoginSubmit" value="go" class="infuseLoginSubmit"> 
+  		<input type="submit" name="infuseLoginSubmit" value="go" class="infuseLoginSubmit">
   	</div>
   </form>
 </div>

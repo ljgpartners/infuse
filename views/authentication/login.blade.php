@@ -15,10 +15,10 @@
   @endif
   <form method="POST" action="" class="form-horizontal" role="form">
   	<div class="form-group">
-  	<input type="text" name="infuseU" class="infuseU placeholder validate form-control" value="Username" data-reset-name="Username" data-reset="1" data-validate='["presence"]' autocomplete="off">
+  	<input type="text" name="infuseU" class="infuseU validate form-control" placeholder="Username" value="" data-reset-name="" data-reset="1" data-validate='["presence"]' autocomplete="off">
   	</div>
   	<div class="form-group">
-  	<input type="text" name="infuseP" class="infuseP placeholder validate focusPassword form-control" value="Password" data-reset-name="Password" data-validate='["presence"]' data-reset="1"  autocomplete="off">
+  	<input type="text" name="infuseP" class="infuseP validate focusPassword form-control" placeholder="Password" value="" data-reset-name="" data-validate='["presence"]' data-reset="1"  autocomplete="off">
   	</div>
   	<div class="form-group">
     {{-- Laravel csrf token --}}
