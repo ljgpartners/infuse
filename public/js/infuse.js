@@ -579,7 +579,7 @@ if ($(".InfuseController").length > 0) {
 	var importModal = $(".importModal"),
 			activeForm = "form.search";
 
-	importModal.on('show.bs.modal', function () { console.log("showing");
+	importModal.on('show.bs.modal', function () {
 		var self = $(this);
 		if (parseInt(self.data("first"))) {
 			self.data("first", 0);
@@ -864,8 +864,9 @@ if ($(".InfuseController").length > 0) {
   	var self = $(this),
   			modalId = self.data("modal-id"),
   			checkboxes = self.closest(".importModalAccordion").find("input:checked"),
-  			originalEntryForm = $(".editCreateForm"),
+  			originalEntryForm = $(".create-edit-form"),
   			combine = new Array();
+
 
   	$.each(checkboxes, function() {
   		var self = $(this),
@@ -942,7 +943,7 @@ if ($(".InfuseController").length > 0) {
   });
 
 
-  $('.editCreateForm form').submit(function(event){
+  $('.create-edit-form').submit(function(event){
 		var inputs = $(".saveSubmitButton");
 		inputs.attr("disabled", true);
 	});

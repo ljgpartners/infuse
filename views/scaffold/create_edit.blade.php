@@ -38,7 +38,7 @@
 		<div class="col-sm-12 col-xs-12">
 
 
-		<form method="post" action="?" enctype="multipart/form-data"  class="form-horizontal" role="form">
+		<form method="post" action="?" enctype="multipart/form-data"  class="form-horizontal create-edit-form" role="form">
 
 		{{-- Laravel csrf token --}}
 		<input type="hidden" name="_token" value="{!! csrf_token() !!}" />

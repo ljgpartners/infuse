@@ -40,7 +40,7 @@
 	  <div class="modal-header">
 			<h1>{{((isset($import[2]['name']))? $import[2]['name'] : Util::cleanName($import[0]) )}} <small>{{((isset($import[2]['description']))? $import[2]['description'] : "" )}}</small></h1>
 
-			@if (empty($foriegnKey) && empty($parentId))
+			@if (!$import[2]['search_off'] && empty($foriegnKey) && empty($parentId))
 			<ul class="nav nav-tabs">
 			  <li class="active">
 			  	<a href="#search{{$import[0]}}" data-toggle="tab">SEARCH</a>
@@ -55,6 +55,7 @@
 
 
 			<div class="tab-content">
+
 				  <div class="tab-pane active" id="search{{$import[0]}}">
 				  	<div class="searchBox">
 				  		<form class="search">
