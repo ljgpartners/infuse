@@ -132,7 +132,7 @@
 
 			{{-- ckeditor  --}}
 			@if (array_key_exists("ckeditor", $column))
-				<textarea class="infuseCkeditor" data-config="{{Util::classToString($entries)."_".$column['field']}}" name="{{$column['field']}}">{{$columnValue }}</textarea>
+				<textarea class="infuseCkeditor importReplace{{$column['field']}}" data-config="{{Util::classToString($entries)."_".$column['field']}}" name="{{$column['field']}}">{{$columnValue }}</textarea>
 
 			{{-- select  --}}
 			@elseif (array_key_exists("select", $column))
