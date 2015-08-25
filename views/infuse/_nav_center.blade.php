@@ -98,7 +98,7 @@ if (isset($infusePagesUnique) && $infusePagesUnique) {
 		  			<div class="hide {{$class.$function}}">
 							<h4>{{$title}}</h4>
 							<div>
-								<img width="32" height="32"  src="/packages/bpez/infuse/images/loading.gif" alt=""/>
+								<img width="32" height="32"  src="/bpez/infuse/images/loading.gif" alt=""/>
 							</div>
 							</br>
 						</div>

@@ -1,9 +1,9 @@
-<?php 
+<?php
 if (isset($header['filters'])):
 		$individualFilters = "";
 		for($x=1; $x <= count($header['filters']); $x++)
 			$individualFilters .= "&filter_".$x."=".Util::get("filter_".$x);
-		$filters = "&action=f&filter_count=".count($header['filters']).$individualFilters; 
+		$filters = "&action=f&filter_count=".count($header['filters']).$individualFilters;
 else:
 	$filters = "";
 endif;
@@ -52,19 +52,19 @@ foreach ($columns as $column) {
 <div class="container-fluid">
 	<div class="row">
   	<div class="col-sm-12 col-xs-12">
-		{!!Util::fuseAlerts(Util::flash())!!} 
+		{!!Util::fuseAlerts(Util::flash())!!}
 		</div>
 	</div>
 </div>
 
 <div class="container-fluid">
 
-	<div class="row"> 
+	<div class="row">
 		<div class="col-sm-12 col-xs-12">
 		<div class="form-group">
 
 		@if(!$header['onlyOne'])
-		<div class="infuseTopButtonGroup"> 
+		<div class="infuseTopButtonGroup">
 			@if (Util::checkPermission($user, $modelInstanceForPermissionCheck, "create"))
 			<div class="btn-group">
 				<a class="btn btn-default mainColor" href="?action=c">Create {{$header['name']}}</a>
@@ -98,18 +98,18 @@ foreach ($columns as $column) {
 	</div> <!-- end of row -->
 
 	@if (isset($header['queryScopes']))
-		<?php 
-			$header['queryScopes'] = array_chunk($header['queryScopes'], 6, true); 
+		<?php
+			$header['queryScopes'] = array_chunk($header['queryScopes'], 6, true);
 		?>
 		@foreach ($header['queryScopes'] as $row)
-		<div class="row"> 
+		<div class="row">
 			<div class="col-sm-12 col-xs-12">
 			<div class="form-group">
 			<div class="btn-group btn-group-justified" role="group">
-		  
+
 			@foreach ($row as $displayName => $functionName)
 			<div class="btn-group" role="group">
-		    <a href="?action=l&scope={{$functionName}}" class="btn btn-default {{($currentScope == $functionName)? "disabled" : ""}}">{{$displayName}}</a> 
+		    <a href="?action=l&scope={{$functionName}}" class="btn btn-default {{($currentScope == $functionName)? "disabled" : ""}}">{{$displayName}}</a>
 		  </div>
 			@endforeach
 
@@ -121,7 +121,7 @@ foreach ($columns as $column) {
 	@endif
 
 
-	<div class="row"> 
+	<div class="row">
 		<div class="col-sm-12 col-xs-12">
 			<div class="form-group">
 
@@ -143,7 +143,7 @@ foreach ($columns as $column) {
 							<input type="hidden" value='f' name="action">
 						</form>
 
-						
+
 							@if (isset($header['filters']))
 				  			<div class="hide rebuildFiltersThroughJs" data-filter-count="{{count($header['filters'])}}">
 				  				@for($x=1; $x <= count($header['filters']); $x++)
@@ -154,25 +154,25 @@ foreach ($columns as $column) {
 						</div>
 					</td>
 				</tr>
-				
+
 				<tr>
 					@foreach ($columns as $column)
 						@if (in_array($column['field'], $header['list']))
 
 							@if (!$displayOrder)
 								@if (array_key_exists($column['field'], $header['columnNames']))
-									<th><a href="?action=l&order={{$column['field']}}">{{$header['columnNames']["{$column['field']}"]}}</a></th> 
+									<th><a href="?action=l&order={{$column['field']}}">{{$header['columnNames']["{$column['field']}"]}}</a></th>
 								@else
 									<th><a href="?action=l&order={{$column['field']}}">{{Util::cleanName($column['field'])}}</a></th>
 								@endif
 							@else
 								@if (array_key_exists($column['field'], $header['columnNames']))
-									<th>{{$header['columnNames']["{$column['field']}"]}}</th> 
+									<th>{{$header['columnNames']["{$column['field']}"]}}</th>
 								@else
 									<th>{{Util::cleanName($column['field'])}}</th>
 								@endif
 							@endif
-							
+
 						@endif
 					@endforeach
 					<th></th>
@@ -186,7 +186,7 @@ foreach ($columns as $column) {
 
 						@if (in_array($column['field'], $header['list']))
 							<td>
-							@if (array_key_exists("select", $column)) 
+							@if (array_key_exists("select", $column))
 								<?php $selectArray = (array_key_exists("nested", $column) && isset($column['nested_last_array']))? $column['nested_last_array'] : $column['select'] ; ?>
 								@foreach ($selectArray as $value)
 										@if ($columnValue == $value["id"])
@@ -195,24 +195,24 @@ foreach ($columns as $column) {
 										@endif
 								@endforeach
 
-							@elseif (array_key_exists("display_order", $column)) 
+							@elseif (array_key_exists("display_order", $column))
 								<div class="orderColumn">
-									<a class="upOrder" data-id="{{$entry->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column['field']}}" data-model="{{get_class($entry)}}" href="">[up]</a> 
+									<a class="upOrder" data-id="{{$entry->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column['field']}}" data-model="{{get_class($entry)}}" href="">[up]</a>
 									<a class="downOrder" data-id="{{$entry->id}}" data-url="{{$_SERVER['REQUEST_URI']}}" data-column="{{$column['field']}}" data-model="{{get_class($entry)}}" href="">[down]</a>
 								</div>
 
 							@elseif (array_key_exists("upload", $column))
 								<div class="previewImage">
-									<img src="{{$entry->url($column['field'])}}" alt=""> 
+									<img src="{{$entry->url($column['field'])}}" alt="">
 								</div>
 
-							@else 
+							@else
 								@if ($column['field'] == "updated_at")
-									{{$columnValue->tz(\Config::get('app.timezone'))->format($header['formatLaravelTimestamp'])}} 
+									{{$columnValue->tz(\Config::get('app.timezone'))->format($header['formatLaravelTimestamp'])}}
 								@else
 									{{(($column['type'] == "text"))? Util::truncateText($columnValue, "25") : $columnValue }}
 								@endif
-										
+
 							@endif
 							</td>
 						@endif
@@ -242,8 +242,8 @@ foreach ($columns as $column) {
 									@if(count($header['callFunctions']) > 0)
 										@foreach ($header['callFunctions'] as $function)
 											<li>
-												<a {{((isset($function['target']))? 'target="'.$function['target'] .'"' : "" )}} 
-													href="?action=cf&id={{$entry->id}}&cf={{$function["function"]}}" 
+												<a {{((isset($function['target']))? 'target="'.$function['target'] .'"' : "" )}}
+													href="?action=cf&id={{$entry->id}}&cf={{$function["function"]}}"
 													@if (isset($function['long_process']))
 														onclick='Infuse.confirmAndblockUI("{{$function["display_name"]}}", "{{$function["function"]}}");'>
 													@else
@@ -255,7 +255,7 @@ foreach ($columns as $column) {
 												<div class="hide {{$function["function"]}}">
 													<h4>{{$function['long_process']}}</h4>
 													<div>
-														<img width="32" height="32"  src="/packages/bpez/infuse/images/loading.gif" alt=""/>
+														<img width="32" height="32"  src="/bpez/infuse/images/loading.gif" alt=""/>
 													</div>
 													</br>
 												</div>
@@ -264,10 +264,10 @@ foreach ($columns as $column) {
 										@endforeach
 									@endif
 								@endif
-								
+
 						  </ul>
 						</div>
-						
+
 					</td>
 				</tr>
 				@endforeach
@@ -314,7 +314,7 @@ foreach ($columns as $column) {
 	  	@else
 	  		<li class="disabled"><a href="javascript: void(0)">&laquo;</a></li>
 	  	@endif
-	  	
+
 	  	@if ($pagination['count'] > $pagination['limit'])
 	  		<?php $times = ceil((int)$pagination['count']/(int)$pagination['limit']); ?>
 	  		@for ($i=1; $i < $times+1; $i++)
@@ -326,13 +326,13 @@ foreach ($columns as $column) {
 	  	@endfor
 	  	 <li><a href='?pg=a{{$filters}}'>View All</a></li>
 	  	@endif
-	  	
+
 	  	@if (isset($times) && $pagination['active_page'] != $times)
 	    	<li><a href='?pg={{$pagination['active_page']+1}}{{$filters}}{{$currentScopeUrl}}'>&raquo;</a></li>
 	    @else
 	    	<li class="disabled"><a href="javascript: void(0)">&raquo;</a></li>
 	   	@endif
-	    
+
 	  </ul>
 	</div>
 	@endif
@@ -340,7 +340,3 @@ foreach ($columns as $column) {
 
 
 </div>
-
-
-
-

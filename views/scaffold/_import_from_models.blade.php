@@ -91,7 +91,7 @@
 	    </table>
 
 	    <div class="loading">
-	    	<img src="/packages/bpez/infuse/images/loading.gif" alt="">
+	    	<img src="/bpez/infuse/images/loading.gif" alt="">
 	    </div>
 	  </div>
 	  <div class="modal-footer">
