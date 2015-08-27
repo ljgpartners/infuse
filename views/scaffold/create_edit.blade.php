@@ -453,8 +453,16 @@
 
 				@if(count($header['callFunctions']) > 0)
 					@foreach ($header['callFunctions'] as $function)
+
+						<?php
+							$stack = Util::get("stack");
+							$callFunctionUrl = (!$stack) ?
+								"?action=cf&id={$entries->id}&cf={$function["function"]}" :
+								"?action=cf&id={$entries->id}&cf={$function["function"]}&stack={$stack}";
+						?>
+
 						<a class="" {{((isset($function['target']))? 'target="'.$function['target'] .'"' : "" )}}
-								href="?action=cf&id={{$entries->id}}&cf={{$function["function"]}}"
+								href="{{$callFunctionUrl}}"
 								@if (isset($function['long_process']))
 									onclick='Infuse.confirmAndblockUI("{{$function["display_name"]}}", "{{$function["function"]}}");'>
 								@else
