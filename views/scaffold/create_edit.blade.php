@@ -270,7 +270,7 @@
 		          @if (!empty($columnValue))
 			        <ul class="dropdown-menu dropdown-menu-form" role="menu">
 			        	<li>
-			        		@if (preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $columnValue ))
+			        		@if (preg_match('/(\.jpg|\.png|\.gif|\.svg|\.JPG|\.PNG|\.GIF|\.SVG)$/', $columnValue ))
 			        			<a href="" data-toggle="modal" data-target="#{{"Modal".$column['field'].$entries->id}}">Preview current</a>
 			        		@else
 								<a href="<?php echo $entries->url($column['field']); ?>" >Current {{$columnValue}}</a>
@@ -295,7 +295,7 @@
 
 
 				@if (!empty($columnValue))
-					@if (preg_match('/(\.jpg|\.png|\.gif|\.JPG|\.PNG|\.GIF)$/', $columnValue ))
+					@if (preg_match('/(\.jpg|\.png|\.gif|\.svg|\.JPG|\.PNG|\.GIF|\.SVG)$/', $columnValue ))
 						<div id="{{"Modal".$column['field'].$entries->id}}" class="modal fade previewModal"  tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
 						  <div class="modal-dialog modal-lg">
 						    <div class="modal-content">
