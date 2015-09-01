@@ -328,7 +328,7 @@ addCkeditor(
 - Database table field names
 
 ## callFunction
-Add extra action to entry's actions (show | edit | delete | YourActionHere )
+Add extra action to entry's actions (show | edit | delete | YourActionHere ). Returning an array("type" => "success", "message" => $message) can tap into notification system. Type can be ("success" || "error" || "info" || "warning"). Or returning false will trigger default error message.
 ```php
 callFunction(array(
     array(
@@ -348,7 +348,34 @@ callFunction(array(
 
 Ex. importSomeThing implementation. Returns an array to the admin marked with type ("success" || "error") and message along with it.
 ```php
-public function scopeImportSomeThings()
+public function importSomeThings()
+{
+	// ... some work here
+	$message = "Thanks";
+	return array("type" => "success", "message" => $message);
+}
+```
+
+
+
+## addOtherAction
+Add top level action under the "Other Actions" dropdown on the scaffold listing page. Function should be static function from the top level model. User instance is passed into static function. Returning an array("type" => "success", "message" => $message) can tap into notification system. Type can be ("success" || "error" || "info" || "warning"). Or returning false will trigger default error message.
+```php
+addOtherAction(array(
+    array(
+        "function" => "seedUrls",
+        "display_name" => "Import some thing",
+    ),
+    ...
+);
+```
+#### Parameters
+1. (Required) [string] function - Name of the function. Its a laravel elequent query scope. So if name is importSomeThing then in the model it's declared scopeImportSomeThing
+2. (Required) [string] Display name for the function
+
+Ex. seedUrls implementation
+```php
+public function seedUrls($currentUser)
 {
 	// ... some work here
 	$message = "Thanks";
