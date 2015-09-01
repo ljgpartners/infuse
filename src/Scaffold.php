@@ -1836,7 +1836,14 @@ class Scaffold
 
         $success = $model::$callFunction($this->user);
 
-        if ($success) {
+        if ($success && is_array($success) && isset($success['message']) && isset($success['type'])) {
+
+            Util::flash(array(
+                "message" => $success['message'],
+                "type" => $success['type']
+            ));
+
+        } else if ($success) {
 
             Util::flash(array(
                 "message" => "Succesfully called {$callFunction} action.",

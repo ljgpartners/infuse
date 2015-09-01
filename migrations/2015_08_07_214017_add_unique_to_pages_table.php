@@ -12,10 +12,14 @@ class AddUniqueToPagesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::table('pages', function(Blueprint $table)
-		{
-			$table->string('unique')->nullable();
-		});
+		$databaseConnectionType = \Config::get('database.default');
+
+		if ($databaseConnectionType == "pgsql") {
+			Schema::table('pages', function(Blueprint $table)
+			{
+				$table->string('unique')->nullable();
+			});
+		}
 	}
 
 	/**
@@ -25,10 +29,14 @@ class AddUniqueToPagesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::table('pages', function(Blueprint $table)
-		{
-			$table->dropColumn('unique');
-		});
+		$databaseConnectionType = \Config::get('database.default');
+
+		if ($databaseConnectionType == "pgsql") {
+			Schema::table('pages', function(Blueprint $table)
+			{
+				$table->dropColumn('unique');
+			});
+		}
 	}
 
 }
