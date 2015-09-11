@@ -75,11 +75,22 @@ if (isset($infusePagesUnique) && $infusePagesUnique) {
 	<div class="row">
 		<div class="col-sm-12 col-xs-12">
 
-		@if (($superAdmin && isset($databaseConnectionType) && $databaseConnectionType == "pgsql") || (isset($databaseConnectionType) && $databaseConnectionType == "pgsql" && Util::checkPsqlPagesExist($infusePagesSection)))
+		<?php $uniqueCheck = (isset($navItems['unique']))? $navItems['unique'] : false; ?>
+
+		@if (($superAdmin && isset($databaseConnectionType) && $databaseConnectionType == "pgsql") ||
+			(isset($databaseConnectionType) &&
+			$databaseConnectionType == "pgsql" &&
+			Util::checkPsqlPagesExist($infusePagesSection) &&
+			Util::checkPsqlPagesExist($infusePagesSection, $uniqueCheck))
+		)
+
+		{{-- Only unique if present to support past versions of infuse pages --}}
+		<?php $uniquePageIdentifier = ($uniqueCheck) ? "&upi={$uniqueCheck}" : ""; ?>
+
 	  	<div class="linkWrapper {{(strpos(\Route::currentRouteAction(), "InfusePageController") !== FALSE )? "active" : ""}}">
-	  		<a href="/admin/page?infuse_pages_section={{$infusePagesSection}}">Pages</a>
+	  		<a href="/admin/page?infuse_pages_section={{$infusePagesSection}}{{$uniquePageIdentifier}}">Pages</a>
 	  	</div>
-  	@endif
+	  	@endif
 
 		@foreach ($navItems as $title => $link )
 			@if ($title != "name" && $title != "description" && $title != "unique" && $title != "permission")

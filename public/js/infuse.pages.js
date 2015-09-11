@@ -527,10 +527,10 @@ window.InfusePages  = {
 				//console.log(pageItem);
 				switch(pageItem.data("serialize-tag")) {
 					case "pageTitle":
-						self.pageData.pageProperties.pageTitle = pageItem.text();
+						self.pageData.pageProperties.pageTitle = Infuse.trim(pageItem.text());
 						break;
 					case "pageDescription":
-						self.pageData.pageProperties.pageDescription = pageItem.text();
+						self.pageData.pageProperties.pageDescription = Infuse.trim(pageItem.text());
 						break;
 					default:
 						var temp = self.infusePageSerializePrepItem(pageItem);
@@ -554,11 +554,11 @@ window.InfusePages  = {
 
 				if (tempItems.length > 0 && panel.data("serialize-page-value") == 1) {
 					var group = {
-						"id": panel.data("serialize-page-value-id"),
+						"id": Infuse.trim(panel.data("serialize-page-value-id")),
 						"type": "group",
-						"name": panel.data("serialize-page-value-name"),
+						"name": Infuse.trim(panel.data("serialize-page-value-name")),
 						"value": tempItems,
-						"description": panel.data("serialize-page-value-description"),
+						"description": Infuse.trim(panel.data("serialize-page-value-description")),
 					};
 					self.pageData.pageValues.push(group);
 				}
@@ -570,10 +570,10 @@ window.InfusePages  = {
 			var tempPageObject = {"id": "", "type": "", "name":"", "value": "", "description": ""};
 
 			if (pageItem.data("serialize-page-value") == 1) {
-				tempPageObject.id = pageItem.data("serialize-page-value-id");
-				tempPageObject.name = pageItem.data("serialize-page-value-name");
-				tempPageObject.description = pageItem.data("serialize-page-value-description");
-				tempPageObject.value = pageItem.val();
+				tempPageObject.id = Infuse.trim(pageItem.data("serialize-page-value-id"));
+				tempPageObject.name = Infuse.trim(pageItem.data("serialize-page-value-name"));
+				tempPageObject.description = Infuse.trim(pageItem.data("serialize-page-value-description"));
+				tempPageObject.value = Infuse.trim(pageItem.val());
 
 				if (pageItem.is("input")) {
 					if (pageItem.attr("type") == "text") {
