@@ -209,7 +209,8 @@ trait InfuseModelLibrary {
         }
 
         if (!isset($this->hstore[$hstoreColumn]['cache'])) {
-            $this->hstore[$hstoreColumn]['cache'] = $this->{$hstoreColumn};
+            $tempHstoreColumn = $this->{$hstoreColumn};
+            $this->hstore[$hstoreColumn]['cache'] = (empty($tempHstoreColumn)) ? [] : $tempHstoreColumn;
         }
 
         foreach ($hstoreKeyPairs as $key => $value) {
