@@ -4,6 +4,7 @@ use Aws\S3\S3Client;
 use League\Flysystem\Filesystem;
 use League\Flysystem\AwsS3v2\AwsS3Adapter;
 use League\Flysystem\Adapter\Local as Adapter;
+use Config;
 
 use Intervention\Image\ImageManagerStatic as Image;
 
@@ -43,8 +44,8 @@ class FileUpload {
 		if ($this->fileSystemDiskType == "s3") {  // disks.s3.bucket secret bucket
 
 			$client = S3Client::factory(array(
-		    'key'    => \Config::get("filesystems.disks.s3.key"),
-		    'secret' => \Config::get("filesystems.disks.s3.secret"),
+			    'key'    => \Config::get("filesystems.disks.s3.key"),
+			    'secret' => \Config::get("filesystems.disks.s3.secret")
 			));
 
 			$this->s3Bucket = \Config::get("filesystems.disks.s3.bucket");
@@ -100,7 +101,11 @@ class FileUpload {
 
 			if ($this->fileSystemDiskType == "s3") {
 
-				return $this->disk->getAdapter()->getClient()->getObjectUrl($this->s3Bucket, $url);
+				if (!isset($instance->infuseCdnOff) && Config::has("services.cloudfront.s3-uploads")) {
+					return Config::get("services.cloudfront.s3-uploads") . $url;
+				} else {
+					return $this->disk->getAdapter()->getClient()->getObjectUrl($this->s3Bucket, $url);
+				}
 
 			} else if ($this->fileSystemDiskType == "local") {
 				$baseUrlUploadedAssetsLocal = \Config::get("infuse::config.base_url_uploaded_assets_local");

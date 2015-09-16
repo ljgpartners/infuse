@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Config;
+use Exception;
 
 /*
 |--------------------------------------------------------------------------
@@ -643,7 +645,46 @@ STRING;
         }
 	}
 
+	/*
+    |--------------------------------------------------------------------------
+    | Thumbor Related Methods
+    |--------------------------------------------------------------------------
+    | On the fly croping and filter methods
+    |
+    */
+
+	public static function thumbor($url)
+    {
+        if (Config::get("filesystems.default") == "s3" &&
+			Config::has("services.thumbor.security-key") &&
+			Config::has("services.thumbor.host")
+		) {
+            $server = Config::get("services.thumbor.host");
+            $secret = Config::get("services.thumbor.security-key");
+            $thumbnailUrlFactory = \Thumbor\Url\BuilderFactory::construct($server, $secret);
+            return $thumbnailUrlFactory->url($url);
+        } else {
+            throw new Exception("S3 Filesystem and  99designs/phumbor library required.");
+        }
+    }
+
+
+	/*
+    |--------------------------------------------------------------------------
+    | Diliver from CDN
+    |--------------------------------------------------------------------------
+    | On the fly croping and filter methods
+    |
+    */
+
+	public static function cdn($url)
+    {
+        if (app()->environment() != "local" && Config::has("services.cloudfront.self-hosted")) {
+			return Config::get("services.cloudfront.self-hosted") . $url;
+        } else {
+            return $url;
+        }
+    }
+
 
 }
-
-?>
