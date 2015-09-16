@@ -1,5 +1,8 @@
 <?php namespace Bpez\Infuse;
 
+use Config;
+use Exception;
+
 trait InfuseModelLibrary {
 
     public function validate($data)
@@ -162,6 +165,30 @@ trait InfuseModelLibrary {
         return \FileUpload::url($this, $column, $hstoreColumn);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Thumbor Related Methods
+    |--------------------------------------------------------------------------
+    | On the fly croping and filter methods
+    |
+    */
+
+    public function thumbor($column, $hstoreColumn = false)
+    {
+        if (Config::get("filesystems.default") == "s3" &&
+			Config::has("services.thumbor.security-key") &&
+			Config::has("services.thumbor.host")
+		) {
+            $server = Config::get("services.thumbor.host");
+            $secret = Config::get("services.thumbor.security-key");
+            $thumbnailUrlFactory = \Thumbor\Url\BuilderFactory::construct($server, $secret);
+            $this->infuseCdnOff = true; // Turn off delivery from cdn and grab from direct source
+            $url = \FileUpload::url($this, $column, $hstoreColumn);
+            return $thumbnailUrlFactory->url($url);
+        } else {
+            throw new Exception("S3 Filesystem and  99designs/phumbor library required.");
+        }
+    }
 
     /*
     |--------------------------------------------------------------------------

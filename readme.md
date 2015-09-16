@@ -190,7 +190,7 @@ onlyOne();
 ```
 
 
-##### addPermanentFilters
+## addPermanentFilters
 Add a SQL where clause to configuration.
 ```php
 addPermanentFilters(array(
@@ -381,6 +381,68 @@ public function seedUrls($currentUser)
 	$message = "Thanks";
 	return array("type" => "success", "message" => $message);
 }
+```
+
+
+# Eloquent ORM
+Setup models to work with infuse by extending the InfuseModel and using InfuseModelLibrary trait.
+```php
+class BlogPost extends InfuseModel {
+
+	use InfuseModelLibrary;
+
+}
+```
+
+### InfuseModel features
+
+#### url($columnName, $hstoreColumn = false)
+Fetch the full url path for the file name saved to the specific column. Call the url method and pass in the column name as a parameter.
+```php
+$post = new BlogPost;
+$post->url($columnName); // Will return a url similar to http://somedomain.com/upload/some/path/name.jpg
+```
+
+
+#### thumbor($columnName, $hstoreColumn = false)
+Building on top of url functionality return an instance of a thumbor client. Only works on columns the have a file saved to them. Thumbor is a smart imaging service. It enables on-demand crop, resizing and flipping of images. Thumbor documentation and thumber client documentation can found here:
+1. https://github.com/thumbor/thumbor/wiki
+2. https://github.com/99designs/phumbor/blob/master/lib/Thumbor/Url/CommandSet.php
+
+Services configuration required please see service configuration below for setup.
+```php
+$post = new BlogPost;
+$post->thumbor($columnName)->smartCrop(true)->resize(699, 525); // Will return a url to the cropped or filtered version
+```
+
+# Bpez\Infuse\Util
+
+#### Util::thumbor($url)
+Same functionality as InfuseModel url method. For other image resources.
+```php
+Util::thumbor($url);
+```
+#### Util::cdn($url)
+For delivering assets originating from same origin through CloudFront CDN. Services configuration required please see service configuration below for setup.
+```php
+Util::cdn($url);
+```
+# Services
+/config/services.php
+```php
+'thumbor' => [
+    // Thumbor security key here
+	'security-key' => '843208u4325032u502532582358235',
+	// Use cloudfront in front of thumbor for scalability.
+	'host' => 'http://d443523423.cloudfront.net',
+],
+
+'cloudfront' => [
+    // Distribution domain for file uploaded through infuse.
+	's3-uploads' => 'http://d4253425.cloudfront.net',
+	// Distribution domain for assets originating from same origin.
+	'self-hosted' => 'http://d54343425.cloudfront.net',
+],
 ```
 
 Created with [http://dillinger.io](http://dillinger.io/)
