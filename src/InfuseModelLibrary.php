@@ -2,8 +2,24 @@
 
 use Config;
 use Exception;
+use DB;
 
 trait InfuseModelLibrary {
+
+    public function scopeHstoreToSelect($query, $selectConfig)
+    {
+        if (!is_array($selectConfig)) {
+            throw new Exception("scopeHstoreToSelect(\$selectConfig) Paremter must be an array.");
+        }
+
+        foreach ($this->hstore as $realColumn => $config) {
+            foreach (array_keys($config['columns']) as $virtualColumn) {
+                array_push($selectConfig, DB::raw("{$realColumn}->'{$virtualColumn}' as {$virtualColumn}"));
+            }
+        }
+        return $query->select($selectConfig);
+
+    }
 
     public function validate($data)
     {
