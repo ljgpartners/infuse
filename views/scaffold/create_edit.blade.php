@@ -400,7 +400,7 @@
 					{{-- Add column description  --}}
 					@if (array_key_exists("description", $column))
 						@if (array_key_exists("description_popover", $column))
-							<a href="#" tabindex="0" class="infoPopOver" role="button" data-toggle="popover" data-html="true" data-trigger="focus" title="Information" data-content="{{$column['description']}}">Information</a>
+							<a tabindex="0" class="infoPopOver" role="button" data-toggle="popover" data-html="true" data-trigger="focus" title="Information" data-content="{{$column['description']}}">Information</a>
 						@else
 							<span class="label label-default-bryan">{{$column['description']}}</span>
 						@endif
