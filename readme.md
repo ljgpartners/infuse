@@ -414,13 +414,22 @@ Services configuration required please see service configuration below for setup
 $post = new BlogPost;
 $post->thumbor($columnName)->smartCrop(true)->resize(699, 525); // Will return a url to the cropped or filtered version
 ```
-
+* When using with img tags add this data attribute: data-no-retina
+```html
+<?php $post = new BlogPost; ?>
+<img src="{{$post->thumbor($columnName)->smartCrop(true)->resize(699, 525)}}" data-no-retina />
+```
 # Bpez\Infuse\Util
 
 #### Util::thumbor($url)
 Same functionality as InfuseModel url method. For other image resources.
 ```php
 Util::thumbor($url);
+```
+* When using with img tags add this data attribute: data-no-retina
+```html
+<?php $post = new BlogPost; ?>
+<img src="{{Util::thumbor($url)->smartCrop(true)->resize(699, 525)}}" data-no-retina />
 ```
 #### Util::cdn($url)
 For delivering assets originating from same origin through CloudFront CDN. Services configuration required please see service configuration below for setup.
@@ -444,6 +453,16 @@ Util::cdn($url);
 	'self-hosted' => 'http://d54343425.cloudfront.net',
 ],
 ```
+
+# Retina image support
+Include the Util::infuse() on your page (put it at the bottom of your template, before your closing </body> tag)
+
+```html
+	{!! Util::infuse() !!}
+    </body>
+</html>
+```
+
 
 Created with [http://dillinger.io](http://dillinger.io/)
 

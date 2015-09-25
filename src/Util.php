@@ -579,10 +579,11 @@ class Util {
 		$return = <<<STRING
 		<script>(function(w){var dpr=((w.devicePixelRatio===undefined)?1:w.devicePixelRatio);if(!!w.navigator.standalone){var r=new XMLHttpRequest();r.open('GET','/bpez/infuse/other/retinaimages.php?devicePixelRatio='+dpr,false);r.send()}else{document.cookie='devicePixelRatio='+dpr+'; path=/'}})(window)</script>
 		<noscript><style id="devicePixelRatio" media="only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2)">html{background-image:url("/bpez/infuse/other/retinaimages.php?devicePixelRatio=2")}</style></noscript>
+
+		<script type="text/javascript" src="/bpez/infuse/js/retina.js"></script>
 STRING;
 		return $return;
 	}
-
 
 	public static function getControllerClassName()
 	{
