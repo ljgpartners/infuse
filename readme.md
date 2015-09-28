@@ -462,7 +462,20 @@ Include the Util::infuse() on your page (put it at the bottom of your template, 
     </body>
 </html>
 ```
-
+S3 CORS needs to be enabled and  config needed for retina support:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <CORSRule>
+        <AllowedOrigin>*</AllowedOrigin>
+        <AllowedMethod>GET</AllowedMethod>
+         <AllowedMethod>HEAD</AllowedMethod>
+        <MaxAgeSeconds>3000</MaxAgeSeconds>
+        <AllowedHeader>Authorization</AllowedHeader>
+    </CORSRule>
+</CORSConfiguration>'self-hosted' => 'http://d54343425.cloudfront.net',
+],
+```
 
 Created with [http://dillinger.io](http://dillinger.io/)
 
