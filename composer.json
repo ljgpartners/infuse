@@ -3,9 +3,9 @@
     "type": "library",
     "description": "Infuse is a laravel admin package for generating administration style interfaces",
     "keywords": [
-        "laravel 4", 
-        "laravel", 
-        "admin", 
+        "laravel 4",
+        "laravel",
+        "admin",
         "scaffold"
     ],
     "license": "MIT",
@@ -25,7 +25,7 @@
         "nesbot/Carbon": "1.8.*",
         "barryvdh/laravel-debugbar": "1.*",
         "way/generators": "2.*",
-        "bpez/munee": "1.5.*",
+        "meenie/munee": "1.5.20",
         "paquettg/php-html-parser": "1.6.3"
     },
     "autoload": {
