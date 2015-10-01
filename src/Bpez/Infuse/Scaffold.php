@@ -1943,8 +1943,10 @@ class Scaffold
 
 			if ($entry->delete()) {
 				foreach ($this->columns as $column) {
-					if (array_key_exists("upload", $column) && !empty($entryBackUp->{$column['field']}) && file_exists($_SERVER['DOCUMENT_ROOT']."/".$entryBackUp->url($column['field']))) {
-            $currentFile = $_SERVER['DOCUMENT_ROOT']."/".$entryBackUp->url($column['field']);
+					if (array_key_exists("upload", $column) && !empty($entryBackUp->{$column['field']}) && file_exists($entryBackUp->uploadPath($column['field']).$entryBackUp->{$column['field']})) {
+            $currentFile = $entryBackUp->uploadPath($column['field']).$entryBackUp->{$column['field']};
+
+
             unlink($currentFile);
             $name = pathinfo($currentFile, PATHINFO_FILENAME);
             $ext  = pathinfo($currentFile, PATHINFO_EXTENSION);
@@ -2204,50 +2206,50 @@ class Scaffold
 						} else if ($checkIfExternalFile) {
 							$overwrite = false;
 							$options = array(
-		            CURLOPT_RETURNTRANSFER => true,
-		            CURLOPT_FOLLOWLOCATION => false,
-		            CURLOPT_FAILONERROR => true,
-		            CURLOPT_SSL_VERIFYPEER => false
-			        );
+								CURLOPT_RETURNTRANSFER => true,
+								CURLOPT_FOLLOWLOCATION => false,
+								CURLOPT_FAILONERROR => true,
+								CURLOPT_SSL_VERIFYPEER => false
+							);
 							$success = $transit->importFromRemote($overwrite, $options);
 						}
 
 						if ($success) {
 							$fileName = explode(DIRECTORY_SEPARATOR, $transit->getOriginalFile());
-              $fileName = end($fileName);
+							$fileName = end($fileName);
 
-							if (!empty($entry->{$column['field']}) && file_exists($_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']))) {
-                $currentFile = $_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']);
-                unlink($currentFile);
-                $name = pathinfo($currentFile, PATHINFO_FILENAME);
-                $ext  = pathinfo($currentFile, PATHINFO_EXTENSION);
-                $retinaImage = $entry->uploadPath($column['field']).$name."@2x.".$ext;
-                if (file_exists($retinaImage)) {
-                  unlink($retinaImage);
-                }
-              }
+							if (!empty($entry->{$column['field']}) && file_exists($entry->uploadPath($column['field']).$entry->{$column['field']})) {
+								$currentFile = $entry->uploadPath($column['field']).$entry->{$column['field']};
+								unlink($currentFile);
+								$name = pathinfo($currentFile, PATHINFO_FILENAME);
+								$ext  = pathinfo($currentFile, PATHINFO_EXTENSION);
+								$retinaImage = $entry->uploadPath($column['field']).$name."@2x.".$ext;
+								if (file_exists($retinaImage)) {
+									unlink($retinaImage);
+								}
+							}
 
 
-              if(strpos($fileName, "@2x.") !== FALSE) {
-                $uploadPath = $model->uploadPath($column['field']);
-                $halfRetinaSize = floor($transit->getOriginalFile()->width()/2);
-                $retinaFileName = $fileName;
+							if(strpos($fileName, "@2x.") !== FALSE) {
+								$uploadPath = $model->uploadPath($column['field']);
+								$halfRetinaSize = floor($transit->getOriginalFile()->width()/2);
+								$retinaFileName = $fileName;
 
-                $fileName = explode("@2x.", $fileName);
-                $fileName = $fileName[0].".".$fileName[1];
-                if (copy($uploadPath.$retinaFileName, $uploadPath.$fileName)) {
+								$fileName = explode("@2x.", $fileName);
+								$fileName = $fileName[0].".".$fileName[1];
+								if (copy($uploadPath.$retinaFileName, $uploadPath.$fileName)) {
 
-                  $transitRetina = new ResizeTransformer(array('width' => $halfRetinaSize));
+									$transitRetina = new ResizeTransformer(array('width' => $halfRetinaSize));
 
-                  if (!$transitRetina->transform(new File($uploadPath.$fileName), true)) {
-                    throw new Exception("Failed to resize retina for non retina version.");
-                  }
-                } else {
-                  throw new Exception("Failed to copy retina image for processing.");
-                }
-              }
+									if (!$transitRetina->transform(new File($uploadPath.$fileName), true)) {
+										throw new Exception("Failed to resize retina for non retina version.");
+									}
+								} else {
+									throw new Exception("Failed to copy retina image for processing.");
+								}
+							}
 
-              $entry->{$column['field']} = $fileName;
+							$entry->{$column['field']} = $fileName;
 
 						}
 					} catch (Exception $e) {
@@ -2256,16 +2258,17 @@ class Scaffold
 				}
 
 				if (Util::get($column['field']."_delete")) {
-          $currentFile = $_SERVER['DOCUMENT_ROOT']."/".$entry->url($column['field']);
-          if (file_exists($currentFile)) {
-            unlink($currentFile);
-          }
-          $name = pathinfo($currentFile, PATHINFO_FILENAME);
-          $ext  = pathinfo($currentFile, PATHINFO_EXTENSION);
-          $retinaImage = $entry->uploadPath($column['field']).$name."@2x.".$ext;
-          if (file_exists($retinaImage)) {
-            unlink($retinaImage);
-          }
+					$currentFile = $entry->uploadPath($column['field']).$entry->{$column['field']};
+
+					if (file_exists($currentFile)) {
+						unlink($currentFile);
+					}
+					$name = pathinfo($currentFile, PATHINFO_FILENAME);
+					$ext  = pathinfo($currentFile, PATHINFO_EXTENSION);
+					$retinaImage = $entry->uploadPath($column['field']).$name."@2x.".$ext;
+					if (file_exists($retinaImage)) {
+						unlink($retinaImage);
+					}
 
 					$entry->{$column['field']} = "";
 				}
