@@ -2,7 +2,7 @@
 if (isset($header['filters'])):
 		$individualFilters = "";
 		for($x=1; $x <= count($header['filters']); $x++)
-			$individualFilters .= "&filter_".$x."=".Util::get("filter_".$x);
+			$individualFilters .= "&filter_".$x."=".json_encode(Util::get("filter_".$x));
 		$filters = "&action=f&filter_count=".count($header['filters']).$individualFilters;
 else:
 	$filters = "";
@@ -141,6 +141,8 @@ foreach ($columns as $column) {
 							<div class="appendFilters"></div>
 							<input type="hidden" value='0' name="filter_count" class="filterCount">
 							<input type="hidden" value='f' name="action">
+							{{-- Laravel csrf token --}}
+							<input type="hidden" name="_token" value="{!! csrf_token() !!}" />
 						</form>
 
 

@@ -770,7 +770,7 @@ class Scaffold
         $filters = array();
 
         for ($x=1; $x <= $filterCount; $x++) {
-            $filter = json_decode(Util::get("filter_".$x));
+            $filter = (is_array(Util::get("filter_".$x))) ? Util::get("filter_".$x) : json_decode(Util::get("filter_".$x));
 
             if (count($filter) == 3) {
 
