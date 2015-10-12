@@ -125,7 +125,7 @@
 			<?php $masterColumnName = (array_key_exists($column['field'], $header['columnNames']))? $header['columnNames']["{$column['field']}"] : Util::cleanName($column['field']); ?>
 
 			@if (!array_key_exists("upload", $column))
-				<span class="input-group-addon">{{Util::cleanName($column['field'])}}</span>
+				<span class="input-group-addon">{{$masterColumnName}}</span>
 			@endif
 
 			{{-- Column Values/Form Input  --}}
