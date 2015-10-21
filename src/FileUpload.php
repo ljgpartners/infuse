@@ -287,7 +287,7 @@ class FileUpload {
 
 		// Only process if file present
 		if (!$checkIfInFiles && !$checkIfAlreadyUploaded && !$checkIfExternalFile) {
-			return true;
+			return false;
 		}
 
 

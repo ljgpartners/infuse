@@ -80,6 +80,11 @@
 
 		<?php $columnValue = Util::getColumnValue($entries, $column); ?>
 
+		{{-- 	Feed to url function hstore config	--}}
+
+		<?php $hstoreColumn = (isset($column['hstore_column']) && $column['hstore_column']) ? $column['hstore_column'] : false; ?>
+
+
 		{{-- 	If foreign key is select reveal on top	--}}
 
 		@if (Util::isForeignKey($column['field']) && array_key_exists("select", $column))
@@ -273,7 +278,7 @@
 			        		@if (preg_match('/(\.jpg|\.png|\.gif|\.svg|\.JPG|\.PNG|\.GIF|\.SVG)$/', $columnValue ))
 			        			<a href="" data-toggle="modal" data-target="#{{"Modal".$column['field'].$entries->id}}">Preview current</a>
 			        		@else
-								<a href="<?php echo $entries->url($column['field']); ?>" >Current {{$columnValue}}</a>
+								<a href="<?php echo $entries->url($column['field'], $hstoreColumn); ?>" >Current {{$columnValue}}</a>
 							@endif
 			        	</li>
 			          <li>
@@ -304,7 +309,7 @@
 						        <h4 class="modal-title">{{$columnValue }}</h4>
 						      </div>
 						      <div class="modal-body">
-						        <img class="uploadAreaPreviewImage" src="{{$entries->url($column['field'])}}">
+						        <img class="uploadAreaPreviewImage" src="{{$entries->url($column['field'], $hstoreColumn)}}">
 						      </div>
 						      <div class="modal-footer">
 						        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
