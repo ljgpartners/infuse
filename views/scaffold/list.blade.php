@@ -186,6 +186,10 @@ foreach ($columns as $column) {
 
 						<?php $columnValue = Util::getColumnValue($entry, $column); ?>
 
+						{{-- 	Feed to url function hstore config	--}}
+
+						<?php $hstoreColumn = (isset($column['hstore_column']) && $column['hstore_column']) ? $column['hstore_column'] : false; ?>
+
 						@if (in_array($column['field'], $header['list']))
 							<td>
 							@if (array_key_exists("select", $column))
@@ -205,7 +209,7 @@ foreach ($columns as $column) {
 
 							@elseif (array_key_exists("upload", $column))
 								<div class="previewImage">
-									<img src="{{$entry->url($column['field'])}}" alt="">
+									<img src="{{$entry->url($column['field'], $hstoreColumn)}}" alt="">
 								</div>
 
 							@else

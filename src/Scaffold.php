@@ -1473,6 +1473,8 @@ class Scaffold
     private function update()
     {
         $model = $this->model;
+        $createFlag = false;
+
         if (Util::get("id")) {
 
             $entry = $model::find(Util::get("id"));
@@ -1501,11 +1503,13 @@ class Scaffold
 
             $entry = $model;
             $message = array("message" => "Added {$this->name}.", "type" => "success");
+            $createFlag = true;
 
         } else {
 
             $entry = $model;
             $message = array("message" => "Created {$this->name}.", "type" => "success");
+            $createFlag = true;
 
         }
 
@@ -1515,12 +1519,14 @@ class Scaffold
 
             if (array_key_exists("upload", $column)) {
 
-                $fileUploadManage->add($column, $entry);
+                if (!$fileUploadManage->add($column, $entry) && $createFlag) {
+                    Util::setColumnValue($entry, $column, "");
+                }
 
                 if (Util::get($column['field']."_delete")) {
 
                     $fileUploadManage->deleteBasicUpload($entry->uploadPath($column['field']), $entry->{$column['field']});
-                    $entry->{$column['field']} = "";
+                    Util::setColumnValue($entry, $column, "");
                 }
 
             } else {
