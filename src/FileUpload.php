@@ -360,6 +360,8 @@ class FileUpload {
 			Util::setColumnValue($entry, $columnConfig, $processRetinaImage);
 		}
 
+		return true;
+
 	} // END OF ADD
 
 
