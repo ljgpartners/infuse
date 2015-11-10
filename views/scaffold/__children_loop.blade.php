@@ -9,7 +9,7 @@
 		@endif
 	@endforeach
 	<th>
-		<a href="{{Util::childActionLink($model, 'c')}}">Create</a>
+		Actions
 	</th>
 </tr>
 

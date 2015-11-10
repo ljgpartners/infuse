@@ -73,6 +73,12 @@
 		<div class="table-responsive">
 		<table class="table table-striped table-bordered">
 
+			<tr>
+				<td colspan="{{$numColumns}}">
+					<a href="{{Util::childActionLink($model, 'c')}}">Create</a>
+				</td>
+			</tr>
+
 			@if (!$split)
 				@include('infuse::scaffold.__children_loop')
 			@else
