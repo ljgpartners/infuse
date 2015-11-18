@@ -7,8 +7,8 @@ CKEDITOR.editorConfig = function( config ) {
 	// Define changes to default configuration here. For example:
 	// config.language = 'fr';
 	// config.uiColor = '#AADC6E';
-	// 
-	
+	//
+
 	// Define changes to default configuration here.
 	// For the complete reference:
 	// http://docs.ckeditor.com/#!/api/CKEDITOR.config
@@ -31,7 +31,7 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'others', items: [ '-' ] },
 		{ name: 'about', items: [ 'About' ] }
 	];
-	
+
 
 	// Toolbar groups configuration.
 	config.toolbarGroups = [
@@ -107,11 +107,11 @@ CKEDITOR.editorConfig = function( config ) {
 	// to disable the filtering of HTML elements in the editor.
 	config.allowedContent = true;
 
-
+	/*
 	config.filebrowserBrowseUrl = '/packages/bpez/infuse/ckeditor/kcfinder/browse.php?type=files';
 	config.filebrowserImageBrowseUrl = '/packages/bpez/infuse/ckeditor/kcfinder/browse.php?type=images';
 	config.filebrowserFlashBrowseUrl = '/packages/bpez/infuse/ckeditor/kcfinder/browse.php?type=flash';
 	config.filebrowserUploadUrl = '/packages/bpez/infuse/ckeditor/kcfinder/upload.php?type=files';
 	config.filebrowserImageUploadUrl = '/packages/bpez/infuse/ckeditor/kcfinder/upload.php?type=images';
-	config.filebrowserFlashUploadUrl = '/packages/bpez/infuse/ckeditor/kcfinder/upload.php?type=flash';
+	config.filebrowserFlashUploadUrl = '/packages/bpez/infuse/ckeditor/kcfinder/upload.php?type=flash'; */
 };
