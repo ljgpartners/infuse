@@ -229,7 +229,7 @@ class FileUpload {
 		array_push($this->savedQueue, $fileSaved);
 	}
 
-	private function processRetina($uploadPath, $filename, $url)
+	private function processRetina($uploadPath, $filename, $url, $mimeType)
 	{
 
 		if(strpos($filename, "@2x.") !== FALSE) {
@@ -255,7 +255,10 @@ class FileUpload {
 
 			if ($this->fileSystemDiskType == "s3") {
 				$stream = fopen($img, 'r+');
-				$this->disk->writeStream($uploadPath.$filename, $stream);
+				$this->disk->writeStream($uploadPath.$filename, $stream, [
+					'visibility' => 'public',
+					'mimetype' => $mimeType
+				]);
 
 			} else if ($this->fileSystemDiskType == "local") {
 				$stream = fopen($img, 'r+');
@@ -315,7 +318,10 @@ class FileUpload {
 
 					if ($this->fileSystemDiskType == "s3") {
 						$stream = fopen($file->getRealPath(), 'r+');
-						$this->disk->writeStream($uploadPath.$newFilename, $stream);
+						$this->disk->writeStream($uploadPath.$newFilename, $stream, [
+							'visibility' => 'public',
+    						'mimetype' => $file->getMimeType()
+						]);
 						//fclose($stream);
 						$this->addToSavedQueue($uploadPath.$newFilename);
 
@@ -355,7 +361,7 @@ class FileUpload {
 
 	  	// process retina
   		$url = $this->url($entry, $column, $columnConfig['hstore_column']);
-		$processRetinaImage = $this->processRetina($uploadPath, $newFilename, $url);
+		$processRetinaImage = $this->processRetina($uploadPath, $newFilename, $url, $file->getMimeType());
 		if ($processRetinaImage) {
 			Util::setColumnValue($entry, $columnConfig, $processRetinaImage);
 		}
@@ -395,7 +401,10 @@ class FileUpload {
 
 					if ($this->fileSystemDiskType == "s3") {
 						$stream = fopen($file->getRealPath(), 'r+');
-						$this->disk->writeStream($uploadPath.$newFilename, $stream);
+						$this->disk->writeStream($uploadPath.$newFilename, $stream, [
+							'visibility' => 'public',
+    						'mimetype' => $file->getMimeType()
+						]);
 						//fclose($stream);
 						$this->addToSavedQueue($uploadPath.$newFilename);
 
@@ -452,7 +461,7 @@ class FileUpload {
 		************************************************************/
 
 
-		$processRetinaImage = $this->processRetina($uploadPath, $newFilename, $url);
+		$processRetinaImage = $this->processRetina($uploadPath, $newFilename, $url, $file->getMimeType());
 		if ($processRetinaImage) {
 			$entry->{$entryPropertyName} = $processRetinaImage;
 		}
