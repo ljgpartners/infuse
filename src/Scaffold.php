@@ -802,6 +802,10 @@ class Scaffold
             "contains" => "like"
         );
 
+        if ($this->databaseConnection == "pgsql") {
+            $comparisons["contains"] = "ILIKE";
+        }
+
         foreach ($filters as $filter) {
 
             if (isset($comparisons[$filter[1]]) &&
