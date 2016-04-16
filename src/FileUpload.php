@@ -81,6 +81,19 @@ class FileUpload {
     return $uploadPath;
 	}
 
+    private static function requestProtocol()
+    {
+        $isSecure = false;
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
+            $isSecure = true;
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
+            || !empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on'
+        ) {
+            $isSecure = true;
+        }
+        return $isSecure ? 'https' : 'http';
+    }
+
 
 	public function url($instance, $column, $hstoreColumn = false)
 	{
@@ -116,8 +129,7 @@ class FileUpload {
 				) {
 					return $baseUrlUploadedAssetsLocal.$url;
 				} else {
-					$httpHOST = (strpos($this->request->server("HTTP_HOST"), 'http://') !== false)? $this->request->server("HTTP_HOST") : "http://".$this->request->server("HTTP_HOST");
-					return $httpHOST.$url;
+					return self::requestProtocol() . "://" . $this->request->server("HTTP_HOST") . $url;
 				}
 			}
 		}
