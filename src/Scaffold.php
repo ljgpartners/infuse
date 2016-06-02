@@ -717,8 +717,16 @@ class Scaffold
         $scope = Util::get("scope");
 
         foreach ($this->queryScopes as $key => $functionName) {
-            if ($scope == $functionName) {
-                $modelInstance = $modelInstance->{$functionName}();
+            if (strpos($scope, "@@") !== false) {
+                $explodeScope = explode("@@", $scope);
+                $explodeFunctionName = explode("@@", $functionName);
+                if ($explodeScope[0] == $explodeFunctionName[0]) {
+                    $modelInstance = $modelInstance->{$explodeFunctionName[0]}($explodeScope[1]);
+                }
+            } else {
+                if ($scope == $functionName) {
+                    $modelInstance = $modelInstance->{$functionName}();
+                }
             }
         }
 
