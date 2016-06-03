@@ -112,6 +112,7 @@
 						<input type="hidden" name="back" value="{{$_SERVER['REQUEST_URI']}}">
 						<input type="hidden" name="parent_id" value="{{$entries->id}}">
 						<input type="submit" value="import" class="btn btn-default submitButton">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					</form>
 				</th>
 			</tr>
@@ -131,6 +132,7 @@
 						<input type="hidden" name="back" value="{{$_SERVER['REQUEST_URI']}}">
 						<input type="hidden" name="parent_id" value="{{$entries->id}}">
 						<input type="submit" value="import" class="btn btn-default submitButton">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					</form>
 				</th>
 			</tr>
@@ -147,6 +149,7 @@
 						<input type="hidden" name="back" value="{{$_SERVER['REQUEST_URI']}}">
 						<input type="hidden" name="parent_id" value="{{$entries->id}}">
 						<input type="submit" value="export" class="btn submitButton">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					</form>
 				</th>
 			</tr>
