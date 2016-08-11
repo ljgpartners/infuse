@@ -8,12 +8,6 @@
         "scaffold"
     ],
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Bryan Perez",
-            "email": "perezjbryan@gmail.com"
-        }
-    ],
     "require": {
         "php": ">=5.4.0",
         "bpez/transit": "1.6.*",
