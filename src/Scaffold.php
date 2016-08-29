@@ -45,6 +45,11 @@ class Scaffold
     private $columns = null;
 
     /**
+    * Contains database table columns from the Model.
+    */
+    private $editListingOrder = array();
+
+    /**
     * Contains flag to determine how to proccess data.
     */
     private $action;
@@ -275,6 +280,7 @@ class Scaffold
         ) {
             $this->name = get_class($this->model);
             $this->boot();
+
             return $this;
         }
 
@@ -301,6 +307,7 @@ class Scaffold
 
             $columns = $db::select("select column_name as field, data_type as type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name = '".$table."'");
 
+
             $atLeastOneExist = ($db::table($table)->count() > 0)? true : false;
 
             $this->order['column'] = $this->model->getKeyName();
@@ -318,6 +325,8 @@ class Scaffold
             $hstoreColumns = $this->model->hstore;
             $hstoreEmulationColumnTypes = array("string", "text");
         }
+
+
 
         foreach ($columns as $column) {
 
@@ -344,6 +353,8 @@ class Scaffold
 
             }
         }
+
+
     }
 
     private function hstoreColumnStructureCheck($column, $hstoreColumn, $atLeastOneExist, $table)
@@ -1891,7 +1902,24 @@ class Scaffold
     }
 
 
+    public function reOrderColumns()
+    {
+        if (!empty($this->editListingOrder)) {
+            $masterDuplicateColumns = $this->columns;
+            $tmpCols = array();
 
+            foreach ($this->editListingOrder as $colName) {
+                $tmpCols[$colName] = $masterDuplicateColumns[$colName];
+                unset($masterDuplicateColumns[$colName]);
+            }
+
+            foreach ($masterDuplicateColumns as $key => $val) {
+                $tmpCols[$key] = $val;
+            }
+
+            $this->columns = $tmpCols;
+        }
+    }
 
 
     /******************************
@@ -1904,6 +1932,8 @@ class Scaffold
         $this->header['deleteAction'] = $this->deleteAction;
         $this->header['callFunctions'] = $this->callFunctions;
         $this->header['formatLaravelTimestamp'] = $this->formatLaravelTimestamp;
+
+        $this->reOrderColumns();
 
         $data = array(
             "action" => $this->action,
@@ -1925,6 +1955,8 @@ class Scaffold
         $this->header['deleteAction'] = $this->deleteAction;
         $this->header['callFunctions'] = $this->callFunctions;
         $this->header['formatLaravelTimestamp'] = $this->formatLaravelTimestamp;
+
+        $this->reOrderColumns();
 
         $data = array(
             "action" => $this->action,
