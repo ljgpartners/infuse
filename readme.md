@@ -383,6 +383,24 @@ public function seedUrls($currentUser)
 }
 ```
 
+## editListingOrder
+Lets you select the column ordering for the edit/create page. Pass in an array with  the column names in the desired order.
+```php
+editListingOrder(array(
+    "created_at",
+    "updated_at",
+    "destination_site",
+    "display_state",
+    "property",
+    "mobile_video_img",
+    "sub_title",
+    "video",
+    "title",
+));
+```
+#### Parameters
+1. (Required) [string] table field names
+
 
 # Eloquent ORM
 Setup models to work with infuse by extending the InfuseModel and using InfuseModelLibrary trait.

@@ -120,6 +120,9 @@ trait ScaffoldAPI {
 				case 'queryScopes':
 					$this->queryScopes($f);
 					break;
+                case 'editListingOrder':
+					$this->editListingOrder($f);
+					break;
 
 				case 'children':
 					break;
@@ -133,6 +136,12 @@ trait ScaffoldAPI {
 		return $this;
 	}
 
+
+    public function editListingOrder($order=array())
+    {
+        $this->editListingOrder = $order;
+        return $this;
+    }
 
 
 	public function name($name)
