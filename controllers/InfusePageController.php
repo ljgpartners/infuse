@@ -27,7 +27,7 @@ class InfusePageController extends Bpez\Infuse\BaseController {
 		View::share("user", $this->user);
 		View::share("superAdmin", $this->user->is('Super Admin'));
 		View::share('navigation', Config::get('infuse::config.navigation'));
-		$rolePermission = (\Config::get("infuse::role_permission"))? true : false;
+		$rolePermission = (\Config::get("infuse::config.role_permission"))? true : false;
 		View::share('rolePermission', $rolePermission);
 		View::share('manageActive', true);
 		View::share('databaseConnectionType', \Config::get('database.default'));
