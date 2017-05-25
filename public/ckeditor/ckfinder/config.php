@@ -45,11 +45,13 @@ $config['authentication'] = function () {
     return auth();
 };
 
+$infuseConfig = require_once $_SERVER['DOCUMENT_ROOT'] . '/../config/infuse/config.php';
+
 /*============================ License Key ============================================*/
 // http://docs.cksource.com/ckfinder3-php/configuration.html#configuration_options_licenseKey
 
-$config['licenseName'] = '';
-$config['licenseKey']  = '';
+$config['licenseName'] = $infuseConfig['licenseName'];
+$config['licenseKey']  = $infuseConfig['licenseKey'];
 
 /*============================ CKFinder Internal Directory ============================*/
 // http://docs.cksource.com/ckfinder3-php/configuration.html#configuration_options_privateDir
@@ -80,26 +82,27 @@ $config['images'] = array(
 // http://docs.cksource.com/ckfinder3-php/configuration.html#configuration_options_backends
 
 $config['backends'][] = array(
-    'name'         => '', // default
+    'name'         => 'default',
     'adapter'      => 's3',
-    'bucket'       => '',
-    'key'          => '',
-    'secret'       => '',
+    'bucket'       => $infuseConfig['s3bucket'],
+    'key'          => $infuseConfig['s3key'],
+    'secret'       => $infuseConfig['s3secret'],
     'visibility'   => 'public',
-    'baseUrl'      => 'https://s3.amazonaws.com/bucket/root_folder/',
-    'root'         => 'root_folder'
+    'baseUrl'      => $infuseConfig['s3baseUrl'],
+    'root'         => $infuseConfig['s3rootPath']
 );
 
 /*================================ Resource Types =====================================*/
 // http://docs.cksource.com/ckfinder3-php/configuration.html#configuration_options_resourceTypes
 
-$config['defaultResourceTypes'] = '';
+$config['defaultResourceTypes'] = 'Images';
 
 $config['resourceTypes'][] = array(
     'name'              => 'Files', // Single quotes not allowed.
     'directory'         => 'files',
     'maxSize'           => 0,
-    'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip',
+    //'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip',
+    'allowedExtensions' => 'jpeg,jpg,png,tiff',
     'deniedExtensions'  => '',
     'backend'           => 'default'
 );
@@ -108,7 +111,8 @@ $config['resourceTypes'][] = array(
     'name'              => 'Images',
     'directory'         => 'images',
     'maxSize'           => 0,
-    'allowedExtensions' => 'bmp,gif,jpeg,jpg,png',
+    //'allowedExtensions' => 'bmp,gif,jpeg,jpg,png',
+    'allowedExtensions' => 'jpeg,jpg,png',
     'deniedExtensions'  => '',
     'backend'           => 'default'
 );
@@ -125,9 +129,9 @@ $config['accessControl'][] = array(
     'folder'              => '/',
 
     'FOLDER_VIEW'         => true,
-    'FOLDER_CREATE'       => true,
-    'FOLDER_RENAME'       => true,
-    'FOLDER_DELETE'       => true,
+    'FOLDER_CREATE'       => false,
+    'FOLDER_RENAME'       => false,
+    'FOLDER_DELETE'       => false,
 
     'FILE_VIEW'           => true,
     'FILE_CREATE'         => true,
