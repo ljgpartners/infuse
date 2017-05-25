@@ -2,7 +2,7 @@
 
 use Aws\S3\S3Client;
 use League\Flysystem\Filesystem;
-use League\Flysystem\AwsS3v2\AwsS3Adapter;
+use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Adapter\Local as Adapter;
 use Config;
 
@@ -45,7 +45,9 @@ class FileUpload {
 
 			$client = S3Client::factory(array(
 			    'key'    => \Config::get("filesystems.disks.s3.key"),
-			    'secret' => \Config::get("filesystems.disks.s3.secret")
+			    'secret' => \Config::get("filesystems.disks.s3.secret"),
+                'region' => \Config::get("filesystems.disks.s3.region"),
+                'version' => \Config::get("filesystems.disks.s3.version", '2006-03-01')
 			));
 
 			$this->s3Bucket = \Config::get("filesystems.disks.s3.bucket");

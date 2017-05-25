@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": ">=5.4.0",
+        "illuminate/support": "5.*",
         "bpez/transit": "1.6.*",
         "toddish/verify": "dev-laravel5",
         "nesbot/Carbon": "1.*",
