@@ -12,7 +12,7 @@
         "php": ">=5.4.0",
         "illuminate/support": "5.*",
         "bpez/transit": "1.6.*",
-        "toddish/verify": "~5",
+        "toddish/verify": "5.0.0",
         "nesbot/Carbon": "1.*",
         "barryvdh/laravel-debugbar": "2.3.*",
         "intervention/image": "2.1.2",
