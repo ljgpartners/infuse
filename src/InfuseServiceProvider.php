@@ -69,7 +69,7 @@ class InfuseServiceProvider extends ServiceProvider {
     $this->registerResources();
 
 
-    $this->app->register('Toddish\Verify\VerifyServiceProvider');
+    $this->app->register('Toddish\Verify\Providers\VerifyServiceProvider');
     $this->app->register('Barryvdh\Debugbar\ServiceProvider');
 
 
