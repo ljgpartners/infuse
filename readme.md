@@ -5,22 +5,12 @@ Infuse
 
 ## Setup
 
-Step 1: Add laravel5 path repo for toddish/verify package
-```json
-"repositories": [
- {
-      "type": "vcs",
-      "url": "https://github.com/industrious-mouse/Verify-L4"
-  }
-],
-```
-
-Step 2: Install via composer
+Step 1: Install via composer
 ```php
-> composer require bpez/infuse:5.*
+> composer require bpez/infuse:dev-laravel5_1
 ```
 
-Step 3: Add the ServiceProvider
+Step 2: Add the ServiceProvider
 ```php
 // config/app.php
 'providers' => [
@@ -29,7 +19,7 @@ Step 3: Add the ServiceProvider
 ] ,
 ```
 
-Step 4: Add to middleware
+Step 3: Add to middleware
 ```php
 // app\http\Kernel.php
 protected $middleware = [
@@ -40,7 +30,7 @@ protected $middleware = [
 ```
 
 
-Step 5: Configure auth file
+Step 4: Configure auth file
 ```php
 // config/auth.php
 ...
@@ -54,7 +44,7 @@ Step 5: Configure auth file
 ...
 ```
 
-Step 6: Publish Configurations & public assets & run migrations
+Step 5: Publish Configurations & public assets & run migrations
 ```cmd
 > php artisan vendor:publish --provider="\Bpez\Infuse\InfuseServiceProvider" --tag=infuse_public --force
 > php artisan vendor:publish --provider="\Bpez\Infuse\InfuseServiceProvider" --tag=infuse_config
@@ -62,7 +52,7 @@ Step 6: Publish Configurations & public assets & run migrations
 > php artisan migrate --path="vendor/bpez/infuse/migrations"
 ```
 
-Step 7: Add to composer.json
+Step 6: Add to composer.json
 ```json
 "post-update-cmd": [
     ...
@@ -71,7 +61,7 @@ Step 7: Add to composer.json
 ```
 
 
-Step 8: Add to .htaccess
+Step 7: Add to .htaccess
 ```htacess
 
 RewriteEngine On
@@ -80,13 +70,13 @@ RewriteEngine On
     RewriteRule \.(?:jpe?g|gif|png|bmp)$ bpez/infuse/other/retinaimages.php [NC,L]
 ```
 
-Step 9: Run infuse migrations
+Step 8: Run infuse migrations
 ```cmd
 > php artisan migrate
 
 ```
 
-Step 10: Add support to server retina images
+Step 9: Add support to server retina images
 ```htaccess
 RewriteCond %{HTTP:Cookie} devicePixelRatio [NC]
 RewriteRule \.(?:jpe?g|gif|png|bmp)$ /packages/bpez/infuse/retinaimages.php [NC,L]
@@ -105,12 +95,6 @@ RewriteRule \.(?:jpe?g|gif|png|bmp)$ /packages/bpez/infuse/retinaimages.php [NC,
 ###  Install artisan on sterioids
 ```cmd
 > sudo curl https://raw.github.com/villimagg/Artisan-on-Steroids/master/artisan -o /usr/local/bin/artisan && sudo chmod +x /usr/local/bin/artisan
-```
-
-### Behat infuse test suite
-```
-imports:
-  - vendor/bpez/infuse/behat.yml
 ```
 
 ### High level data flow
