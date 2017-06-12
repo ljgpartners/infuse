@@ -74,11 +74,6 @@ return array(
 	*/
 	'licenseName' => '',
 	'licenseKey' => '',
-	's3bucket' => '',
-	's3key' => '',
-	's3secret' => '',
-	's3baseUrl' => '',
-	's3rootPath' => '',
 
 
 

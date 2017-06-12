@@ -45,7 +45,12 @@ $config['authentication'] = function () {
     return auth();
 };
 
+function public_path () {
+    return $_SERVER['DOCUMENT_ROOT'];
+}
+
 $infuseConfig = require_once $_SERVER['DOCUMENT_ROOT'] . '/../config/infuse/config.php';
+$fileSystemConfig = require_once $_SERVER['DOCUMENT_ROOT'] . '/../config/filesystems.php';
 
 /*============================ License Key ============================================*/
 // http://docs.cksource.com/ckfinder3-php/configuration.html#configuration_options_licenseKey
@@ -80,17 +85,27 @@ $config['images'] = array(
 
 /*=================================== Backends ========================================*/
 // http://docs.cksource.com/ckfinder3-php/configuration.html#configuration_options_backends
-
-$config['backends'][] = array(
-    'name'         => 'default',
-    'adapter'      => 's3',
-    'bucket'       => $infuseConfig['s3bucket'],
-    'key'          => $infuseConfig['s3key'],
-    'secret'       => $infuseConfig['s3secret'],
-    'visibility'   => 'public',
-    'baseUrl'      => $infuseConfig['s3baseUrl'],
-    'root'         => $infuseConfig['s3rootPath']
-);
+// *note* CKFINDER does not currently support rackspace so adapter cannot be defined by fileSystemConfig
+if ($fileSystemConfig['default'] == 's3') {
+    $config['backends'][] = array(
+        'name'         => 'default', // default
+        'adapter'      => 's3',
+        'bucket'       => $fileSystemConfig['disks']['s3']['bucket'],
+        'key'          => $fileSystemConfig['disks']['s3']['key'],
+        'secret'       => $fileSystemConfig['disks']['s3']['secret'],
+        'visibility'   => 'public',
+        'baseUrl'      => 'https://s3.amazonaws.com/' . $fileSystemConfig['disks']['s3']['bucket'],
+        'root'         => 'ckfinder'
+    );
+}
+else {
+    $config['backends'][] = array(
+        'name'         => 'default', // default
+        'adapter'      => 'local',
+        'visibility'   => 'public',
+        'baseUrl'      => '/ckfinder/'
+    );
+}
 
 /*================================ Resource Types =====================================*/
 // http://docs.cksource.com/ckfinder3-php/configuration.html#configuration_options_resourceTypes
