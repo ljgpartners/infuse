@@ -55,8 +55,14 @@ $fileSystemConfig = require_once $_SERVER['DOCUMENT_ROOT'] . '/../config/filesys
 /*============================ License Key ============================================*/
 // http://docs.cksource.com/ckfinder3-php/configuration.html#configuration_options_licenseKey
 
-$config['licenseName'] = $infuseConfig['licenseName'];
-$config['licenseKey']  = $infuseConfig['licenseKey'];
+if (array_key_exists('licenseName', $infuseConfig) && array_key_exists('licenseKey', $infuseConfig)) {
+    $config['licenseName'] = $infuseConfig['licenseName'];
+    $config['licenseKey']  = $infuseConfig['licenseKey'];
+}
+else {
+    $config['licenseName'] = '';
+    $config['licenseKey']  = '';
+}
 
 /*============================ CKFinder Internal Directory ============================*/
 // http://docs.cksource.com/ckfinder3-php/configuration.html#configuration_options_privateDir
@@ -86,7 +92,7 @@ $config['images'] = array(
 /*=================================== Backends ========================================*/
 // http://docs.cksource.com/ckfinder3-php/configuration.html#configuration_options_backends
 // *note* CKFINDER does not currently support rackspace so adapter cannot be defined by fileSystemConfig
-if ($fileSystemConfig['default'] == 's3'  && $infuseConfig['licenseName'] && $infuseConfig['licenseKey']) {
+if ($fileSystemConfig['default'] == 's3'  && $config['licenseName'] && $config['licenseKey']) {
     $config['backends'][] = array(
         'name'         => 'default', // default
         'adapter'      => 's3',
