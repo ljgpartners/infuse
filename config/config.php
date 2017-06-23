@@ -69,6 +69,12 @@ return array(
 	*/
 	'add_javascript' => '',
 
+    /*
+	| CKFinder Configuration
+	*/
+	'licenseName' => '',
+	'licenseKey' => '',
+
 
 
 	/*
