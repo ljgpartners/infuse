@@ -140,7 +140,9 @@ class FileUpload extends CommandAbstract
             $uploadedFileStream = $uploadedFile->getContentsStream();
             $uploaded = (int) $workingFolder->putStream($fileName, $uploadedFileStream, $uploadedFile->getMimeType());
 
-            fclose($uploadedFileStream);
+            if (is_resource($uploadedFileStream)) {
+                fclose($uploadedFileStream);
+            }
 
             if ($overwriteOnUpload) {
                 $thumbsRepository->deleteThumbnails(

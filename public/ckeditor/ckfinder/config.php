@@ -86,7 +86,7 @@ $config['images'] = array(
 /*=================================== Backends ========================================*/
 // http://docs.cksource.com/ckfinder3-php/configuration.html#configuration_options_backends
 // *note* CKFINDER does not currently support rackspace so adapter cannot be defined by fileSystemConfig
-if ($fileSystemConfig['default'] == 's3') {
+if ($fileSystemConfig['default'] == 's3'  && $infuseConfig['licenseName'] && $infuseConfig['licenseKey']) {
     $config['backends'][] = array(
         'name'         => 'default', // default
         'adapter'      => 's3',
@@ -94,7 +94,7 @@ if ($fileSystemConfig['default'] == 's3') {
         'key'          => $fileSystemConfig['disks']['s3']['key'],
         'secret'       => $fileSystemConfig['disks']['s3']['secret'],
         'visibility'   => 'public',
-        'baseUrl'      => 'https://s3.amazonaws.com/' . $fileSystemConfig['disks']['s3']['bucket'],
+        'baseUrl'      => 'https://s3.amazonaws.com/' . $fileSystemConfig['disks']['s3']['bucket'] . '/ckfinder/',
         'root'         => 'ckfinder'
     );
 }
