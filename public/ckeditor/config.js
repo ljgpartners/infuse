@@ -103,9 +103,9 @@ CKEDITOR.editorConfig = function( config ) {
 	// to disable the filtering of HTML elements in the editor.
 	config.allowedContent = true;
 
-  // config.filebrowserBrowseUrl = '/bpez/infuse/ckeditor/ckfinder/ckfinder.html';
-  // config.filebrowserImageBrowseUrl = '/bpez/infuse/ckeditor/ckfinder/ckfinder.html?type=Images';
-  // config.filebrowserUploadUrl = '/bpez/infuse/ckeditor/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files';
-  // config.filebrowserImageUploadUrl = '/bpez/infuse/ckeditor/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images';
+  config.filebrowserBrowseUrl = '/bpez/infuse/ckeditor/ckfinder/ckfinder.html';
+  config.filebrowserImageBrowseUrl = '/bpez/infuse/ckeditor/ckfinder/ckfinder.html?type=Images';
+  config.filebrowserUploadUrl = '/bpez/infuse/ckeditor/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files';
+  config.filebrowserImageUploadUrl = '/bpez/infuse/ckeditor/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images';
 
 };
